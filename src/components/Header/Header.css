@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+
 .header {
   display: flex;
   align-items: center;
@@ -6,6 +8,7 @@
   background: #fff;
   border-bottom: 1px solid #eee;
   min-height: 48px;
+  font-family: 'Alexandria', 'Noto Sans KR', sans-serif;
 }
 
 .header__logo {

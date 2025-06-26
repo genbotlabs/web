@@ -40,7 +40,7 @@ const MainSection = () => {
 클릭 한 번으로 상담봇을 완성하세요 </p>
                     </div>
                     <div className="button-wrapper">
-                        <button className="generate-button">챗봇, 보이스봇 생성하기</button>
+                        <button className="generate-button">🤖 챗봇, 보이스봇 생성하기</button>
                     </div>
                         
                 </div>
