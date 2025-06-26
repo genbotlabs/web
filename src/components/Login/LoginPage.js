@@ -9,7 +9,7 @@ import github_logo from '../icons/github.png';
 const LoginPage = () => {
     const navigate = useNavigate();
     const handleEmailLoginClick = () => {
-        navigate('/email-login');
+        navigate('/login/email');
     };
     
 
