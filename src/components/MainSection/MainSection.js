@@ -17,7 +17,7 @@ const MainSection = () => {
     ];
 
     const handleClick = () => {
-        navigate('/generate-bot');
+        navigate('/generate');
     };
 
     useEffect(() => {
