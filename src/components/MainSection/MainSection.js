@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './MainSection.css';
 
 const MainSection = () => {
+    const navigate = useNavigate();
     const [messages, setMessages] = useState([]);
     const [index, setIndex] = useState(0);
     const messageQueue = [
@@ -13,6 +15,10 @@ const MainSection = () => {
         { text: "그럼 음료 반입은 가능한가요?", sender: 'user' },
         { text: "네. 저희 Genbot 스터디룸은 음료 반입이 가능합니다. 다만, 재활용은 직접 해주셔야 합니다.", sender: 'bot' },
     ];
+
+    const handleClick = () => {
+        navigate('/generate-bot');
+    };
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -40,7 +46,7 @@ const MainSection = () => {
 클릭 한 번으로 상담봇을 완성하세요 </p>
                     </div>
                     <div className="button-wrapper">
-                        <button className="generate-button">🤖 챗봇, 보이스봇 생성하기</button>
+                        <button className="generate-button" onClick={handleClick}>🤖 챗봇, 보이스봇 생성하기</button>
                     </div>
                         
                 </div>
