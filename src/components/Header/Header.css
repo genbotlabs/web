@@ -50,6 +50,11 @@
   transition: color 0.2s;
 }
 
+.header__menu li a {
+  text-decoration: none;
+  color: inherit;
+}
+
 .header__menu li:hover {
   color: #007aff;
 }
@@ -60,4 +65,13 @@
   cursor: pointer;
   font-weight: 400;
   margin-left: 24px;
+}
+
+.header__login #login-button {
+  text-decoration: none;
+  color: inherit;
+}
+
+.header__login #login-button:hover {
+  color: #007aff;
 }
