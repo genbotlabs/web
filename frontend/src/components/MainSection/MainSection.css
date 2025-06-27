@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+
+.main-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 80vh;
+    gap: 0 20px;
+    margin-top: 7vh;
+    margin-bottom: 7vh;
+    font-family: 'Alexandria', 'Noto Sans KR', sans-serif;
+}
+
+.title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+.content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    flex: 1;
+    gap: 20px;
+    margin-bottom: 20px;
+    min-height: 200px;
+}
+
+.left-container {
+    flex: 0 0 40%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 20px;
+    background-color: #fff;
+    box-sizing: border-box;
+    justify-content: space-between;
+    margin-right: 20px;
+}
+
+.right-container {
+    flex: 0 0 60%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 20px;
+    background-color: #fff;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .content-wrapper {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .left-container,
+    .right-container {
+        width: 100%;
+        height: auto;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.chatbox {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.message {
+    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    animation: slideUp 0.3s ease-out;
+}
+
+.bot-message {
+    background-color: #f8f8f8;
+    align-self: flex-start;
+}
+
+.user-message {
+    background-color: #a9d8ff;
+    align-self: flex-end;
+}
+
+.text-wrapper {
+    height: 60vh;
+}
+
+.text-wrapper>p {
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.button-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.generate-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 20px;
+    transition: background-color 0.2s;
+    padding: 15px 40px 15px 40px;
+}
+
+.generate-button:hover {
+    background-color: #005fcc;
+}

@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 32px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  min-height: 48px;
+  font-family: 'Alexandria', 'Noto Sans KR', sans-serif;
+}
+
+.header__logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header__logo-img {
+  width: 32px;
+  height: 32px;
+}
+
+.header__logo-text {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #111;
+  letter-spacing: -1px;
+}
+
+.header__nav {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.header__menu {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.header__menu li {
+  font-size: 1rem;
+  color: #222;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.header__menu li a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.header__menu li:hover {
+  color: #007aff;
+}
+
+.header__login {
+  font-size: 1rem;
+  color: #222;
+  cursor: pointer;
+  font-weight: 400;
+  margin-left: 24px;
+}
+
+.header__login #login-button {
+  text-decoration: none;
+  color: inherit;
+}
+
+.header__login #login-button:hover {
+  color: #007aff;
+}
