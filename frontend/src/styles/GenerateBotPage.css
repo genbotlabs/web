@@ -23,7 +23,8 @@
 .question-2 label,
 .question-3 label,
 .question-4 label,
-.question-5 label {
+.question-5 label,
+.file-upload label {
     font-weight: bold;
 }
 
@@ -32,7 +33,7 @@
 .question-4 input,
 .question-5 input {
     margin: 10px;
-    width: 35vw;
+    width: 650px;
 }
 
 

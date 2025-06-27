@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 
-export default function FileUploadBox() {
+export default function FileUploadBox({ onFileChange }) {
     const [files, setFiles] = useState([]);
 
     const handleFileChange = (e) => {
-        const selected = Array.from(e.target.files).slice(0, 10);
-        setFiles(selected);
+        const selected = Array.from(e.target.files);
+        const newFiles = [...files, ...selected];
+
+        if (newFiles.length > 10) {
+            alert("최대 10개 파일까지만 업로드할 수 있습니다.");
+            return;
+        }
+
+        setFiles(newFiles);
+        onFileChange(newFiles);
     };
 
     return (
         <div className="file-upload-box">
-            <div className="upload-header">
-                <span>데이터 업로드하기</span>
-                <a href="/example-data.pdf" target="_blank" rel="noreferrer">데이터 예시 보기</a>
-            </div>
-            <ul>
-                <li>.json, PDF 파일만 업로드 할 수 있습니다.</li>
-                <li>파일은 최대 10개까지, 각 파일은 30MB까지 가능합니다.</li>
-            </ul>
             <input type="file" multiple accept=".pdf,.json" onChange={handleFileChange} />
             <div className="file-list">
                 {files.map((file, idx) => (
