@@ -1,9 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+
 .generate-bot-form {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    width: 500px;
-    margin: 0 auto;
+    width: 700px;
+    margin: 50px auto;
+    font-family: 'Alexandria', 'Noto Sans KR', sans-serif;
 }
 
 .generate-bot-form input {
@@ -11,6 +14,27 @@
     border: 1px solid #ccc;
     border-radius: 4px;
 }
+
+.generate-bot-form div {
+    margin: 10px;
+}
+
+.question-1 label,
+.question-2 label,
+.question-3 label,
+.question-4 label,
+.question-5 label {
+    font-weight: bold;
+}
+
+.question-2 input,
+.question-3 input,
+.question-4 input,
+.question-5 input {
+    margin: 10px;
+    width: 35vw;
+}
+
 
 .submit-btn {
     background: #007bff;
