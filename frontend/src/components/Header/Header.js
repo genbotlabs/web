@@ -1,8 +1,8 @@
 import './Header.css';
-import logo from './logo.png';
+import logo from '../icons/logo.png';
 import { Link } from 'react-router-dom';
 
-export default function Header() {
+export default function Header({ user }) {
     return (
         <header className="header">
             <div className="header__logo">
@@ -18,7 +18,18 @@ export default function Header() {
                 </ul>
             </nav>
             <div className="header__login">
-                <Link to="/login" id='login-button'>로그인</Link>
+                {user ? (
+                    <Link to="/mypage">
+                        <img
+                            src={user.profile_image}
+                            alt="프로필"
+                            className="header__profile-img"
+                            style={{ width: "36px", height: "36px", borderRadius: "50%" }}
+                        />
+                    </Link>
+                ) : (
+                    <Link to="/login" id="login-button">로그인</Link>
+                )}
             </div>
         </header>
     );
