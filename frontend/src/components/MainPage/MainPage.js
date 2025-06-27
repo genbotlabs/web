@@ -14,8 +14,9 @@ const MainPage = ({ setUser }) => {
         const name = params.get("name");
         const profile_image = params.get("profile_image");
 
-        if (email) {
+        if (name) {
             setUser({ email, name, profile_image });
+            console.log('전체 유저 정보:', { email, name, profile_image });
             navigate("/");
         }
     }, [location, setUser]);

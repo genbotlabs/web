@@ -69,7 +69,7 @@ async def kakao_callback(code: str, db: Session = Depends(get_db)):
 
     kakao_id = str(user_json.get("id"))
     kakao_account = user_json.get("kakao_account", {})
-    email = kakao_account.get("email", "")
+    email = user_json.get("email") or "";
     profile = kakao_account.get("profile", {})
     name = profile.get("nickname", "")
     profile_image = profile.get("profile_image_url", "")
@@ -89,14 +89,14 @@ async def kakao_callback(code: str, db: Session = Depends(get_db)):
         )
         db.add(user)
     else:
-        # user.email = email
+        user.email = email
         user.name = name
         user.profile_image = profile_image
 
     db.commit()
 
     query = urllib.parse.urlencode({
-        # "email": email,
+        "email": email,
         "name": name,
         "profile_image": profile_image
     })
@@ -190,7 +190,7 @@ async def github_callback(code: str, db: Session = Depends(get_db)):
         user_json = user_res.json()
 
     github_id = str(user_json.get("id"))
-    email = user_json.get("email") or ""  # 일부 사용자 이메일이 비공개일 수 있음
+    email = user_json.get("email") or "";
     name = user_json.get("name") or user_json.get("login") or ""
     profile_image = user_json.get("avatar_url", "")
 
