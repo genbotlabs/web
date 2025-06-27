@@ -8,7 +8,21 @@ import github_logo from '../icons/github.png';
 
 const LoginPage = () => {
     const navigate = useNavigate();
-    const handleEmailLoginClick = () => {
+
+    const KAKAO_REST_API_KEY = process.env.REACT_APP_KAKAO_REST_API_KEY;
+    const KAKAO_REDIRECT_URI = process.env.REACT_APP_KAKAO_REDIRECT_URI; 
+    const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`;
+
+    const handleEmailLogin = () => {
+        navigate('/login/email');
+    };
+    const handleKaKaoLogin = () => {
+        window.location.href = KAKAO_AUTH_URL;
+    };
+    const handleGoogleLogin = () => {
+        navigate('/login/email');
+    };
+    const handleGitHubLogink = () => {
         navigate('/login/email');
     };
     
@@ -20,11 +34,11 @@ const LoginPage = () => {
                 <p>GenBot</p>
             </div>
             <div className='login__container'>
-                <button className='email-login' onClick={handleEmailLoginClick}>
+                <button className='email-login' onClick={handleEmailLogin}>
                     <img src={genbot} alt="GenBot Logo" className="logo-img" />
                     <p>이메일로 로그인</p>
                 </button>
-                <button className='kakao-login'>
+                <button className='kakao-login' onClick={handleKaKaoLogin}>
                     <img src={kakao_logo} alt="Kakao Logo" className="logo-img" />
                     <p>카카오톡으로 로그인</p>
                 </button>
