@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import Header from '../Header/Header';
-import MainSection from '../MainSection/MainSection';
+import MainSection from './MainSection';
 
 const MainPage = ({ setUser }) => {
     const location = useLocation();

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import './LoginPage.css';
+import '../styles/LoginPage.css';
 import logo from '../icons/logo.png';
 import genbot from '../icons/genbot.png';
 import kakao_logo from '../icons/kakao.png';

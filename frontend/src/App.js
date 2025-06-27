@@ -2,8 +2,9 @@ import { BrowserRouter, Route, Routes } from  'react-router-dom';
 import { useState } from 'react';
 
 import Header from './components/Header/Header';
-import MainPage from './components/MainPage/MainPage'
-import LoginPage from './components/Login/LoginPage'
+import MainPage from './pages/MainPage'
+// import LoginPage from '../pages/LoginPage'
+import LoginPage from './pages/LoginPage';
 
 export default function App() {
   const [user, setUser] = useState(null);
