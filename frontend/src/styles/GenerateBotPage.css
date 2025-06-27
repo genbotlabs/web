@@ -1,0 +1,27 @@
+.generate-bot-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 500px;
+    margin: 0 auto;
+}
+
+.generate-bot-form input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.submit-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.file-upload-box {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px dashed #aaa;
+}

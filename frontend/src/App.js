@@ -3,8 +3,8 @@ import { useState } from 'react';
 
 import Header from './components/Header/Header';
 import MainPage from './pages/MainPage'
-// import LoginPage from '../pages/LoginPage'
 import LoginPage from './pages/LoginPage';
+import GenerateBotPage from './pages/GenerateBotPage';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -16,6 +16,7 @@ export default function App() {
         <Routes>
           <Route path='/' element={<MainPage setUser={setUser} />}></Route>
           <Route path='/login' element={<LoginPage/>}></Route>
+          <Route path='/generate' element={<GenerateBotPage/>}></Route>
         </Routes>
       </BrowserRouter>
     </>
