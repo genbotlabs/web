@@ -18,6 +18,10 @@ app.add_middleware(
 KAKAO_CLIENT_ID = os.getenv("KAKAO_REST_API_KEY")
 KAKAO_REDIRECT_URI = os.getenv("KAKAO_REDIRECT_URI")
 
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
+
 
 @app.get("/kakao/callback")
 async def kakao_callback(code: str):
@@ -44,3 +48,30 @@ async def kakao_callback(code: str):
         user_json = user_response.json()
 
     return {"message": "로그인 성공", "user": user_json}
+
+@app.get("/google/callback")
+async def google_callback(code: str):
+    token_url = "https://oauth2.googleapis.com/token"
+    token_data = {
+        "code": code,
+        "client_id": GOOGLE_CLIENT_ID,
+        "client_secret": GOOGLE_CLIENT_SECRET,
+        "redirect_uri": GOOGLE_REDIRECT_URI,
+        "grant_type": "authorization_code",
+    }
+
+    async with httpx.AsyncClient() as client:
+        token_res = await client.post(token_url, data=token_data)
+        token_json = token_res.json()
+
+    access_token = token_json.get("access_token")
+    if not access_token:
+        return {"error": "Token fetch failed", "detail": token_json}
+
+    user_info_url = "https://www.googleapis.com/oauth2/v2/userinfo"
+    headers = {"Authorization": f"Bearer {access_token}"}
+    async with httpx.AsyncClient() as client:
+        user_res = await client.get(user_info_url, headers=headers)
+        user_info = user_res.json()
+
+    return {"message": "구글 로그인 성공", "user": user_info}

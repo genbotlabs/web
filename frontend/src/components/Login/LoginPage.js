@@ -13,6 +13,10 @@ const LoginPage = () => {
     const KAKAO_REDIRECT_URI = process.env.REACT_APP_KAKAO_REDIRECT_URI; 
     const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`;
 
+    const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+    const GOOGLE_REDIRECT_URI = process.env.REACT_APP_GOOGLE_REDIRECT_URI;
+    const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=email%20profile`;
+
     const handleEmailLogin = () => {
         navigate('/login/email');
     };
@@ -20,7 +24,7 @@ const LoginPage = () => {
         window.location.href = KAKAO_AUTH_URL;
     };
     const handleGoogleLogin = () => {
-        navigate('/login/email');
+        window.location.href = GOOGLE_AUTH_URL;
     };
     const handleGitHubLogink = () => {
         navigate('/login/email');
@@ -42,7 +46,7 @@ const LoginPage = () => {
                     <img src={kakao_logo} alt="Kakao Logo" className="logo-img" />
                     <p>카카오톡으로 로그인</p>
                 </button>
-                <button className='google-login'>
+                <button className='google-login' onClick={handleGoogleLogin}>
                     <img src={google_logo} alt="Google Logo" className="logo-img" />
                     <p>Google로 로그인</p>
                 </button>
