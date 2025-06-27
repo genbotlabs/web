@@ -7,7 +7,7 @@ export default function GenerateBotPage() {
     const [form, setForm] = useState({
         type: [],
         company: '',
-        purpose: '',
+        usage: '',
         greeting: '',
         description: '',
     });
