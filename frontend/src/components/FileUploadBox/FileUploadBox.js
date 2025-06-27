@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import * as pdfjs from 'pdfjs-dist';
-import pdfWorkerScript from 'pdfjs-dist/build/pdf.worker.js';
 import logo from '../../icons/logo.png';
-
-const workerBlob = new Blob([pdfWorkerScript], { type: 'application/javascript' });
-const workerBlobUrl = URL.createObjectURL(workerBlob);
-pdfjs.GlobalWorkerOptions.workerSrc = workerBlobUrl;
 
 
 export default function FileUploadBox({ onFileChange }) {
@@ -25,34 +19,34 @@ export default function FileUploadBox({ onFileChange }) {
         onFileChange(newFiles);
 
         // 썸네일 
-        for (const file of selected) {
-            if (file.type === 'application/pdf') {
-                const fileReader = new FileReader();
-                fileReader.onload = async () => {
-                    try {
-                        const typedArray = new Uint8Array(fileReader.result);
-                        const pdf = await pdfjs.getDocument(typedArray).promise;
-                        const page = await pdf.getPage(1);
-                        const viewport = page.getViewport({ scale: 1 });
+        // for (const file of selected) {
+        //     if (file.type === 'application/pdf') {
+        //         const fileReader = new FileReader();
+        //         fileReader.onload = async () => {
+        //             try {
+        //                 const typedArray = new Uint8Array(fileReader.result);
+        //                 const pdf = await pdfjs.getDocument(typedArray).promise;
+        //                 const page = await pdf.getPage(1);
+        //                 const viewport = page.getViewport({ scale: 1 });
 
-                        const canvas = document.createElement('canvas');
-                        const context = canvas.getContext('2d');
-                        canvas.width = viewport.width;
-                        canvas.height = viewport.height;
+        //                 const canvas = document.createElement('canvas');
+        //                 const context = canvas.getContext('2d');
+        //                 canvas.width = viewport.width;
+        //                 canvas.height = viewport.height;
 
-                        await page.render({ canvasContext: context, viewport }).promise;
+        //                 await page.render({ canvasContext: context, viewport }).promise;
 
-                        const thumbnail = canvas.toDataURL();
-                        setThumbnails(prev => ({ ...prev, [file.name]: thumbnail }));
-                    } catch (err) {
-                        console.error('PDF 썸네일 생성 실패:', err);
-                    }
-                };
-                fileReader.readAsArrayBuffer(file);
-            } else {
-                setThumbnails(prev => ({ ...prev, [file.name]: logo }));
-            }
-        }
+        //                 const thumbnail = canvas.toDataURL();
+        //                 setThumbnails(prev => ({ ...prev, [file.name]: thumbnail }));
+        //             } catch (err) {
+        //                 console.error('PDF 썸네일 생성 실패:', err);
+        //             }
+        //         };
+        //         fileReader.readAsArrayBuffer(file);
+        //     } else {
+        //         setThumbnails(prev => ({ ...prev, [file.name]: logo }));
+        //     }
+        // }
     };
 
     return (
