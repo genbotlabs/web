@@ -22,6 +22,10 @@ GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
 
+GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
+GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
+GITHUB_REDIRECT_URI = os.getenv("GITHUB_REDIRECT_URI")
+
 
 @app.get("/kakao/callback")
 async def kakao_callback(code: str):
@@ -49,6 +53,7 @@ async def kakao_callback(code: str):
 
     return {"message": "로그인 성공", "user": user_json}
 
+
 @app.get("/google/callback")
 async def google_callback(code: str):
     token_url = "https://oauth2.googleapis.com/token"
@@ -75,3 +80,31 @@ async def google_callback(code: str):
         user_info = user_res.json()
 
     return {"message": "구글 로그인 성공", "user": user_info}
+
+
+@app.get("/github/callback")
+async def github_callback(code: str):
+    token_url = "https://github.com/login/oauth/access_token"
+    headers = {"Accept": "application/json"}
+    token_data = {
+        "code": code,
+        "client_id": GITHUB_CLIENT_ID,
+        "client_secret": GITHUB_CLIENT_SECRET,
+        "redirect_uri": GITHUB_REDIRECT_URI,
+    }
+
+    async with httpx.AsyncClient() as client:
+        token_res = await client.post(token_url, headers=headers, data=token_data)
+        token_json = token_res.json()
+
+    access_token = token_json.get("access_token")
+    if not access_token:
+        return {"error": "Failed to get access token", "detail": token_json}
+
+    user_info_url = "https://api.github.com/user"
+    headers = {"Authorization": f"token {access_token}"}
+    async with httpx.AsyncClient() as client:
+        user_res = await client.get(user_info_url, headers=headers)
+        user_info = user_res.json()
+
+    return {"message": "GitHub 로그인 성공", "user": user_info}

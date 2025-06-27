@@ -17,6 +17,10 @@ const LoginPage = () => {
     const GOOGLE_REDIRECT_URI = process.env.REACT_APP_GOOGLE_REDIRECT_URI;
     const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=email%20profile`;
 
+    const GITHUB_CLIENT_ID = process.env.REACT_APP_GITHUB_CLIENT_ID;
+    const GITHUB_REDIRECT_URI = process.env.REACT_APP_GITHUB_REDIRECT_URI;
+    const GITHUB_AUTH_URL = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${GITHUB_REDIRECT_URI}`;
+
     const handleEmailLogin = () => {
         navigate('/login/email');
     };
@@ -26,8 +30,8 @@ const LoginPage = () => {
     const handleGoogleLogin = () => {
         window.location.href = GOOGLE_AUTH_URL;
     };
-    const handleGitHubLogink = () => {
-        navigate('/login/email');
+    const handleGitHubLogin = () => {
+        window.location.href = GITHUB_AUTH_URL;
     };
     
 
@@ -50,7 +54,7 @@ const LoginPage = () => {
                     <img src={google_logo} alt="Google Logo" className="logo-img" />
                     <p>Google로 로그인</p>
                 </button>
-                <button className='github-login'>
+                <button className='github-login' onClick={handleGitHubLogin}>
                     <img src={github_logo} alt="GitHub Logo" className="logo-img" />
                     <p>GitHub로 로그인</p>
                 </button>
