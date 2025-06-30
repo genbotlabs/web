@@ -8,6 +8,7 @@ import FileUploadBox from '../components/FileUploadBox/FileUploadBox.js';
 export default function GenerateBotPage() {
     const navigate = useNavigate();
     const [uploadedFiles, setUploadedFiles] = useState([]);
+    const [showFormatPopup, setShowFormatPopup] = useState(false);
     const [form, setForm] = useState({
         type: [],
         company: '',
@@ -107,7 +108,9 @@ export default function GenerateBotPage() {
 
             <div className='file-upload'>
                 <label>데이터 업로드하기<span><strong>*</strong></span></label>
-                <button className='show-data-ex'>데이터 예시보기</button>
+                <button type="button" className="show-data-ex" onClick={() => setShowFormatPopup(true)}>
+                    데이터 예시보기
+                </button>
                 <p>
                     - json, PDF 파일을 업로드 할 수 있습니다. <br/>
                     - 파일의 개수는 최대 10개이고, 각 파일의 크기 제한은 30MB입니다. <br/>
@@ -116,9 +119,21 @@ export default function GenerateBotPage() {
                 </p>
                 <FileUploadBox onFileChange={setUploadedFiles}/>
             </div>
-            
-
             <button type="submit" className="submit-btn">생성하기</button>
+            
+            {showFormatPopup && (
+                <div className="popup-overlay" onClick={() => setShowFormatPopup(false)}>
+                    <div className="popup-box" onClick={(e) => e.stopPropagation()}>
+                    <h3>데이터 형식 예시</h3>
+                    <p>PDF 또는 JSON 파일만 업로드 가능합니다.</p>
+                    <ul>
+                        <li>예시: 계약서.pdf</li>
+                        <li>예시: 학습데이터.json</li>
+                    </ul>
+                    <button onClick={() => setShowFormatPopup(false)}>닫기</button>
+                    </div>
+                </div>
+            )}
         </form>
     );
 }
