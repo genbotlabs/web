@@ -1,6 +1,21 @@
 .tooltip-container {
-  position: relative;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  border: 1px solid black;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.thumbnail {
+  margin-right: 10px;
+}
+
+.data_info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
 }
 
 .tooltip-box {

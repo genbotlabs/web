@@ -28,14 +28,17 @@ export default function FileUploadBox({ onFileChange }) {
                 {files.map((file, idx) => (
                     <div key={idx} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                         <div className="tooltip-container">
-                            <img src={thumbnails[file.name]} alt="preview" style={{ width: '80px', height: '100px', marginRight: '10px' }} />
-                            <div>
+                            <div className='thumbnail'>
+                                <img src={thumbnails[file.name]} alt="preview" style={{ width: '80px', height: '100px', marginRight: '10px' }} />
+                            </div>
+                            <div className='data_info'>
                                 <p style={{ cursor: 'pointer' }}>{file.name}</p>
                                 <div className="tooltip-box">
                                     크기: {(file.size / 1024).toFixed(2)} KB
                                 </div>
+                                <button>형식 확인하기</button>
                             </div>
-                            <button>형식 확인하기</button>
+                            
                         </div>
                     </div>
                 ))}
