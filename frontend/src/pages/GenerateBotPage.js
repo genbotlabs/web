@@ -55,7 +55,7 @@ export default function GenerateBotPage() {
         const formData = new FormData();
         formData.append('type', form.type.join(','));
         formData.append('company', form.company);
-        formData.append('purpose', form.purpose);
+        formData.append('usage', form.usage);
         formData.append('greeting', form.greeting || '');
         formData.append('description', form.description || '');
 
@@ -83,6 +83,14 @@ export default function GenerateBotPage() {
         }
     };
 
+    const isFormValid = form.type.length > 0 &&
+        form.company.trim() &&
+        form.usage.trim() &&
+        uploadedFiles.length > 0 &&
+        uploadedFiles.every(file => {
+            const result = validationResult.find(v => v.name === file.name);
+            return result?.valid === true;
+        });
 
 
     return (
@@ -103,7 +111,7 @@ export default function GenerateBotPage() {
             <div className='question-3'>
                 <label>봇의 용도를 입력해 주세요.</label>
                 <br/>
-                <input name="purpose" value={form.purpose} onChange={handleChange} placeholder="예시: 문의" required />
+                <input name="usage" value={form.usage} onChange={handleChange} placeholder="예시: 문의" required />
             </div>
             <div className='question-4'>
                 <label>봇의 첫 멘트를 입력해 주세요. <span>(선택)</span></label>
@@ -135,7 +143,18 @@ export default function GenerateBotPage() {
                 setValidationResult={setValidationResult}
                 />
             </div>
-            <button type="submit" className="submit-btn">생성하기</button>
+            <button
+                type="submit"
+                className="submit-btn"
+                disabled={!isFormValid}
+                style={{
+                    backgroundColor: isFormValid ? '#007BFF' : '#ccc',
+                    color: isFormValid ? 'white' : '#666',
+                    cursor: isFormValid ? 'pointer' : 'not-allowed'
+                }}
+            >
+                생성하기
+            </button>
 
             {showFormatPopup && (
                 <div className="popup-overlay" onClick={() => setShowFormatPopup(false)}>

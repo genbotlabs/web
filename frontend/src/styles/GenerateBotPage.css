@@ -36,14 +36,26 @@
     width: 650px;
 }
 
-
 .submit-btn {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
 }
+
+.submit-btn:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.submit-btn.enabled {
+  background-color: #007BFF;
+  color: white;
+  cursor: pointer;
+}
+
 
 .file-upload-box {
     margin-top: 20px;
