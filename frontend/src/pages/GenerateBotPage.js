@@ -53,6 +53,7 @@ export default function GenerateBotPage() {
         }
 
         const formData = new FormData();
+        formData.append('user_id', userId);
         formData.append('type', form.type.join(','));
         formData.append('company', form.company);
         formData.append('usage', form.usage);
