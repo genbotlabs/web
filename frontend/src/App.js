@@ -17,8 +17,8 @@ export default function App() {
         <Routes>
           <Route path='/' element={<MainPage setUser={setUser} />}></Route>
           <Route path='/login' element={<LoginPage/>}></Route>
-          <Route path='/generate' element={<GenerateBotPage/>}></Route>
-          <Route path="/generate/pending" element={<PendingPage />} />
+          <Route path='/generate' element={<GenerateBotPage user={user}/>}></Route>
+          <Route path="/generate/pending" element={<PendingPage user={user}/>} />
         </Routes>
       </BrowserRouter>
     </>

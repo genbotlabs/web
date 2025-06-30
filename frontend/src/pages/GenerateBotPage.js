@@ -5,7 +5,7 @@ import '../styles/GenerateBotPage.css';
 import FileUploadBox from '../components/FileUploadBox/FileUploadBox.js';
 
 
-export default function GenerateBotPage() {
+export default function GenerateBotPage({user}) {
     const navigate = useNavigate();
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [showFormatPopup, setShowFormatPopup] = useState(false);
@@ -53,7 +53,8 @@ export default function GenerateBotPage() {
         }
 
         const formData = new FormData();
-        formData.append('user_id', userId);
+        const user_id = user['user_id']
+        formData.append('user_id', user_id);
         formData.append('type', form.type.join(','));
         formData.append('company', form.company);
         formData.append('usage', form.usage);

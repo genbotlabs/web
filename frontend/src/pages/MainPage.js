@@ -9,13 +9,14 @@ const MainPage = ({ setUser }) => {
     
     useEffect(() => {
         const params = new URLSearchParams(location.search);
+        const user_id = params.get("user_id");
         const email = params.get("email");
         const name = params.get("name");
         const profile_image = params.get("profile_image");
 
         if (name) {
-            setUser({ email, name, profile_image });
-            console.log('전체 유저 정보:', { email, name, profile_image });
+            setUser({ user_id, email, name, profile_image });
+            console.log('전체 유저 정보:', { user_id, email, name, profile_image });
             navigate("/");
         }
     }, [location, setUser]);

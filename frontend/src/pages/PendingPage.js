@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-export default function PendingPage() {
+export default function PendingPage({user}) {
     const [botInfo, setBotInfo] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
 

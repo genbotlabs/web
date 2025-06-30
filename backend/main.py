@@ -100,6 +100,7 @@ async def kakao_callback(code: str, db: Session = Depends(get_db)):
     db.commit()
 
     query = urllib.parse.urlencode({
+        "user_id": user.user_id,
         "email": email,
         "name": name,
         "profile_image": profile_image
@@ -161,6 +162,7 @@ async def google_callback(code: str, db: Session = Depends(get_db)):
     db.commit()
 
     query = urllib.parse.urlencode({
+        "user_id": user.user_id,
         "email": email,
         "name": name,
         "profile_image": profile_image
@@ -220,6 +222,7 @@ async def github_callback(code: str, db: Session = Depends(get_db)):
     db.commit()
 
     query = urllib.parse.urlencode({
+        "user_id": user.user_id,
         "email": email,
         "name": name,
         "profile_image": profile_image
