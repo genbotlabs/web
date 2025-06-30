@@ -67,5 +67,6 @@ class VoiceLog(Base):
     question = Column(String, nullable=False)
     answer = Column(String, nullable=False)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
+    updated_at = Column(DateTime, nullable=False, server_default=func.now())
 
     voicebot = relationship("Voicebot", back_populates="voicelogs")
