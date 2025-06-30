@@ -6,7 +6,6 @@ import '../FileUploadBox/FileUploadBox.css'
 export default function FileUploadBox({ onFileChange }) {
     const [files, setFiles] = useState([]);
     const [thumbnails, setThumbnails] = useState({});
-    const [tooltipIndex, setTooltipIndex] = useState(null);
 
     const handleFileChange = async (e) => {
         const selected = Array.from(e.target.files);
