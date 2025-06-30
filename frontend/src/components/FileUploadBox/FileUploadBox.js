@@ -23,6 +23,16 @@ export default function FileUploadBox({ onFileChange }) {
 
     const handleFormatCheck = async () => {
         const results = await Promise.all(files.map(async (file) => {
+            const MAX_SIZE = 10 * 1024 * 1024;
+
+            if (file.size > MAX_SIZE) {
+                return {
+                    name: file.name,
+                    valid: false,
+                    reason: '파일 크기가 10MB를 초과함'
+                };
+            }
+            
             if (file.name.endsWith('.pdf')) {
                 return { name: file.name, valid: true, reason: 'PDF 형식 확인됨' };
             }
