@@ -6,10 +6,10 @@ class Detail(Base):
     __tablename__ = "detail"
 
     detail_id = Column(Integer, primary_key=True, autoincrement=True)
-    company_name = Column(String, nullable=True)
-    usage = Column(String, nullable=True)
-    first_text = Column(String, nullable=True)
-    description = Column(String, nullable=True)
+    company_name = Column(String(255), nullable=True)
+    usage = Column(String(255), nullable=True)
+    first_text = Column(String(255), nullable=True)
+    description = Column(String(255), nullable=True)
     voicebot_id = Column(Integer, ForeignKey("voicebot.voicebot_id", ondelete="RESTRICT"), nullable=True)
     chatbot_id = Column(Integer, ForeignKey("chatbot.chatbot_id", ondelete="RESTRICT"), nullable=True)
 
