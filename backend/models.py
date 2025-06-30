@@ -34,6 +34,7 @@ class Chatbot(Base):
     created_at = Column(DateTime, nullable=False, server_default=func.now())
 
     user = relationship("User", back_populates="chatbots")
+    chatlogs = relationship("ChatLog", back_populates="chatbot", cascade="all, delete-orphan")
 
 class Voicebot(Base):
     __tablename__ = "voicebot"
@@ -44,3 +45,15 @@ class Voicebot(Base):
     created_at = Column(DateTime, nullable=False, server_default=func.now())
 
     user = relationship("User", back_populates="voicebots")
+
+class ChatLog(Base):
+    __tablename__ = "chatlog"
+
+    session_id = Column(Integer, primary_key=True, autoincrement=True)
+    chatbot_id = Column(Integer, ForeignKey("chatbot.chatbot_id", ondelete="CASCADE"), nullable=False)
+    question = Column(String, nullable=False)
+    answer = Column(String, nullable=False)
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
+    updated_at = Column(DateTime, nullable=False, server_default=func.now())
+
+    chatbot = relationship("Chatbot", back_populates="chatlogs")
