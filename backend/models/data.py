@@ -7,7 +7,7 @@ class Data(Base):
 
     data_id = Column(Integer, primary_key=True, autoincrement=True)
     type = Column(Boolean, nullable=False)
-    storage_url = Column(String, nullable=False)
+    storage_url = Column(String(512), nullable=False)
     detail_id = Column(Integer, ForeignKey("detail.detail_id", ondelete="CASCADE"), nullable=False)
 
     detail = relationship("Detail", back_populates="data_items")
