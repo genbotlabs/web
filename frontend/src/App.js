@@ -2,8 +2,10 @@ import { BrowserRouter, Route, Routes } from  'react-router-dom';
 import { useState } from 'react';
 
 import Header from './components/Header/Header';
-import MainPage from './components/MainPage/MainPage'
-import LoginPage from './components/Login/LoginPage'
+import MainPage from './pages/MainPage'
+import LoginPage from './pages/LoginPage';
+import GenerateBotPage from './pages/GenerateBotPage';
+import PendingPage from './pages/PendingPage';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -15,6 +17,8 @@ export default function App() {
         <Routes>
           <Route path='/' element={<MainPage setUser={setUser} />}></Route>
           <Route path='/login' element={<LoginPage/>}></Route>
+          <Route path='/generate' element={<GenerateBotPage user={user}/>}></Route>
+          <Route path="/generate/pending" element={<PendingPage user={user}/>} />
         </Routes>
       </BrowserRouter>
     </>
