@@ -26,7 +26,7 @@ export default function FileUploadBox({ onFileChange }) {
             <input type="file" multiple accept=".pdf,.json" onChange={handleFileChange} />
             <div className="file-list">
                 {files.map((file, idx) => (
-                    <div key={idx} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                    <div className='file-name' key={idx} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                         <div className="tooltip-container">
                             <div className='thumbnail'>
                                 <img src={thumbnails[file.name]} alt="preview" style={{ width: '80px', height: '100px', marginRight: '10px' }} />
