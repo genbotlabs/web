@@ -59,6 +59,7 @@ export default function GenerateBotPage() {
             if (response.ok) {
                 const result = await response.json();
                 console.log("서버 응답:", result);
+                localStorage.setItem('lastBotRequest', JSON.stringify(form));
                 navigate('/generate/pending');
             } else {
                 alert("서버 오류가 발생했습니다.");
