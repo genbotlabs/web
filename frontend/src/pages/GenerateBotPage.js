@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import '../styles/GenerateBotPage.css';
 import FileUploadBox from '../components/FileUploadBox/FileUploadBox.js';
 
+
 export default function GenerateBotPage() {
+    const navigate = useNavigate();
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [form, setForm] = useState({
         type: [],
@@ -55,10 +59,8 @@ export default function GenerateBotPage() {
             if (response.ok) {
                 const result = await response.json();
                 console.log("서버 응답:", result);
-                alert("봇 생성 요청이 성공적으로 전송되었습니다!");
+                navigate('/generate/pending');
             } else {
-                const error = await response.json();
-                console.error("서버 오류:", error);
                 alert("서버 오류가 발생했습니다.");
             }
         } catch (err) {
