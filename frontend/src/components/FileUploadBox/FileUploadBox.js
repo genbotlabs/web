@@ -6,7 +6,7 @@ import '../FileUploadBox/FileUploadBox.css'
 export default function FileUploadBox({ onFileChange }) {
     const [files, setFiles] = useState([]);
     const [thumbnails, setThumbnails] = useState({});
-    const [validationResult, setValidationResult] = useState(null);
+    const [validationResult, setValidationResult] = useState([]);
 
     const handleFileChange = async (e) => {
         const selected = Array.from(e.target.files);
@@ -72,7 +72,6 @@ export default function FileUploadBox({ onFileChange }) {
     };
 
     const getValidationClass = (fileName) => {
-        if (!validationResult) return '';
         const result = validationResult.find(r => r.name === fileName);
         if (!result) return '';
         return result.valid ? 'check-success' : 'check-fail';
