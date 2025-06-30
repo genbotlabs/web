@@ -27,32 +27,46 @@ export default function GenerateBotPage() {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (form.type.length === 0) {
-            alert("생성할 봇을 한 가지 이상 선택해 주세요.");
-            return;
-        }
+        if (form.type.length === 0) return alert("생성할 봇을 한 가지 이상 선택해 주세요.");
+        if (!form.company.trim()) return alert("회사명을 입력해주세요.");
+        if (!form.purpose.trim()) return alert("봇의 용도를 입력해주세요.");
+        if (uploadedFiles.length === 0) return alert("PDF 또는 JSON 파일을 최소 1개 업로드해주세요.");
 
-        if (!form.company.trim()) {
-            alert("회사명을 입력해주세요.");
-            return;
-        }
+        const formData = new FormData();
+        formData.append('type', form.type.join(','));
+        formData.append('company', form.company);
+        formData.append('purpose', form.purpose);
+        formData.append('greeting', form.greeting || '');
+        formData.append('description', form.description || '');
 
-        if (!form.purpose.trim()) {
-            alert("봇의 용도를 입력해주세요.");
-            return;
-        }
+        uploadedFiles.forEach((file, index) => {
+            formData.append('files', file);
+        });
 
-        if (uploadedFiles.length === 0) {
-            alert("PDF 또는 JSON 파일을 최소 1개 업로드해주세요.");
-            return;
-        }
+        try {
+            const response = await fetch('http://localhost:8000/api/generate-bot', {
+                method: 'POST',
+                body: formData,
+            });
 
-        console.log("제출 성공:", form);
-        // TODO: API 전송 로직
+            if (response.ok) {
+                const result = await response.json();
+                console.log("서버 응답:", result);
+                alert("봇 생성 요청이 성공적으로 전송되었습니다!");
+            } else {
+                const error = await response.json();
+                console.error("서버 오류:", error);
+                alert("서버 오류가 발생했습니다.");
+            }
+        } catch (err) {
+            console.error("전송 실패:", err);
+            alert("요청 중 오류가 발생했습니다.");
+        }
     };
+
 
 
     return (
