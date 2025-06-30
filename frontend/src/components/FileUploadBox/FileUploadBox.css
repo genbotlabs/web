@@ -1,55 +1,56 @@
 .file-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
-  max-width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    max-width: 100%;
 }
 
 .file-item {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
-  padding: 8px;
-  border-radius: 4px;
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 4px;
 }
 
 .tooltip-container {
-  display: flex;
-  align-items: center;
-  border: 1px solid black;
-  padding: 8px;
-  border-radius: 4px;
-  margin-bottom: 10px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid black;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
 }
 
 .thumbnail {
-  margin-right: 10px;
+    margin-right: 10px;
 }
 
 .data_info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
 }
 
 .tooltip-box {
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  position: absolute;
-  top: -25px;
-  left: 0;
-  background-color: #333;
-  color: #fff;
-  padding: 5px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  z-index: 1000;
+    visibility: hidden;
+    transition: opacity 0.2s ease;
+    opacity: 0;
+    position: absolute;
+    top: -25px;
+    left: 0;
+    background-color: #333;
+    color: #fff;
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
 }
 
 .tooltip-container:hover .tooltip-box {
-  visibility: visible;
-  opacity: 1;
+    visibility: visible;
+    opacity: 1;
 }
