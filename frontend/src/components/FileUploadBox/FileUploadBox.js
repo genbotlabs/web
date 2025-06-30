@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import logo from '../../icons/logo.png';
+import '../FileUploadBox/FileUploadBox.css'
 
 
 export default function FileUploadBox({ onFileChange }) {
     const [files, setFiles] = useState([]);
     const [thumbnails, setThumbnails] = useState({});
+    const [tooltipIndex, setTooltipIndex] = useState(null);
 
     const handleFileChange = async (e) => {
         const selected = Array.from(e.target.files);
@@ -25,13 +27,14 @@ export default function FileUploadBox({ onFileChange }) {
             <div className="file-list">
                 {files.map((file, idx) => (
                     <div key={idx} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                        <img
-                            src={thumbnails[file.name]}
-                            alt={file.name}
-                            style={{ width: '80px', height: '100px', objectFit: 'cover', backgroundColor: '#f0f0f0', marginRight: '10px' }}
-                        />
-                        <div>
-                            <p>{file.name}</p>
+                        <div className="tooltip-container">
+                            <img src={thumbnails[file.name]} alt="preview" style={{ width: '80px', height: '100px', marginRight: '10px' }} />
+                            <div>
+                                <p style={{ cursor: 'pointer' }}>{file.name}</p>
+                                <div className="tooltip-box">
+                                    크기: {(file.size / 1024).toFixed(2)} KB
+                                </div>
+                            </div>
                             <button>형식 확인하기</button>
                         </div>
                     </div>
