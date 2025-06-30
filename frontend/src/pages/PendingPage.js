@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 export default function PendingPage() {
     const [botInfo, setBotInfo] = useState(null);
+    const [showPopup, setShowPopup] = useState(false);
 
     useEffect(() => {
         const savedData = localStorage.getItem('lastBotRequest');
@@ -37,11 +38,45 @@ export default function PendingPage() {
                         <td>{botInfo.company}</td>
                         <td>{botInfo.purpose}</td>
                         <td>{botInfo.description || '-'}</td>
-                        <td><button>사용한 데이터 보기</button></td>
+                        <td><button onClick={() => setShowPopup(true)}>사용한 데이터 보기</button></td>
                         <td>처리 중...</td>
                     </tr>
                 </tbody>
             </table>
+            {showPopup && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        top: 0, left: 0, right: 0, bottom: 0,
+                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        display: 'flex', justifyContent: 'center', alignItems: 'center',
+                        zIndex: 1000
+                        }}
+                        onClick={() => setShowPopup(false)}
+                    >
+                    <div
+                        style={{
+                            backgroundColor: 'white',
+                            padding: '2rem',
+                            borderRadius: '8px',
+                            minWidth: '300px',
+                            maxHeight: '80vh',
+                            overflowY: 'auto'
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                    <h3>사용한 데이터 목록</h3>
+                    <ul>
+                        {Array.isArray(botInfo.files) && botInfo.files.length > 0 ? (
+                            botInfo.files.map((file, idx) => <li key={idx}>{file.name}</li>)
+                            ) : (
+                            <li>저장된 파일 정보 없음</li>
+                        )}
+                    </ul>
+                    <button onClick={() => setShowPopup(false)}>닫기</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
