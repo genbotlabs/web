@@ -20,3 +20,14 @@ class User(Base):
     __table_args__ = (
         UniqueConstraint('provider', 'social_id', name='uq_provider_social_id'),
     )
+
+class Bot(Base):
+    __tablename__ = "bots"
+
+    id = Column(Integer, primary_key=True, index=True)
+    type = Column(String(100))
+    company = Column(String(255))
+    purpose = Column(Text)
+    greeting = Column(Text)
+    description = Column(Text)
+    created_at = Column(DateTime, server_default=func.now())
