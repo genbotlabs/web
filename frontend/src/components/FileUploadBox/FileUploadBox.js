@@ -7,6 +7,7 @@ export default function FileUploadBox({ onFileChange }) {
     const [files, setFiles] = useState([]);
     const [thumbnails, setThumbnails] = useState({});
     const [validationResult, setValidationResult] = useState([]);
+    const [tooltipIndex, setTooltipIndex] = useState(null);
 
     const handleFileChange = async (e) => {
         const selected = Array.from(e.target.files);
@@ -77,6 +78,13 @@ export default function FileUploadBox({ onFileChange }) {
         return result.valid ? 'check-success' : 'check-fail';
     };
 
+    const handleFileDelete = (index) => {
+        const updated = [...files];
+        updated.splice(index, 1);
+        setFiles(updated);
+        onFileChange(updated);
+    };
+
     return (
         <div className="file-upload-box">
             <input type="file" multiple accept=".pdf,.json" onChange={handleFileChange} />
@@ -84,23 +92,34 @@ export default function FileUploadBox({ onFileChange }) {
                 {files.map((file, idx) => (
                     <div className='file-name' key={idx} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                         <div className="tooltip-container">
+                            <button className="delete-btn" onClick={() => handleFileDelete(idx)}>×</button>
+
                             <div className='thumbnail'>
                                 <img src={thumbnails[file.name]} alt="preview" style={{ width: '80px', height: '100px', marginRight: '10px' }} />
                             </div>
+
                             <div className='data_info'>
+                                <div
+                                className="file-name-wrapper"
+                                onMouseEnter={() => setTooltipIndex(idx)}
+                                onMouseLeave={() => setTooltipIndex(null)}
+                                >
                                 <p style={{ cursor: 'pointer' }}>{file.name}</p>
-                                <div className="tooltip-box">
+                                {tooltipIndex === idx && (
+                                    <div className="tooltip-box">
                                     크기: {(file.size / 1024).toFixed(2)} KB
+                                    </div>
+                                )}
                                 </div>
+
                                 <button
-                                    type="button"
-                                    className={`check-btn ${getValidationClass(file.name)}`}
-                                    onClick={() => handleFormatCheck(file)}
-                                    >
-                                    형식 확인하기
+                                type="button"
+                                className={`check-btn ${getValidationClass(file.name)}`}
+                                onClick={() => handleFormatCheck(file)}
+                                >
+                                형식 확인하기
                                 </button>
                             </div>
-                            
                         </div>
                     </div>
                 ))}
