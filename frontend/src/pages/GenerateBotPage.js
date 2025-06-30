@@ -38,7 +38,7 @@ export default function GenerateBotPage() {
 
         if (form.type.length === 0) return alert("생성할 봇을 한 가지 이상 선택해 주세요.");
         if (!form.company.trim()) return alert("회사명을 입력해주세요.");
-        if (!form.purpose.trim()) return alert("봇의 용도를 입력해주세요.");
+        if (!form.usage.trim()) return alert("봇의 용도를 입력해주세요.");
         if (uploadedFiles.length === 0) return alert("PDF 또는 JSON 파일을 최소 1개 업로드해주세요.");
 
         const allChecked = uploadedFiles.every(file => {
