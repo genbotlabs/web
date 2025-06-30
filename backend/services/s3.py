@@ -5,8 +5,6 @@ from datetime import datetime
 
 load_dotenv()
 
-
-
 s3 = boto3.client('s3',
     region_name=os.getenv("AWS_S3_REGION"),
     aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
