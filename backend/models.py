@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, func, UniqueConstraint
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, func, UniqueConstraint, Boolean
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -70,3 +70,13 @@ class VoiceLog(Base):
     updated_at = Column(DateTime, nullable=False, server_default=func.now())
 
     voicebot = relationship("Voicebot", back_populates="voicelogs")
+
+class Data(Base):
+    __tablename__ = "data"
+
+    data_id = Column(Integer, primary_key=True, autoincrement=True)
+    type = Column(Boolean, nullable=False)
+    storage_url = Column(String, nullable=False)
+    detail_id = Column(Integer, ForeignKey("detail.detail_id", ondelete="CASCADE"), nullable=False)
+
+    detail = relationship("Detail", back_populates="data_items")
