@@ -54,3 +54,21 @@
     visibility: visible;
     opacity: 1;
 }
+
+.check-btn {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #ddd;
+  cursor: pointer;
+}
+
+.check-success {
+  background-color: #00F639;
+  color: white;
+}
+
+.check-fail {
+  background-color: #FE2020;
+  color: white;
+}

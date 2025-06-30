@@ -71,6 +71,13 @@ export default function FileUploadBox({ onFileChange }) {
         });
     };
 
+    const getValidationClass = (fileName) => {
+        if (!validationResult) return '';
+        const result = validationResult.find(r => r.name === fileName);
+        if (!result) return '';
+        return result.valid ? 'check-success' : 'check-fail';
+    };
+
     return (
         <div className="file-upload-box">
             <input type="file" multiple accept=".pdf,.json" onChange={handleFileChange} />
@@ -86,7 +93,11 @@ export default function FileUploadBox({ onFileChange }) {
                                 <div className="tooltip-box">
                                     크기: {(file.size / 1024).toFixed(2)} KB
                                 </div>
-                                <button type="button" onClick={() => handleFormatCheck(file)}>
+                                <button
+                                    type="button"
+                                    className={`check-btn ${getValidationClass(file.name)}`}
+                                    onClick={() => handleFormatCheck(file)}
+                                    >
                                     형식 확인하기
                                 </button>
                             </div>
