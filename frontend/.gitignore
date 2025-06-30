@@ -27,6 +27,7 @@ yarn-error.log*
 
 # backend
 __pycache__
+uploads/
 
-# pdf
+# frontend
 public/pdf.worker.min.js
