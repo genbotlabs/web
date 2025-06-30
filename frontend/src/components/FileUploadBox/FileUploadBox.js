@@ -27,7 +27,7 @@ export default function FileUploadBox({ onFileChange }) {
                     <div key={idx} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                         <img
                             src={thumbnails[file.name]}
-                            alt="preview"
+                            alt={file.name}
                             style={{ width: '80px', height: '100px', objectFit: 'cover', backgroundColor: '#f0f0f0', marginRight: '10px' }}
                         />
                         <div>
