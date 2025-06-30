@@ -3,10 +3,10 @@ import logo from '../../icons/logo.png';
 import '../FileUploadBox/FileUploadBox.css'
 
 
-export default function FileUploadBox({ onFileChange }) {
+export default function FileUploadBox({ onFileChange, validationResult, setValidationResult }) {
     const [files, setFiles] = useState([]);
     const [thumbnails, setThumbnails] = useState({});
-    const [validationResult, setValidationResult] = useState([]);
+    // const [validationResult, setValidationResult] = useState([]);
     const [tooltipIndex, setTooltipIndex] = useState(null);
 
     const handleFileChange = async (e) => {
@@ -41,21 +41,21 @@ export default function FileUploadBox({ onFileChange }) {
             };
         } else if (file.name.endsWith('.json')) {
             try {
-            const text = await file.text();
-            const parsed = JSON.parse(text);
+                const text = await file.text();
+                const parsed = JSON.parse(text);
 
-            const isValidArray = Array.isArray(parsed) &&
-                parsed.every(item => typeof item.Q === 'string' && typeof item.A === 'string');
+                const isValidArray = Array.isArray(parsed) &&
+                    parsed.every(item => typeof item.Q === 'string' && typeof item.A === 'string');
 
-            result = isValidArray
-                ? { name: file.name, valid: true, reason: 'JSON 형식 확인됨' }
-                : { name: file.name, valid: false, reason: 'JSON 형식이 올바르지 않음 (Q, A 구조 아님)' };
-            } catch {
-            result = {
-                name: file.name,
-                valid: false,
-                reason: 'JSON 파싱 실패'
-            };
+                result = isValidArray
+                    ? { name: file.name, valid: true, reason: 'JSON 형식 확인됨' }
+                    : { name: file.name, valid: false, reason: 'JSON 형식이 올바르지 않음 (Q, A 구조 아님)' };
+                } catch {
+                result = {
+                    name: file.name,
+                    valid: false,
+                    reason: 'JSON 파싱 실패'
+                };
             }
         } else {
             result = {
@@ -67,8 +67,8 @@ export default function FileUploadBox({ onFileChange }) {
 
         console.log("파일 검사 결과:", result);
         setValidationResult(prev => {
-            const other = prev?.filter(r => r.name !== file.name) || [];
-            return [...other, result];
+            const others = prev.filter(item => item.name !== file.name);
+            return [...others, result];
         });
     };
 

@@ -9,6 +9,7 @@ export default function GenerateBotPage() {
     const navigate = useNavigate();
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [showFormatPopup, setShowFormatPopup] = useState(false);
+    const [validationResult, setValidationResult] = useState([]);
     const [form, setForm] = useState({
         type: [],
         company: '',
@@ -39,6 +40,17 @@ export default function GenerateBotPage() {
         if (!form.company.trim()) return alert("회사명을 입력해주세요.");
         if (!form.purpose.trim()) return alert("봇의 용도를 입력해주세요.");
         if (uploadedFiles.length === 0) return alert("PDF 또는 JSON 파일을 최소 1개 업로드해주세요.");
+
+        const allChecked = uploadedFiles.every(file => {
+            const result = validationResult.find(v => v.name === file.name);
+            console.log('검사 중:', file.name, result); // 디버깅용
+            return result?.valid === true;
+        });
+
+        if (!allChecked) {
+            alert("모든 파일의 형식을 확인하고 유효한지 검사해주세요.");
+            return;
+        }
 
         const formData = new FormData();
         formData.append('type', form.type.join(','));
@@ -117,10 +129,14 @@ export default function GenerateBotPage() {
                     - 데이터 예시 보기 버튼을 통해 데이터 형식을 확인해 주세요. <br/>
                     - 데이터 형식 확인 버튼을 통해 데이터 형식 검사를 받아주세요. <br/>
                 </p>
-                <FileUploadBox onFileChange={setUploadedFiles}/>
+                <FileUploadBox
+                onFileChange={setUploadedFiles}
+                validationResult={validationResult}
+                setValidationResult={setValidationResult}
+                />
             </div>
             <button type="submit" className="submit-btn">생성하기</button>
-            
+
             {showFormatPopup && (
                 <div className="popup-overlay" onClick={() => setShowFormatPopup(false)}>
                     <div className="popup-box" onClick={(e) => e.stopPropagation()}>
