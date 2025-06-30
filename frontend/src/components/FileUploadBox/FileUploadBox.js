@@ -36,7 +36,7 @@ export default function FileUploadBox({ onFileChange }) {
                                 <div className="tooltip-box">
                                     크기: {(file.size / 1024).toFixed(2)} KB
                                 </div>
-                                <button>형식 확인하기</button>
+                                <button type="button">형식 확인하기</button>
                             </div>
                             
                         </div>
