@@ -24,6 +24,7 @@
 .question-3 label,
 .question-4 label,
 .question-5 label,
+.question-6 label,
 .file-upload label {
     font-weight: bold;
 }
@@ -31,7 +32,8 @@
 .question-2 input,
 .question-3 input,
 .question-4 input,
-.question-5 input {
+.question-5 input,
+.question-6 input {
     margin: 10px;
     width: 650px;
 }

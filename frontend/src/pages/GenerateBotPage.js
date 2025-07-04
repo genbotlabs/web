@@ -16,6 +16,7 @@ export default function GenerateBotPage({user}) {
         usage: '',
         greeting: '',
         description: '',
+        number: ''
     });
 
     const handleChange = (e) => {
@@ -60,6 +61,7 @@ export default function GenerateBotPage({user}) {
         formData.append('usage', form.usage);
         formData.append('greeting', form.greeting || '');
         formData.append('description', form.description || '');
+        formData.append('number', form.number || '');
 
         uploadedFiles.forEach((file, index) => {
             formData.append('files', file);
@@ -129,6 +131,12 @@ export default function GenerateBotPage({user}) {
                 <p>입력하신 설명은 챗봇에 표시될 예정입니다.</p>
                 <br/>
                 <input name="description" value={form.description} onChange={handleChange} placeholder="예시: GenBot은 문의를 돕는 봇입니다." />
+            </div>
+            <div className='question-6'>
+                <label>상담원에 연결할 번호를 입력해 주세요.<span>(보이스봇 선택 시 필수)</span></label>
+                <p>고객이 원할 시 상담원에게 연결할 번호입니다.</p>
+                <br/>
+                <input name="number" value={form.number} onChange={handleChange} placeholder="예시: xxxx-xxxx 혹은 010-xxxx-xxxx" />
             </div>
 
             <div className='file-upload'>
