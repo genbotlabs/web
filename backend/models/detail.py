@@ -10,6 +10,7 @@ class Detail(Base):
     usage = Column(String(255), nullable=True)
     first_text = Column(String(255), nullable=True)
     description = Column(String(255), nullable=True)
+    number = Column(String(13), nullable=True)
     voicebot_id = Column(Integer, ForeignKey("voicebot.voicebot_id", ondelete="RESTRICT"), nullable=True)
     chatbot_id = Column(Integer, ForeignKey("chatbot.chatbot_id", ondelete="RESTRICT"), nullable=True)
 
