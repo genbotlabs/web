@@ -23,7 +23,7 @@ export default function FileUploadBox({ onFileChange, validationResult, setValid
     };
 
     const handleFormatCheck = async (file) => {
-        const MAX_SIZE = 10 * 1024 * 1024;
+        const MAX_SIZE = 30 * 1024 * 1024;
 
         let result;
 

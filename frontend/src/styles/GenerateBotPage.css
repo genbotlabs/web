@@ -56,6 +56,35 @@
   cursor: pointer;
 }
 
+.file-upload {
+  display: flex;
+  flex-direction: column;
+}
+
+.file-upload-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; 
+}
+
+.file-upload button {
+  background-color: white;
+  padding: 5px 10px 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: 'Alexandria', 'Noto Sans KR', sans-serif;
+  border: 1.5px solid #007BFF;
+}
+
+.file-upload button:hover {
+  background-color: #007BFF;
+  padding: 5px 10px 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: 'Alexandria', 'Noto Sans KR', sans-serif;
+  border: 1.5px solid #007BFF;
+  color: white
+}
 
 .file-upload-box {
     margin-top: 20px;

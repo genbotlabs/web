@@ -101,7 +101,7 @@ export default function GenerateBotPage({user}) {
     return (
         <form className="generate-bot-form" onSubmit={handleSubmit}>
             <div className='question-1'>
-                <label>생성할 봇을 선택해 주세요.<span><strong>*</strong></span></label>
+                <label>생성할 봇을 선택해 주세요.<span><strong style={{ color: 'red' }}>*</strong></span></label>
                 <p>한 가지 이상 선택해 주세요.</p>
                 <div>
                     <input type="checkbox" value="챗봇" onChange={handleCheckbox} /> 챗봇
@@ -109,7 +109,7 @@ export default function GenerateBotPage({user}) {
                 </div>
             </div>
             <div className='question-2'>
-                <label>회사명을 입력해 주세요.<span><strong>*</strong></span></label>
+                <label>회사명을 입력해 주세요.<span><strong style={{ color: 'red' }}>*</strong></span></label>
                 <br/>
                 <input name="company" value={form.company} onChange={handleChange} placeholder="예시: GenBot" required />
             </div>
@@ -122,7 +122,7 @@ export default function GenerateBotPage({user}) {
                 <label>봇의 첫 멘트를 입력해 주세요. <span>(선택)</span></label>
                 <p>입력하지 않으실 경우, 예시 문장이 자동으로 입력됩니다.</p>
                 <br/>
-                <input name="greeting" value={form.greeting} onChange={handleChange} placeholder="예시: 안녕하세요. OOO의 챗봇입니다..." />
+                <input name="greeting" value={form.greeting} onChange={handleChange} placeholder="예시: 안녕하세요. GenBot의 문의봇입니다." />
             </div>
             <div className='question-5'>
                 <label>봇에 대한 설명을 입력해 주세요. <span>(선택)</span></label>
@@ -132,21 +132,28 @@ export default function GenerateBotPage({user}) {
             </div>
 
             <div className='file-upload'>
-                <label>데이터 업로드하기<span><strong>*</strong></span></label>
-                <button type="button" className="show-data-ex" onClick={() => setShowFormatPopup(true)}>
-                    데이터 예시보기
-                </button>
-                <p>
+                <div className='file-upload-top'>
+                    <label>데이터 업로드하기<span><strong style={{ color: 'red' }}>*</strong></span></label>
+                    &nbsp;&nbsp;
+                    <button type="button" className="show-data-ex" onClick={() => setShowFormatPopup(true)}>
+                        데이터 예시보기
+                    </button>
+                </div>
+                <div className='file-upload-bottom'>
+                    <p>
                     - json, PDF 파일을 업로드 할 수 있습니다. <br/>
                     - 파일의 개수는 최대 10개이고, 각 파일의 크기 제한은 30MB입니다. <br/>
                     - 데이터 예시 보기 버튼을 통해 데이터 형식을 확인해 주세요. <br/>
                     - 데이터 형식 확인 버튼을 통해 데이터 형식 검사를 받아주세요. <br/>
-                </p>
-                <FileUploadBox
-                onFileChange={setUploadedFiles}
-                validationResult={validationResult}
-                setValidationResult={setValidationResult}
-                />
+                    <br/>
+                    <br/>
+                    </p>
+                    <FileUploadBox
+                    onFileChange={setUploadedFiles}
+                    validationResult={validationResult}
+                    setValidationResult={setValidationResult}
+                    />
+                </div>
             </div>
             <button
                 type="submit"
