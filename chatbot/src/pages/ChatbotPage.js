@@ -9,21 +9,39 @@ export default function ChatbotPage() {
   ]);
   const [input, setInput] = useState('');
 
-  const sendMessage = () => {
-    if (!input.trim()) return;
+  const sendMessage = async () => {
+  if (!input.trim()) return;
 
-    const newMessages = [...messages, { from: 'user', text: input }];
-    setMessages(newMessages);
-    setInput('');
+  // 사용자 메시지 추가
+  setMessages(prev => [...prev, { from: 'user', text: input }]);
+  setInput("");
 
-    // TODO: 실제 AI 응답 연결
-    setTimeout(() => {
-      setMessages(prev => [
-        ...prev,
-        { from: 'bot', text: '죄송합니다. 아직 답변 기능이 구현되지 않았어요.' }
-      ]);
-    }, 500);
-  };
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: input }),
+    });
+
+    // HTTP 에러가 났을 때, body 텍스트까지 읽어오기
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error("API 에러:", res.status, errText);
+      throw new Error(`HTTP ${res.status}: ${errText}`);
+    }
+
+    const data = await res.json();
+    setMessages(prev => [...prev, { from: "bot", text: data.answer }]);
+  } catch (err) {
+    // err.message, err.stack 등 자세히 찍기
+    console.error("fetch 중 예외 발생:", err);
+    setMessages(prev => [
+      ...prev,
+      // { from: "bot", text: `오류: ${err.message}` },
+      { from: "bot", text: `학습된 문서에 관련 내용이 없습니다. 다시 질문해주세요!` },
+    ]);
+  }
+};
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') sendMessage();
