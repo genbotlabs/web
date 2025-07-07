@@ -171,13 +171,57 @@ export default function GenerateBotPage({user}) {
             {showFormatPopup && (
                 <div className="popup-overlay" onClick={() => setShowFormatPopup(false)}>
                     <div className="popup-box" onClick={(e) => e.stopPropagation()}>
-                    <h3>데이터 형식 예시</h3>
-                    <p>PDF 또는 JSON 파일만 업로드 가능합니다.</p>
-                    <ul>
-                        <li>예시: 계약서.pdf</li>
-                        <li>예시: 학습데이터.json</li>
-                    </ul>
-                    <button onClick={() => setShowFormatPopup(false)}>닫기</button>
+                        <h3>데이터 형식 예시</h3>
+                        <p>PDF 또는 JSON 파일만 업로드 가능합니다.</p>
+                        <div className='popup-box-top'>
+                            <div className='popup-box-left'>
+                            <p>json 데이터(싱글턴 대화)</p>
+                                <pre style={{ textAlign:"left", backgroundColor: '#f4f4f4', padding: '10px', borderRadius: '5px', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                                    <code>
+            {`[
+    {
+        "Q": "스터디룸 이용 가능 시간이 어떻게 되나요?",
+        "A": "매일 24시간 이용 가능합니다."
+    },
+    {
+        "Q": "스터디룸 안에 에어컨 있나요?",
+        "A": "모든 스터디룸 안에 에어컨이 있습니다. 에어컨 사용을 희망하시면 카운터로 문의 부탁드립니다."
+    },
+    {
+        "Q": "스터디룸 내에 음료 반입 가능한가요?",
+        "A": "네. 음료 반입은 가능합니다."
+    }
+]`}
+                                    </code>
+                                </pre>
+                            </div>
+                            <div className='popup-box-right'>
+                                <p>json 데이터(멀티턴 대화)</p>
+                                    <pre style={{ textAlign:"left", backgroundColor: '#f4f4f4', padding: '10px', borderRadius: '5px', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                                        <code>
+            {`[
+    [
+        {
+            "Q": "오늘 날씨는 어떤가요?",
+            "A": "오늘은 맑고 기온은 약 25도 정도입니다. 밖에서 활동하기 좋은 날씨예요."
+        },
+        {
+            "Q": "오늘 오후에 뭘 하면 좋을까요?",
+            "A": "오늘 같은 날엔 공원에서 산책하거나 카페에서 책을 읽는 것도 좋을 것 같아요."
+        },
+        {
+            "Q": "공원에는 어떤 꽃들이 피었나요?",
+            "A": "지금 공원에는 장미와 튤립이 많이 피었어요. 아주 예쁠 거예요!"
+        }
+    ]
+]`}
+                                    </code>
+                                </pre>
+                            </div>
+                        </div>
+                        
+                    
+                        <button onClick={() => setShowFormatPopup(false)}>닫기</button>
                     </div>
                 </div>
             )}
