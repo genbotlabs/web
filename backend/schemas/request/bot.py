@@ -29,7 +29,9 @@ class BotUpdateRequest(BaseModel):
     first_text: Optional[str] = Field(None, example="무엇을 도와드릴까요?")
     email: Optional[str] = Field(None, example="support@genbot.com")
     cs_number: Optional[str] = Field(None, example="1544-1234")
-    
+
+class UploadedFileResponse(BaseModel):
+    files: List[UploadedFileInfo]
 
 # 임시
 class DataValidationRequest(BaseModel):
