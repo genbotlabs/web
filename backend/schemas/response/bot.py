@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 # 데이터 메타 정보
-class BotDataItem(BaseModel):
+class BotDataItemResponse(BaseModel):
     data_id: str = Field(..., example="data_001")
     filename: str = Field(..., example="faq.pdf")
     type: int = Field(..., example=0, description="파일 타입 (예: 0: json, 1: pdf)")
@@ -18,7 +18,7 @@ class BotDetailItem(BaseModel):
     first_text: str = Field(..., example="안녕하세요! GenBot의 문의봇입니다.")
     email: str = Field(..., example="user@example.com")
     cs_number: str = Field(..., example="1522-0000")
-    data: List[BotDataItem]
+    data: List[BotDataItemResponse]
     created_at: datetime = Field(..., example="2025-07-14T12:00:00Z")
     updated_at: datetime = Field(..., example="2025-07-14T12:10:00Z")
 
@@ -34,11 +34,11 @@ class BotListResponse(BaseModel):
 
 # 데이터 상세 조회
 class UploadedDataDetailResponse(BaseModel):
-    file: BotDataItem
+    file: BotDataItemResponse
 
 # 데이터 목록 조회
 class UploadedDataListResponse(BaseModel):
-    files: List[BotDataItem]
+    files: List[BotDataItemResponse]
 
 # 봇 삭제
 class BotDeleteResponse(BaseModel):
