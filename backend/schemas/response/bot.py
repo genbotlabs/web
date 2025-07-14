@@ -33,11 +33,11 @@ class BotListResponse(BaseModel):
     bots: List[BotDetailItem]
 
 # 데이터 상세 조회
-class UploadedDataResponse(BaseModel):
+class UploadedDataDetailResponse(BaseModel):
     file: BotDataItem
 
 # 데이터 목록 조회
-class UploadedDataResponse(BaseModel):
+class UploadedDataListResponse(BaseModel):
     files: List[BotDataItem]
 
 # 봇 삭제
