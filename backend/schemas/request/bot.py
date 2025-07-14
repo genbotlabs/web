@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
 
 
 class BotDataItem(BaseModel):
@@ -15,6 +15,13 @@ class BotGenerateRequest(BaseModel):
     email: str = Field(..., example="user@example.com")
     cs_number: str = Field(..., example="1522-0000")
     data: List[BotDataItem]
+
+class BotUpdateRequest(BaseModel):
+    company_name: Optional[str] = Field(None, example="GenBot Inc.")
+    usage: Optional[str] = Field(None, example="업무 자동화")
+    first_text: Optional[str] = Field(None, example="무엇을 도와드릴까요?")
+    email: Optional[str] = Field(None, example="support@genbot.com")
+    cs_number: Optional[str] = Field(None, example="1544-1234")
 
 # 임시
 class DataValidationRequest(BaseModel):
