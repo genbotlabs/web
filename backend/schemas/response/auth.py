@@ -24,3 +24,7 @@ class UserMeResponse(BaseModel):
 class LogoutResponse(BaseModel):
     success: bool = Field(..., example=True)
     message: str = Field(..., example="성공적으로 로그아웃되었습니다.")
+    
+class UserDeleteResponse(BaseModel):
+    success: bool = Field(..., example=True)
+    message: str = Field(..., example="회원 탈퇴가 완료되었습니다.")
