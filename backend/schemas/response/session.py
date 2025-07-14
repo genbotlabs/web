@@ -10,8 +10,8 @@ class CreateSessionResponse(BaseModel):
 # 메시지
 class MessageItemResponse(BaseModel):
     sender: Literal["user", "bot"] = Field(..., example="user")
-    message: str
-    timestamp: datetime
+    message: str = Field(..., example="문의하신 내용을 확인했습니다.")
+    timestamp: datetime = Field(..., example="2025-07-14T13:02:00Z")
     message_type: Literal["text", "voice"]
 
 # 전체 메시지 목록 응답
@@ -21,8 +21,8 @@ class MessageListResponse(BaseModel):
 
 # 단일 메시지 응답
 class SendMessageResponse(BaseModel):
-    response_message: str = Field(..., example="문의하신 내용을 확인했습니다.")
-    timestamp: datetime = Field(..., example="2025-07-14T13:02:00Z")
+    session_id: str = Field(..., example="session_abc123")
+    message: MessageItemResponse
 
 # 세션 종료 응답
 class EndSessionResponse(BaseModel):
