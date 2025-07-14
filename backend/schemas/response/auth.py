@@ -20,3 +20,7 @@ class LoginResponse(BaseModel):
 
 class UserMeResponse(BaseModel):
     user: UserInfo
+
+class LogoutResponse(BaseModel):
+    success: bool = Field(..., example=True)
+    message: str = Field(..., example="성공적으로 로그아웃되었습니다.")
