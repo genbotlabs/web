@@ -15,3 +15,7 @@ class BotGenerateRequest(BaseModel):
     email: str = Field(..., example="user@example.com")
     cs_number: str = Field(..., example="1522-0000")
     data: List[BotDataItem]
+
+# 임시
+class DataValidationRequest(BaseModel):
+    file_names: List[str] = Field(..., example=["faq.pdf", "test.json"])
