@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
 
+
 class UserInfo(BaseModel):
     user_id: str = Field(..., example="user_123")
     social_id: str = Field(..., example="social_123")
@@ -11,3 +12,8 @@ class UserInfo(BaseModel):
     provider: str = Field(..., example="kakao", description="소셜 로그인 제공자 (kakao, google, naver)")
     created_at: Optional[datetime] = Field(None, example="2025-07-14T10:00:00Z")
     updated_at: Optional[datetime] = Field(None, example="2025-07-14T10:05:00Z")
+    
+class LoginResponse(BaseModel):
+    access_token: str = Field(..., example="access_token")
+    refresh_token: str = Field(..., example="refresh_token")
+    user: UserInfo
