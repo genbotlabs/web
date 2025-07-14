@@ -11,6 +11,3 @@ class LogoutRequest(BaseModel):
 class UserUpdateRequest(BaseModel):
     nickname: Optional[str] = Field(None, example="닉네임", description="수정할 닉네임")
     profile_image: Optional[str] = Field(None, example="https://cdn.example.com/profile.jpg", description="프로필 이미지 URL")
-
-class UserDeleteRequest(BaseModel):
-    confirm: bool = Field(..., example=True, description="정말로 탈퇴하시겠습니까?")
