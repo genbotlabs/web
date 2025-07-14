@@ -15,7 +15,7 @@ class UploadedFileInfo(BaseModel):
     storage_url: str = Field(..., example="https://storage.example.com/faq.pdf")
     uploaded_at: datetime = Field(..., example="2025-07-14T12:01:00Z")
 
-class BotGenerateRequest(BaseModel):
+class BotCreateRequest(BaseModel):
     company_name: str = Field(..., example="GenBot")
     usage: str = Field(..., example="문의")
     first_text: str = Field(..., example="안녕하세요! GenBot의 문의봇입니다.")
