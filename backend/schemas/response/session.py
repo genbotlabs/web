@@ -23,3 +23,8 @@ class MessageListResponse(BaseModel):
 class SendMessageResponse(BaseModel):
     response_message: str = Field(..., example="문의하신 내용을 확인했습니다.")
     timestamp: datetime = Field(..., example="2025-07-14T13:02:00Z")
+
+# 세션 종료 응답
+class EndSessionResponse(BaseModel):
+    success: bool = Field(..., example=True)
+    message: str = Field(..., example="세션이 성공적으로 종료되었습니다.")
