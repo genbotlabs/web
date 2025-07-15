@@ -14,7 +14,7 @@ class User(Base):
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
 
-    csbot = relationship("CSbot", back_populates="user", cascade="all, delete-orphan")
+    csbots = relationship("CSbot", back_populates="user", cascade="all, delete-orphan")
 
     __table_args__ = (
         UniqueConstraint('provider', 'social_id', name='uq_provider_social_id'),
