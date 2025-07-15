@@ -14,7 +14,7 @@ class BotDataItemResponse(BaseModel):
 class BotDetailItem(BaseModel):
     bot_id: str = Field(..., example="bot_001")
     company_name: str = Field(..., example="GenBot")
-    usage: str = Field(..., example="문의")
+    bot_name: str = Field(..., example="문의")
     first_text: str = Field(..., example="안녕하세요! GenBot의 문의봇입니다.")
     email: str = Field(..., example="user@example.com")
     cs_number: str = Field(..., example="1522-0000")

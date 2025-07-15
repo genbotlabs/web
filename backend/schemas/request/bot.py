@@ -10,7 +10,7 @@ class BotDataItemRequest(BaseModel):
 
 class BotCreateRequest(BaseModel):
     company_name: str = Field(..., example="GenBot")
-    usage: str = Field(..., example="문의")
+    bot_name: str = Field(..., example="문의봇", description="봇의 이름")
     first_text: str = Field(..., example="안녕하세요! GenBot의 문의봇입니다.")
     email: EmailStr = Field(..., example="user@example.com")
     cs_number: str = Field(..., example="1522-0000")
@@ -18,7 +18,7 @@ class BotCreateRequest(BaseModel):
 
 class BotUpdateRequest(BaseModel):
     company_name: Optional[str] = Field(None, example="GenBot1")
-    usage: Optional[str] = Field(None, example="업무 문의")
+    bot_name: Optional[str] = Field(None, example="업무 문의봇")
     first_text: Optional[str] = Field(None, example="안녕하세요. 무엇을 도와드릴까요?")
     email: Optional[EmailStr] = Field(None, example="update@example.com")
     cs_number: Optional[str] = Field(None, example="1544-0000")
