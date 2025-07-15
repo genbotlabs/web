@@ -12,4 +12,5 @@ class CSbot(Base):
     updated_at = Column(DateTime, nullable=False, server_default=func.now())
 
     user = relationship("User", back_populates="csbots")
+    detail = relationship("Detail", back_populates="csbot", cascade="all, delete-orphan")
     chatlogs = relationship("ChatLog", back_populates="bot", cascade="all, delete-orphan")
