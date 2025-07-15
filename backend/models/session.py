@@ -10,3 +10,4 @@ class Session(Base):
     
     csbot = relationship("CSbot", back_populates="sessions")
     chatlogs = relationship("ChatLog", back_populates="session", cascade="all, delete-orphan")
+    voicelogs = relationship("VoiceLog", back_populates="session", cascade="all, delete-orphan")
