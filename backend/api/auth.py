@@ -6,16 +6,27 @@ from schemas.response.auth import (
     LoginResponse, LogoutResponse, UserMeResponse, UserDeleteResponse
 )
 from services.auth_service import (
-    social_login, logout_user, get_current_user, update_user_info, delete_user
+    kakao_social_login, google_social_login, naver_social_login, 
+    logout_user, get_current_user, update_user_info, delete_user
 )
 
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
-# 로그인
-@router.post("/login", response_model=LoginResponse)
+# 카카오 로그인
+@router.post("/login/kakao", response_model=LoginResponse)
 async def login(request: SocialLoginRequest):
-    return await social_login(request)
+    return await kakao_social_login(request)
+
+# 구글 로그인
+@router.post("/login/google", response_model=LoginResponse)
+async def login(request: SocialLoginRequest):
+    return await google_social_login(request)
+
+# 카카오 로그인
+@router.post("/login/naver", response_model=LoginResponse)
+async def login(request: SocialLoginRequest):
+    return await naver_social_login(request)
 
 # 로그아웃
 @router.post("/logout", response_model=LogoutResponse)
