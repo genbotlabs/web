@@ -1,11 +1,11 @@
-from sqlalchemy import Column, String, Text, DateTime, func, UniqueConstraint
+from sqlalchemy import Column, String, Text, DateTime, func, UniqueConstraint, Integer
 from sqlalchemy.orm import relationship
 from database import Base
 
 class User(Base):
     __tablename__ = "user"
 
-    user_id = Column(String(255), primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     password = Column(String(255), nullable=True)
     nickname = Column(String(255), nullable=True)
     provider = Column(String(20), nullable=True)
