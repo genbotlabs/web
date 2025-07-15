@@ -9,3 +9,4 @@ class Session(Base):
     bot_id = Column(Integer, ForeignKey("csbot.bot_id", ondelete="CASCADE"), nullable=False)
     
     csbot = relationship("CSbot", back_populates="sessions")
+    chatlogs = relationship("ChatLog", back_populates="session", cascade="all, delete-orphan")
