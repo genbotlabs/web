@@ -1,22 +1,28 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from schemas.request.auth import (
     SocialLoginRequest, LogoutRequest, UserUpdateRequest, UserDeleteRequest
 )
 from schemas.response.auth import (
     LoginResponse, LogoutResponse, UserMeResponse, UserDeleteResponse
 )
-from services.auth_service import (
+from web.backend.services.auth.service import (
     kakao_social_login, google_social_login, naver_social_login, 
     logout_user, get_current_user, update_user_info, delete_user
 )
+from services.get_db import get_db
 
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 # 카카오 로그인
 @router.post("/login/kakao", response_model=LoginResponse)
-async def login(request: SocialLoginRequest):
-    return await kakao_social_login(request)
+async def login(
+    request: SocialLoginRequest,
+    session: AsyncSession = Depends(get_db)
+):
+    return await kakao_social_login(request, session)
 
 # 구글 로그인
 @router.post("/login/google", response_model=LoginResponse)
