@@ -28,7 +28,7 @@ class LogoutResponse(BaseModel):
 class UserMeResponse(BaseModel):
     user: UserInfo
 
-# 회원 정보 삭제 응답  
+# 회원 탙퇴 응답  
 class UserDeleteResponse(BaseModel):
     success: bool = Field(..., example=True)
     message: str = Field(..., example="회원 탈퇴가 완료되었습니다.")
