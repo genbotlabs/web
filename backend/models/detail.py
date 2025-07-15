@@ -14,4 +14,4 @@ class Detail(Base):
     cs_number = Column(String(255), nullable=False)
 
     csbot = relationship("CSbot", back_populates="detail")
-    data_items = relationship("Data", back_populates="detail", cascade="all, delete-orphan")
+    datas = relationship("Data", back_populates="detail", cascade="all, delete-orphan")
