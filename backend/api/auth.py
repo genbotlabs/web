@@ -5,7 +5,7 @@ from schemas.request.auth import (
 from schemas.response.auth import (
     LoginResponse, LogoutResponse, UserMeResponse, UserDeleteResponse
 )
-from services.auth import (
+from services.auth_service import (
     social_login, logout_user, get_current_user, update_user_info, delete_user
 )
 
