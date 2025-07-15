@@ -13,4 +13,4 @@ class CSbot(Base):
 
     user = relationship("User", back_populates="csbots")
     detail = relationship("Detail", back_populates="csbot", cascade="all, delete-orphan")
-    chatlogs = relationship("ChatLog", back_populates="bot", cascade="all, delete-orphan")
+    sessions = relationship("Session", back_populates="csbot", cascade="all, delete-orphan")
