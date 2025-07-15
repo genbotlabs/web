@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from schemas.request.auth import (
@@ -7,49 +7,17 @@ from schemas.request.auth import (
 from schemas.response.auth import (
     LoginResponse, LogoutResponse, UserMeResponse, UserDeleteResponse
 )
-from web.backend.services.auth.service import (
-    kakao_social_login, google_social_login, naver_social_login, 
-    logout_user, get_current_user, update_user_info, delete_user
+from services.auth.service import (
+    kakao_social_login
 )
 from services.get_db import get_db
 
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
-# 카카오 로그인
 @router.post("/login/kakao", response_model=LoginResponse)
 async def login(
     request: SocialLoginRequest,
     session: AsyncSession = Depends(get_db)
 ):
     return await kakao_social_login(request, session)
-
-# 구글 로그인
-@router.post("/login/google", response_model=LoginResponse)
-async def login(request: SocialLoginRequest):
-    return await google_social_login(request)
-
-# 카카오 로그인
-@router.post("/login/naver", response_model=LoginResponse)
-async def login(request: SocialLoginRequest):
-    return await naver_social_login(request)
-
-# 로그아웃
-@router.post("/logout", response_model=LogoutResponse)
-async def logout(request: LogoutRequest):
-    return await logout_user(request)
-
-# 내 정보 조회
-@router.get("/me", response_model=UserMeResponse)
-async def get_me(user=Depends(get_current_user)):
-    return {"user": user}
-
-# 내 정보 수정
-@router.patch("/me", response_model=UserMeResponse)
-async def update_me(request: UserUpdateRequest, user=Depends(get_current_user)):
-    return await update_user_info(user, request)
-
-# 탈퇴
-@router.delete("/me", response_model=UserDeleteResponse)
-async def delete_me(request: UserDeleteRequest, user=Depends(get_current_user)):
-    return await delete_user(user, request)
