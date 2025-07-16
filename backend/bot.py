@@ -4,8 +4,8 @@ from typing import List
 
 from models.detail import Detail
 from models.data import Data
-from models.chatbot import Chatbot
-from models.voicebot import Voicebot
+from models.csbot import CSbot
+from models.voicelog import VoiceLog
 from database import SessionLocal
 
 from services.s3 import upload_json_to_s3

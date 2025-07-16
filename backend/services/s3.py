@@ -5,8 +5,8 @@ from datetime import datetime
 
 load_dotenv()
 
-s3 = boto3.client('s3',
-    region_name=os.getenv("AWS_S3_REGION"),
+s3 = boto3.client('s3',     # boto3 가 AWS S3 서비스에 접근할 수 있도록 설정.  
+    region_name=os.getenv("AWS_S3_REGION"), 
     aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
     aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
 )

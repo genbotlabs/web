@@ -10,3 +10,5 @@ async def upload_json(file: UploadFile = File(...)):
 
     url = upload_json_to_s3(file.file, file.filename)
     return {"url": url}
+
+# uvicorn main:app --reload 
