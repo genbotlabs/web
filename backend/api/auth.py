@@ -13,7 +13,7 @@ from services.auth.service import (
 from services.get_db import get_db
 
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter()
 
 @router.post("/login/kakao", response_model=LoginResponse)
 async def login(
