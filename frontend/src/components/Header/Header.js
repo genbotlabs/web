@@ -3,6 +3,18 @@ import logo from '../../icons/logo.png';
 import { Link } from 'react-router-dom';
 
 export default function Header({ user }) {
+    const handleLogout = async (e) => {
+        e.preventDefault();
+        try {
+            await axios.post("/auth/logout");
+            localStorage.removeItem("access_token");
+            setUser(null);
+            navigate("/");
+        } catch (err) {
+            alert("로그아웃에 실패했습니다.");
+        }
+    };
+
     return (
         <header className="header">
             <div className="header__logo">
@@ -21,7 +33,7 @@ export default function Header({ user }) {
             <div className="header__login">
                 {user ? (
                     <ul className='header__my'>
-                        <Link to="/logout">로그아웃</Link>
+                        <Link to="#" onClick={handleLogout}>로그아웃</Link>
                         <Link to="/mypage">
                             <img
                                 src={user.profile_image}
