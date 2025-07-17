@@ -22,7 +22,7 @@ load_dotenv()
 
 
 # 의존성 관리 코드 포함
-DATABASE_URL = os.getenv(GENBOTDB_LOCAL_URL)  # 실제 환경에 맞게 수정
+DATABASE_URL = os.getenv("GENBOTDB_LOCAL_URL")  # 실제 환경에 맞게 수정
 engine = create_async_engine(DATABASE_URL, echo=False)
 AsyncSessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False)
 

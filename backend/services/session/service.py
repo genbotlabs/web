@@ -15,17 +15,15 @@ from schemas.response.session import (
 # 1. 세션 생성
 async def create_session_service(request: CreateSessionRequest, db: AsyncSession) -> CreateSessionResponse:
     session_id = f"session_{uuid4().hex[:8]}"
-    created_at = datetime.utcnow()
 
     session = SessionModel(
         session_id=session_id,
-        bot_id=request.bot_id,
-        created_at=created_at
+        bot_id=request.bot_id
     )
     db.add(session)
     await db.commit()
 
-    return CreateSessionResponse(session_id=session_id, created_at=created_at)
+    return CreateSessionResponse(session_id=session_id)
 
 
 # 2. 메시지 전송 (텍스트)

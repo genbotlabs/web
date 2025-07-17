@@ -12,12 +12,14 @@ from fastapi.responses import RedirectResponse
 import urllib.parse
 
 from bot import router as bot_router
+from api.session import router as session_router
 
 load_dotenv()
 
 app = FastAPI()
 
 app.include_router(bot_router)
+app.include_router(session_router)
 
 def get_db():
     db = SessionLocal()
