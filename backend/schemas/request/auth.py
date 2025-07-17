@@ -1,0 +1,16 @@
+from pydantic import BaseModel, Field
+from typing import Optional
+
+# 소셜 로그인 요청
+class SocialLoginRequest(BaseModel):
+    provider: str = Field(..., example="kakao", description="소셜 로그인 제공자 (kakao, google, naver)")
+    access_token: str = Field(..., example="access_token", description="소셜 플랫폼에서 발급받은 액세스 토큰")
+    
+# 로그아웃 요청
+class LogoutRequest(BaseModel):
+    refresh_token: str = Field(..., example="refresh_token", description="로그아웃할 사용자의 리프레시 토큰")
+
+# 회원 정보 수정 요청   
+class UserUpdateRequest(BaseModel):
+    nickname: Optional[str] = Field(None, example="닉네임", description="수정할 닉네임")
+    profile_image: Optional[str] = Field(None, example="https://cdn.example.com/profile.jpg", description="프로필 이미지 URL")
