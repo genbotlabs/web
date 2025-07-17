@@ -104,9 +104,45 @@ async def google_social_login(code: str, session: AsyncSession) -> LoginResponse
         print("로그인 처리 중 에러:", e)
         raise HTTPException(status_code=500, detail=str(e))
 
-# async def naver_social_login(request: SocialLoginRequest) -> LoginResponse:
-#     return LoginResponse(
-#         access_token=,
-#         refresh_token=,
-#         user=
-#     )
+async def naver_social_login(code: str, state: str, session: AsyncSession) -> LoginResponse:
+    token_url = "https://nid.naver.com/oauth2.0/token"
+    params = {
+        "grant_type": "authorization_code",
+        "client_id": os.getenv('NAVER_CLIENT_ID'),
+        "client_secret": os.getenv('NAVER_CLIENT_SECRET'),
+        "code": code,
+        "state": state,
+    }
+
+    async with httpx.AsyncClient() as client:
+        token_res = await client.post(token_url, params=params)
+        token_json = token_res.json()
+
+    access_token = token_json.get("access_token")
+    if not access_token:
+        raise HTTPException(status_code=400, detail=f"네이버 토큰 오류: {token_json}")
+    
+    user_info_url = "https://openapi.naver.com/v1/nid/me"
+    headers = {"Authorization": f"Bearer {access_token}"}
+    async with httpx.AsyncClient() as client:
+        response = await client.get(user_info_url, headers=headers)
+
+    try:
+        naver_info = response.json()["response"] 
+        naver_id = str(naver_info.get("id"))
+        nickname = naver_info.get("name")
+        profile_image = naver_info.get("profile_image")
+
+        user: User = await get_or_create_user(session, naver_id, nickname, profile_image, "naver")
+
+        access_token = create_access_token(user.user_id)
+        refresh_token = create_refresh_token(user.user_id)
+        
+        return LoginResponse(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            user=UserInfo(**user.__dict__)
+        )
+    except Exception as e:
+        print("로그인 처리 중 에러:", e)
+        raise HTTPException(status_code=500, detail=str(e))

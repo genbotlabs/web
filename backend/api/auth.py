@@ -10,7 +10,7 @@ from schemas.response.auth import (
     LoginResponse, LogoutResponse, UserMeResponse, UserDeleteResponse
 )
 from services.auth.service import (
-    kakao_social_login
+    kakao_social_login, google_social_login, naver_social_login
 )
 from services.get_db import get_db
 
@@ -39,3 +39,13 @@ async def google_login(code: str, session: AsyncSession = Depends(get_db)):
     })
     return RedirectResponse(f"http://localhost:3000/?{query}")
 
+@router.get("/login/naver", response_model=LoginResponse)
+async def naver_login(code: str, state: str, session: AsyncSession = Depends(get_db)):
+    user = await naver_social_login(code, state, session)
+    
+    query = urllib.parse.urlencode({
+        "user_id": user.user.user_id,
+        "nickname": user.user.nickname,
+        "profile_image": user.user.profile_image
+    })
+    return RedirectResponse(f"http://localhost:3000/?{query}")
