@@ -81,3 +81,27 @@ async def get_my_info(current_user = Depends(get_current_user)):
         created_at=current_user.created_at,
         updated_at=current_user.updated_at
     )
+
+@router.put("/user/me", status_code=200)
+async def update_my_info(
+    update_req: UserUpdateRequest,
+    current_user = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db)
+):
+    changed = False
+    if update_req.nickname is not None:
+        current_user.nickname = update_req.nickname
+        changed = True
+    if update_req.profile_image is not None:
+        current_user.profile_image = update_req.profile_image
+        changed = True
+
+    if not changed:
+        raise HTTPException(status_code=400, detail="수정할 값이 없습니다.")
+
+    from datetime import datetime
+    current_user.updated_at = datetime.utcnow()
+    session.add(current_user)
+    await session.commit()
+    await session.refresh(current_user)
+    return {"success": True, "message": "회원 정보가 수정되었습니다."}
