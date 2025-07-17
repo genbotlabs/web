@@ -18,7 +18,7 @@ from services.get_db import get_db
 router = APIRouter()
 
 @router.get("/login/kakao", response_model=LoginResponse)
-async def login(code: str, session: AsyncSession = Depends(get_db)):
+async def kakao_login(code: str, session: AsyncSession = Depends(get_db)):
     user = await kakao_social_login(code, session)
     
     query = urllib.parse.urlencode({
@@ -27,3 +27,15 @@ async def login(code: str, session: AsyncSession = Depends(get_db)):
         "profile_image": user.user.profile_image
     })
     return RedirectResponse(f"http://localhost:3000/?{query}")
+
+@router.get("/login/google", response_model=LoginResponse)
+async def google_login(code: str, session: AsyncSession = Depends(get_db)):
+    user = await google_social_login(code, session)
+    
+    query = urllib.parse.urlencode({
+        "user_id": user.user.user_id,
+        "nickname": user.user.nickname,
+        "profile_image": user.user.profile_image
+    })
+    return RedirectResponse(f"http://localhost:3000/?{query}")
+
