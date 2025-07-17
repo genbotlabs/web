@@ -7,6 +7,7 @@ class Detail(Base):
 
     detail_id = Column(Integer, primary_key=True, autoincrement=True)
     bot_id = Column(String(255), ForeignKey("csbot.bot_id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.user_id"))
     company_name = Column(String(255), nullable=False)
     bot_name = Column(String(255), nullable=False)
     first_text = Column(String(255), nullable=True)

@@ -73,7 +73,7 @@ async def kakao_callback(code: str, db: Session = Depends(get_db)):
 
     kakao_id = str(user_json.get("id"))
     kakao_account = user_json.get("kakao_account", {})
-    email = user_json.get("email") or "";
+    # email = user_json.get("email") or "";
     profile = kakao_account.get("profile", {})
     name = profile.get("nickname", "")
     profile_image = profile.get("profile_image_url", "")
@@ -81,28 +81,28 @@ async def kakao_callback(code: str, db: Session = Depends(get_db)):
     user = db.query(User).filter_by(provider="kakao", social_id=kakao_id).first()
     if not user:
         user = User(
-            email=email,
+            # email="",
             password=None,
-            phone_number="",
-            company_name="",
-            name=name,
-            position="",
+            # phone_number="",
+            # company_name="",
+            nickname=name,
+            # position="",
             provider="kakao",
             social_id=kakao_id,
             profile_image=profile_image,
         )
         db.add(user)
     else:
-        user.email = email
-        user.name = name
+        # user.email = email
+        user.nickname = name
         user.profile_image = profile_image
 
     db.commit()
 
     query = urllib.parse.urlencode({
         "user_id": user.user_id,
-        "email": email,
-        "name": name,
+        # "email": email,
+        "nickname": name,
         "profile_image": profile_image
     })
     return RedirectResponse(f"http://localhost:3000/?{query}")
