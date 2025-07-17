@@ -20,14 +20,18 @@ export default function Header({ user }) {
             </nav>
             <div className="header__login">
                 {user ? (
-                    <Link to="/mypage">
-                        <img
-                            src={user.profile_image}
-                            alt="프로필"
-                            className="header__profile-img"
-                            style={{ width: "36px", height: "36px", borderRadius: "50%" }}
-                        />
-                    </Link>
+                    <ul className='header__my'>
+                        <Link to="/logout">로그아웃</Link>
+                        <Link to="/mypage">
+                            <img
+                                src={user.profile_image}
+                                alt="프로필"
+                                className="header__profile-img"
+                                style={{ width: "36px", height: "36px", borderRadius: "50%" }}
+                            />
+                        </Link>
+                    </ul>
+                    
                 ) : (
                     <Link to="/login" id="login-button">로그인</Link>
                 )}
