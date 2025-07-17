@@ -4,7 +4,6 @@ from typing import Optional
 # 소셜 로그인 요청
 class SocialLoginRequest(BaseModel):
     provider: str = Field(..., example="kakao", description="소셜 로그인 제공자 (kakao, google, naver)")
-    access_token: str = Field(..., example="access_token", description="소셜 플랫폼에서 발급받은 액세스 토큰")
     
 # 로그아웃 요청
 class LogoutRequest(BaseModel):

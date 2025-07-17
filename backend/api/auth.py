@@ -15,9 +15,6 @@ from services.get_db import get_db
 
 router = APIRouter()
 
-@router.post("/login/kakao", response_model=LoginResponse)
-async def login(
-    request: SocialLoginRequest,
-    session: AsyncSession = Depends(get_db)
-):
-    return await kakao_social_login(request, session)
+@router.get("/login/kakao", response_model=LoginResponse)
+async def login(code: str, session: AsyncSession = Depends(get_db)):
+    return await kakao_social_login(code, session)

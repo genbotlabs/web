@@ -15,25 +15,29 @@ from schemas.response.auth import (
 from services.auth.utils import create_access_token, create_refresh_token
 
 
-KAKAO_USER_INFO_URL = os.getenv('KAKAO_USER_INFO_URL')
-
-async def kakao_social_login(
-    request: SocialLoginRequest,
-    session: AsyncSession = Depends(get_db)
-) -> LoginResponse:
+async def kakao_social_login(code: str, session: AsyncSession) -> LoginResponse:
     
-    # 액세스 토큰으로 카카오 유저 정보 조회
-    headers = {
-        "Authorization": f"Bearer {request.access_token}",
-        "Content-Type": "application/json"
+    token_url = "https://kauth.kakao.com/oauth/token"
+    token_data = {
+        "grant_type": "authorization_code",
+        "client_id": os.getenv("KAKAO_REST_API_KEY"),
+        "redirect_uri": os.getenv("KAKAO_REDIRECT_URI"),
+        "code": code,
     }
+
     async with httpx.AsyncClient() as client:
-        response = await client.get(KAKAO_USER_INFO_URL, headers=headers)
+        token_res = await client.post(token_url, data=token_data)
+        token_json = token_res.json()
+
+    access_token = token_json.get("access_token")
+    if not access_token:
+        return {"error": "카카오 토큰 오류", "detail": token_json}
     
-    if response.status_code != 200:
-        print("카카오 응답 상태:", response.status_code)
-        print("카카오 응답 내용:", response.text) 
-        raise Exception("카카오 사용자 정보 조회 실패")
+    user_info_url = "https://kapi.kakao.com/v2/user/me"
+    headers = {"Authorization": f"Bearer {access_token}"}
+    async with httpx.AsyncClient() as client:
+        response = await client.get(user_info_url, headers=headers)
+        
 
     try:
         kakao_info = response.json()
