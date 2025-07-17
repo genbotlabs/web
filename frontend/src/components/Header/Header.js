@@ -53,26 +53,20 @@ export default function Header({ user, setUser }) {
     };
 
     const handleDeleteAccount = async () => {
-        const user_id = localStorage.getItem("user_id");
         const access_token = localStorage.getItem("access_token");
-        if (!user_id || !access_token) {
+        const user_id = localStorage.getItem("user_id");
+        if (!access_token) {
             alert("로그인 정보가 없습니다.");
             return;
         }
-
         try {
-            const response = await fetch(`http://localhost:8000/auth/logout`, {
+            const response = await fetch(`http://localhost:8000/auth/delete?user_id=${user_id}`, {
                 method: "DELETE",
-                headers: {
-                    "Authorization": `Bearer ${access_token}`,
-                }
+                headers: { "Authorization": `Bearer ${access_token}` },
             });
+            console.log(response)
             if (response.ok) {
-                localStorage.removeItem("access_token");
-                localStorage.removeItem("refresh_token");
-                localStorage.removeItem("user_id");
-                localStorage.removeItem("nickname");
-                localStorage.removeItem("profile_image");
+                localStorage.clear();
                 setUser(null);
                 alert("회원 탈퇴가 완료되었습니다.");
                 navigate("/");
@@ -80,7 +74,7 @@ export default function Header({ user, setUser }) {
                 alert("회원 탈퇴에 실패했습니다.");
             }
         } catch (err) {
-            alert("오류 발생");
+            alert("네트워크 오류 또는 서버에 연결할 수 없습니다.");
         }
     };
 

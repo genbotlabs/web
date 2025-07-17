@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Response
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 import urllib.parse
 from fastapi.responses import RedirectResponse
@@ -57,7 +58,7 @@ async def logout(response: Response):
     return UserDeleteResponse(success=True, message="로그아웃 완료")
 
 @router.delete("/delete", response_model=UserDeleteResponse)
-async def delete_account(user_id: str, session: AsyncSession = Depends(get_db)):
+async def delete_account(user_id: int, session: AsyncSession = Depends(get_db)):
     result = await session.execute(
         select(User).where(User.user_id == user_id)
     )
