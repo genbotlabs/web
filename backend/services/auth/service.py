@@ -50,14 +50,14 @@ async def kakao_social_login(code: str, session: AsyncSession) -> LoginResponse:
         user: User = await get_or_create_user(session, kakao_id, nickname, profile_image, "kakao")
 
         # JWT 토큰 발급
-        access_token = create_access_token(user["user_id"])
-        refresh_token = create_refresh_token(user["user_id"])
+        access_token = create_access_token(user.user_id)
+        refresh_token = create_refresh_token(user.user_id)
 
         # 응답 반환
         return LoginResponse(
             access_token=access_token,
             refresh_token=refresh_token,
-            user=UserInfo(**user)
+            user=UserInfo(**user.__dict__)
         )
     except Exception as e:
         print("로그인 처리 중 에러:", e)
