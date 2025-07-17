@@ -23,7 +23,7 @@ export default function FileUploadBox({ onFileChange, validationResult, setValid
     };
 
     const handleFormatCheck = async (file) => {
-        const MAX_SIZE = 10 * 1024 * 1024;
+        const MAX_SIZE = 30 * 1024 * 1024;
 
         let result;
 
@@ -92,7 +92,7 @@ export default function FileUploadBox({ onFileChange, validationResult, setValid
                 {files.map((file, idx) => (
                     <div className='file-name' key={idx} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                         <div className="tooltip-container">
-                            <button className="delete-btn" onClick={() => handleFileDelete(idx)}>×</button>
+                            <button className="delete-btn" onClick={() => handleFileDelete(idx)}>X</button>
 
                             <div className='thumbnail'>
                                 <img src={thumbnails[file.name]} alt="preview" style={{ width: '80px', height: '100px', marginRight: '10px' }} />
