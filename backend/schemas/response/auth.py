@@ -5,7 +5,7 @@ from datetime import datetime
 
 # 사용자 정보
 class UserInfo(BaseModel):
-    user_id: str = Field(..., example="user_123")
+    user_id: int = Field(..., example="123")
     social_id: str = Field(..., example="social_123")
     nickname: Optional[str] = Field(None, example="유경", description="사용자의 닉네임")
     profile_image: Optional[str] = Field(None, example="https://cdn.example.com/profile.jpg")
@@ -28,7 +28,7 @@ class LogoutResponse(BaseModel):
 class UserMeResponse(BaseModel):
     user: UserInfo
 
-# 회원 정보 삭제 응답  
+# 회원 탙퇴 응답  
 class UserDeleteResponse(BaseModel):
     success: bool = Field(..., example=True)
     message: str = Field(..., example="회원 탈퇴가 완료되었습니다.")
