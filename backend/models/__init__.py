@@ -1,8 +1,8 @@
 from database import Base
 
 from .user import User
-from .chatbot import Chatbot
-from .voicebot import Voicebot
+from .csbot import CSbot
+from .session import Session
 from .chatlog import ChatLog
 from .voicelog import VoiceLog
 from .detail import Detail

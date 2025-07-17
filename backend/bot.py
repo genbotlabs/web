@@ -4,8 +4,8 @@ from typing import List
 
 from models.detail import Detail
 from models.data import Data
-from models.chatbot import Chatbot
-from models.voicebot import Voicebot
+# from models.chatbot import Chatbot
+# from models.voicebot import Voicebot
 from database import SessionLocal
 
 from services.s3 import upload_json_to_s3
@@ -57,21 +57,21 @@ async def generate_bot(
         chatbot_id = None
         voicebot_id = None
 
-        if "챗봇" in type_list:
-            chatbot = Chatbot(user_id=user_id)
-            session.add(chatbot)
-            session.commit()
-            session.refresh(chatbot)
-            chatbot_id = chatbot.chatbot_id
-            detail.chatbot_id = chatbot_id
+        # if "챗봇" in type_list:
+        #     chatbot = Chatbot(user_id=user_id)
+        #     session.add(chatbot)
+        #     session.commit()
+        #     session.refresh(chatbot)
+        #     chatbot_id = chatbot.chatbot_id
+        #     detail.chatbot_id = chatbot_id
 
-        if "보이스봇" in type_list:
-            voicebot = Voicebot(user_id=user_id)
-            session.add(voicebot)
-            session.commit()
-            session.refresh(voicebot)
-            voicebot_id = voicebot.voicebot_id
-            detail.voicebot_id = voicebot_id
+        # if "보이스봇" in type_list:
+        #     voicebot = Voicebot(user_id=user_id)
+        #     session.add(voicebot)
+        #     session.commit()
+        #     session.refresh(voicebot)
+        #     voicebot_id = voicebot.voicebot_id
+        #     detail.voicebot_id = voicebot_id
 
         session.commit()
 
