@@ -57,7 +57,7 @@ async def logout(response: Response):
     return UserDeleteResponse(success=True, message="로그아웃 완료")
 
 @router.delete("/delete", response_model=UserDeleteResponse)
-async def naver_login(user_id: str, session: AsyncSession = Depends(get_db)):
+async def delete_account(user_id: str, session: AsyncSession = Depends(get_db)):
     result = await session.execute(
         select(User).where(User.user_id == user_id)
     )
