@@ -15,6 +15,7 @@ from schemas.response.auth import (
 from services.auth.service import (
     kakao_social_login, google_social_login, naver_social_login
 )
+from services.auth.user import get_current_user
 from services.get_db import get_db
 
 
@@ -68,3 +69,15 @@ async def delete_account(user_id: int, session: AsyncSession = Depends(get_db)):
     await session.delete(user)
     await session.commit()
     return UserDeleteResponse(success=True, message="회원 탈퇴가 완료되었습니다.")
+
+@router.get("/user/me", response_model=UserMeResponse)
+async def get_my_info(current_user = Depends(get_current_user)):
+    return UserMeResponse(
+        user_id=current_user.user_id,
+        social_id=current_user.social_id,
+        nickname=current_user.nickname,
+        profile_image=current_user.profile_image,
+        provider=current_user.provider,
+        created_at=current_user.created_at,
+        updated_at=current_user.updated_at
+    )
