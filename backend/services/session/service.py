@@ -6,6 +6,7 @@ from datetime import datetime
 
 from models.session import Session as SessionModel
 from models.chatlog import ChatLog
+from models.voicelog import VoiceLog
 from schemas.request.session import CreateSessionRequest, SendMessageRequest
 from schemas.response.session import (
     CreateSessionResponse, SendMessageResponse,
@@ -18,7 +19,8 @@ async def create_session_service(request: CreateSessionRequest, db: AsyncSession
 
     session = SessionModel(
         session_id=session_id,
-        bot_id=request.bot_id
+        bot_id=request.bot_id,
+        # created_at=datetime
     )
     db.add(session)
     await db.commit()
@@ -95,7 +97,7 @@ async def send_voice_message_service(session_id: str, request: SendMessageReques
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
-    message = ChatLog(
+    message = VoiceLog(
         session_id=session_id,
         turn=1,
         role="user",
