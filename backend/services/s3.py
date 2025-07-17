@@ -11,10 +11,10 @@ s3 = boto3.client('s3',
     aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
 )
 
-def upload_json_to_s3(file, filename):
+def upload_pdf_to_s3(file, filename):
     aws_s3_region = os.getenv('AWS_S3_REGION')
     bucket_name = os.getenv("AWS_S3_BUCKET_NAME")
     s3_key = f"{datetime.now().strftime('%Y%m%d%H%M%S')}/{filename}"
 
-    s3.upload_fileobj(file, bucket_name, s3_key, ExtraArgs={"ContentType": "application/json"})
+    s3.upload_fileobj(file, bucket_name, s3_key, ExtraArgs={"ContentType": "application/pdf"})
     return f"https://{bucket_name}.s3.{aws_s3_region}.amazonaws.com/{s3_key}"
