@@ -4,7 +4,6 @@ from typing import Optional
 # 소셜 로그인 요청
 class SocialLoginRequest(BaseModel):
     provider: str = Field(..., example="kakao", description="소셜 로그인 제공자 (kakao, google, naver)")
-    access_token: str = Field(..., example="access_token", description="소셜 플랫폼에서 발급받은 액세스 토큰")
     
 # 로그아웃 요청
 class LogoutRequest(BaseModel):
@@ -14,3 +13,7 @@ class LogoutRequest(BaseModel):
 class UserUpdateRequest(BaseModel):
     nickname: Optional[str] = Field(None, example="닉네임", description="수정할 닉네임")
     profile_image: Optional[str] = Field(None, example="https://cdn.example.com/profile.jpg", description="프로필 이미지 URL")
+
+# 회원 탈퇴 요청
+class UserDeleteRequest(BaseModel):
+    confirm: bool = Field(..., example=True, description="정말 탈퇴하시겠습니까?")
