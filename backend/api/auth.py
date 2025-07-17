@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 import urllib.parse
 from fastapi.responses import RedirectResponse
 from fastapi import Response
 
+from models import User
 from schemas.request.auth import (
     SocialLoginRequest, LogoutRequest, UserUpdateRequest, UserDeleteRequest
 )
@@ -21,7 +22,6 @@ router = APIRouter()
 @router.get("/login/kakao", response_model=LoginResponse)
 async def kakao_login(code: str, session: AsyncSession = Depends(get_db)):
     user = await kakao_social_login(code, session)
-    
     query = urllib.parse.urlencode({
         "user_id": user.user.user_id,
         "nickname": user.user.nickname,
@@ -32,7 +32,6 @@ async def kakao_login(code: str, session: AsyncSession = Depends(get_db)):
 @router.get("/login/google", response_model=LoginResponse)
 async def google_login(code: str, session: AsyncSession = Depends(get_db)):
     user = await google_social_login(code, session)
-    
     query = urllib.parse.urlencode({
         "user_id": user.user.user_id,
         "nickname": user.user.nickname,
@@ -43,8 +42,6 @@ async def google_login(code: str, session: AsyncSession = Depends(get_db)):
 @router.get("/login/naver", response_model=LoginResponse)
 async def naver_login(code: str, state: str, session: AsyncSession = Depends(get_db)):
     user = await naver_social_login(code, state, session)
-    print(">>>>>>>>>>>.")
-    print(user)
     query = urllib.parse.urlencode({
         "access_token": user.access_token,
         "refresh_token": user.refresh_token,
@@ -58,3 +55,15 @@ async def naver_login(code: str, state: str, session: AsyncSession = Depends(get
 async def logout(response: Response):
     response.delete_cookie(key="access_token")
     return UserDeleteResponse(success=True, message="로그아웃 완료")
+
+@router.delete("/delete", response_model=UserDeleteResponse)
+async def naver_login(user_id: str, session: AsyncSession = Depends(get_db)):
+    result = await session.execute(
+        select(User).where(User.user_id == user_id)
+    )
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    await session.delete(user)
+    await session.commit()
+    return UserDeleteResponse(success=True, message="회원 탈퇴가 완료되었습니다.")
