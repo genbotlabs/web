@@ -36,10 +36,11 @@ async def service_create_bot(
 
         uploaded_urls = []
         data_items = []
-
+        folder_name = f"bot_{detail.company_name}_{detail.detail_id}"
+        
         for file in files:
             if file.filename.endswith(".pdf"):
-                url = upload_pdf_to_s3(file.file, file.filename)
+                url = upload_pdf_to_s3(file.file, file.filename, folder_name)
                 uploaded_urls.append(url)
 
                 data = Data(
@@ -59,7 +60,7 @@ async def service_create_bot(
 
         await session.commit()
 
-        # ✅ 완전한 BotDetailItem 반환
+        # BotDetailItem 반환
         bot_response = BotDetailItem(
             bot_id="bot_" + str(detail.detail_id),
             company_name=detail.company_name,
