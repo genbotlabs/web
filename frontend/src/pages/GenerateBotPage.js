@@ -66,7 +66,7 @@ export default function GenerateBotPage({user}) {
         });
 
         try {
-            const response = await fetch('http://localhost:8000/api/generate-bot', {
+            const response = await fetch('http://localhost:8000/bots', {
                 method: 'POST',
                 body: formData,
             });
