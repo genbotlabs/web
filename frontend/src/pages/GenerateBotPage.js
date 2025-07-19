@@ -66,7 +66,7 @@ export default function GenerateBotPage({user}) {
         });
 
         try {
-            const response = await fetch('http://localhost:8000/api/generate-bot', {
+            const response = await fetch('http://localhost:8000/bots', {
                 method: 'POST',
                 body: formData,
             });
@@ -101,7 +101,7 @@ export default function GenerateBotPage({user}) {
     return (
         <form className="generate-bot-form" onSubmit={handleSubmit}>
             <div className='question-1'>
-                <label>생성할 봇을 선택해 주세요.<span><strong>*</strong></span></label>
+                <label>생성할 봇을 선택해 주세요.<span><strong style={{ color: 'red' }}>*</strong></span></label>
                 <p>한 가지 이상 선택해 주세요.</p>
                 <div>
                     <input type="checkbox" value="챗봇" onChange={handleCheckbox} /> 챗봇
@@ -109,7 +109,7 @@ export default function GenerateBotPage({user}) {
                 </div>
             </div>
             <div className='question-2'>
-                <label>회사명을 입력해 주세요.<span><strong>*</strong></span></label>
+                <label>회사명을 입력해 주세요.<span><strong style={{ color: 'red' }}>*</strong></span></label>
                 <br/>
                 <input name="company" value={form.company} onChange={handleChange} placeholder="예시: GenBot" required />
             </div>
@@ -122,7 +122,7 @@ export default function GenerateBotPage({user}) {
                 <label>봇의 첫 멘트를 입력해 주세요. <span>(선택)</span></label>
                 <p>입력하지 않으실 경우, 예시 문장이 자동으로 입력됩니다.</p>
                 <br/>
-                <input name="greeting" value={form.greeting} onChange={handleChange} placeholder="예시: 안녕하세요. OOO의 챗봇입니다..." />
+                <input name="greeting" value={form.greeting} onChange={handleChange} placeholder="예시: 안녕하세요. GenBot의 문의봇입니다." />
             </div>
             <div className='question-5'>
                 <label>봇에 대한 설명을 입력해 주세요. <span>(선택)</span></label>
@@ -132,21 +132,28 @@ export default function GenerateBotPage({user}) {
             </div>
 
             <div className='file-upload'>
-                <label>데이터 업로드하기<span><strong>*</strong></span></label>
-                <button type="button" className="show-data-ex" onClick={() => setShowFormatPopup(true)}>
-                    데이터 예시보기
-                </button>
-                <p>
+                <div className='file-upload-top'>
+                    <label>데이터 업로드하기<span><strong style={{ color: 'red' }}>*</strong></span></label>
+                    &nbsp;&nbsp;
+                    <button type="button" className="show-data-ex" onClick={() => setShowFormatPopup(true)}>
+                        데이터 예시보기
+                    </button>
+                </div>
+                <div className='file-upload-bottom'>
+                    <p>
                     - json, PDF 파일을 업로드 할 수 있습니다. <br/>
                     - 파일의 개수는 최대 10개이고, 각 파일의 크기 제한은 30MB입니다. <br/>
                     - 데이터 예시 보기 버튼을 통해 데이터 형식을 확인해 주세요. <br/>
                     - 데이터 형식 확인 버튼을 통해 데이터 형식 검사를 받아주세요. <br/>
-                </p>
-                <FileUploadBox
-                onFileChange={setUploadedFiles}
-                validationResult={validationResult}
-                setValidationResult={setValidationResult}
-                />
+                    <br/>
+                    <br/>
+                    </p>
+                    <FileUploadBox
+                    onFileChange={setUploadedFiles}
+                    validationResult={validationResult}
+                    setValidationResult={setValidationResult}
+                    />
+                </div>
             </div>
             <button
                 type="submit"
@@ -164,13 +171,57 @@ export default function GenerateBotPage({user}) {
             {showFormatPopup && (
                 <div className="popup-overlay" onClick={() => setShowFormatPopup(false)}>
                     <div className="popup-box" onClick={(e) => e.stopPropagation()}>
-                    <h3>데이터 형식 예시</h3>
-                    <p>PDF 또는 JSON 파일만 업로드 가능합니다.</p>
-                    <ul>
-                        <li>예시: 계약서.pdf</li>
-                        <li>예시: 학습데이터.json</li>
-                    </ul>
-                    <button onClick={() => setShowFormatPopup(false)}>닫기</button>
+                        <h3>데이터 형식 예시</h3>
+                        <p>PDF 또는 JSON 파일만 업로드 가능합니다.</p>
+                        <div className='popup-box-top'>
+                            <div className='popup-box-left'>
+                            <p>json 데이터(싱글턴 대화)</p>
+                                <pre style={{ textAlign:"left", backgroundColor: '#f4f4f4', padding: '10px', borderRadius: '5px', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                                    <code>
+            {`[
+    {
+        "Q": "스터디룸 이용 가능 시간이 어떻게 되나요?",
+        "A": "매일 24시간 이용 가능합니다."
+    },
+    {
+        "Q": "스터디룸 안에 에어컨 있나요?",
+        "A": "모든 스터디룸 안에 에어컨이 있습니다. 에어컨 사용을 희망하시면 카운터로 문의 부탁드립니다."
+    },
+    {
+        "Q": "스터디룸 내에 음료 반입 가능한가요?",
+        "A": "네. 음료 반입은 가능합니다."
+    }
+]`}
+                                    </code>
+                                </pre>
+                            </div>
+                            <div className='popup-box-right'>
+                                <p>json 데이터(멀티턴 대화)</p>
+                                    <pre style={{ textAlign:"left", backgroundColor: '#f4f4f4', padding: '10px', borderRadius: '5px', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                                        <code>
+            {`[
+    [
+        {
+            "Q": "오늘 날씨는 어떤가요?",
+            "A": "오늘은 맑고 기온은 약 25도 정도입니다. 밖에서 활동하기 좋은 날씨예요."
+        },
+        {
+            "Q": "오늘 오후에 뭘 하면 좋을까요?",
+            "A": "오늘 같은 날엔 공원에서 산책하거나 카페에서 책을 읽는 것도 좋을 것 같아요."
+        },
+        {
+            "Q": "공원에는 어떤 꽃들이 피었나요?",
+            "A": "지금 공원에는 장미와 튤립이 많이 피었어요. 아주 예쁠 거예요!"
+        }
+    ]
+]`}
+                                    </code>
+                                </pre>
+                            </div>
+                        </div>
+                        
+                    
+                        <button onClick={() => setShowFormatPopup(false)}>닫기</button>
                     </div>
                 </div>
             )}

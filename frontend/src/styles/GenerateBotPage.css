@@ -56,6 +56,36 @@
   cursor: pointer;
 }
 
+.file-upload {
+  display: flex;
+  flex-direction: column;
+}
+
+.file-upload-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; 
+}
+
+.file-upload button:hover {
+  background-color: white;
+  padding: 5px 10px 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: 'Alexandria', 'Noto Sans KR', sans-serif;
+  border: 1.5px solid #007BFF;
+  color: #007BFF;
+}
+
+.file-upload button {
+  background-color: #007BFF;
+  padding: 5px 10px 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: 'Alexandria', 'Noto Sans KR', sans-serif;
+  border: 1.5px solid #007BFF;
+  color: white
+}
 
 .file-upload-box {
     margin-top: 20px;
@@ -80,7 +110,34 @@
   background: white;
   padding: 40px;
   border-radius: 8px;
-  width: 500px;
+  width: 1300px;
   text-align: center;
+  /* display: flex;
+  justify-content: space-between; */
   box-shadow: 0 0 15px rgba(0,0,0,0.2);
+}
+
+.popup-box button {
+  background-color: #007BFF;
+  padding: 5px 10px 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: 'Alexandria', 'Noto Sans KR', sans-serif;
+  border: 1.5px solid #007BFF;
+  color: white
+}
+
+.popup-box button:hover {
+  background-color: white;
+  padding: 5px 10px 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: 'Alexandria', 'Noto Sans KR', sans-serif;
+  border: 1.5px solid #007BFF;
+  color: #007BFF;
+}
+
+.popup-box-top {
+  display: flex;
+  justify-content: space-between;
 }

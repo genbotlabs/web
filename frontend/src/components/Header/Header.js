@@ -15,6 +15,7 @@ export default function Header({ user }) {
                     <li><Link to="/generate">봇 생성</Link></li>
                     <li><Link to="/guide">GenBot 사용법</Link></li>
                     <li><Link to="/pricing">요금제</Link></li>
+                    <li><Link to="/pricing">체험하기</Link></li>
                 </ul>
             </nav>
             <div className="header__login">
