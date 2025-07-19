@@ -6,6 +6,7 @@ import MainPage from './pages/MainPage'
 import LoginPage from './pages/LoginPage';
 import GenerateBotPage from './pages/GenerateBotPage';
 import PendingPage from './pages/PendingPage';
+import MyAccountPage from './pages/MyAccountPage';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -19,6 +20,7 @@ export default function App() {
           <Route path='/login' element={<LoginPage/>}></Route>
           <Route path='/generate' element={<GenerateBotPage user={user}/>}></Route>
           <Route path="/generate/pending" element={<PendingPage user={user}/>} />
+          <Route path="/mypage" element={<MyAccountPage user={user}/>} />
         </Routes>
       </BrowserRouter>
     </>
