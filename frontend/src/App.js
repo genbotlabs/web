@@ -13,7 +13,7 @@ export default function App() {
   return (
     <>
       <BrowserRouter>
-        <Header user={user} />
+        <Header user={user} setUser={setUser}/>
         <Routes>
           <Route path='/' element={<MainPage setUser={setUser} />}></Route>
           <Route path='/login' element={<LoginPage/>}></Route>
