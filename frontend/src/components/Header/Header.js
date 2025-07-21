@@ -11,13 +11,12 @@ export default function Header({ user, setUser }) {
     useEffect(() => {
         console.log(">>>", window.location.search);
         const params = new URLSearchParams(window.location.search);
-        console.log(">>>", params);
         const access_token = params.get("access_token");
         const refresh_token = params.get("refresh_token");
         const user_id = params.get("user_id");
         const nickname = params.get("nickname");
         const profile_image = params.get("profile_image");
-        console.log("token", access_token)
+        const provider = params.get("provider");
 
         if (access_token) {
             localStorage.setItem("access_token", access_token);
@@ -25,6 +24,7 @@ export default function Header({ user, setUser }) {
             localStorage.setItem("user_id", user_id);
             localStorage.setItem("nickname", nickname);
             localStorage.setItem("profile_image", profile_image);
+            localStorage.setItem("provider", provider);
             navigate("/", { replace: true });
         }
     }, [location, navigate]);
@@ -40,6 +40,7 @@ export default function Header({ user, setUser }) {
                 localStorage.removeItem("user_id");
                 localStorage.removeItem("nickname");
                 localStorage.removeItem("profile_image");
+                localStorage.removeItem("provider");
                 setUser(null);
                 alert("로그아웃이 완료되었습니다.");
                 navigate("/");
