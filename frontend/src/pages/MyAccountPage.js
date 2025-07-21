@@ -5,27 +5,39 @@ import '../styles/MyAccountPage.css';
 
 const MyAccountPage = ({ user }) => {
     return (
-        <div>
-            <div class="mypage-account">
-                <div className='mypage-account-top'>
-                    <div className='profile-image'>
-                        <img src={logo}></img>
+        <div className="mypage-container">
+            <div className="mypage-account">
+                <div className="profile-card">
+                    <div className="profile-image">
+                        <img src={logo} alt="Profile" />
                     </div>
-                </div>
-                <div className='mypage-account-bottom'>
-                    <div className='name'>name</div>
-                    <div className='provider'>provider</div>
-                    <div className='buttons'>
-                        <button className='update-button'>수정</button>
-                        <button className='delete-button'>탈퇴</button>
+                    <div className="profile-info">
+                        <h2 className="name">이름. 현유경</h2>
+                        <p className="provider">연동된 소셜 로그인 방식: google</p>
+                    </div>
+                    <div className="profile-actions">
+                        <button className="update-button">회원정보 수정</button>
+                        <button className="delete-button">회원 탈퇴</button>
                     </div>
                 </div>
             </div>
-            <div class="mypage-bot">
-                <div class='bot-title'>내 상담봇</div>
-                <div class='bot-list'>
-                    <div>문의봇</div>
-                    <div>응답봇</div>
+            <div className="mypage-bot">
+                <div className="bot-section">
+                    <h2 className="bot-title">내 상담봇</h2>
+                    <div className="bot-list">
+                        <div className="bot-card">
+                            <div className="bot-info">
+                                <h3>문의봇</h3>
+                            </div>
+                            <button className="bot-detail-btn">세부정보 보기</button>
+                        </div>
+                        <div className="bot-card">
+                            <div className="bot-info">
+                                <h3>상담봇</h3>
+                            </div>
+                            <button className="bot-detail-btn">세부정보 보기</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
