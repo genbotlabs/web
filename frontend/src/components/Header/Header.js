@@ -91,7 +91,7 @@ export default function Header({ user, setUser }) {
                         <ul className="header__menu">
                             <li><Link to="/">홈</Link></li>
                             <li><Link to="/myaccount">내 계정</Link></li>
-                            <li><Link to="/manage">봇 관리</Link></li>
+                            <li><Link to="/dashboard">봇 관리</Link></li>
                             <li><Link to="/generate">봇 생성</Link></li>
                         </ul>
                     </nav>
