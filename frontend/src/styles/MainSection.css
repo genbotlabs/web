@@ -32,23 +32,23 @@
 }
 
 .left-container {
-    flex: 0 0 40%;
+    flex: 0 0 38%;
     height: 100%;
     overflow-y: auto;
     padding: 20px;
     background-color: #fff;
     box-sizing: border-box;
     justify-content: space-between;
-    margin-right: 20px;
+    border-radius: 50px;
 }
 
 .right-container {
     flex: 0 0 60%;
     height: 100%;
-    overflow-y: auto;
     padding: 20px;
     background-color: #fff;
     box-sizing: border-box;
+    border-radius: 50px;
 }
 
 @media (max-width: 768px) {
