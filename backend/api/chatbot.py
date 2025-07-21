@@ -7,12 +7,12 @@ from schemas.response.session import (
     CreateSessionResponse, SendMessageResponse,
     MessageListResponse, EndSessionResponse
 )
-from services.session.service import (
+from web.backend.services.session.chatbot import (
     create_session_service,
     send_message_service,
     get_session_messages_service,
     end_session_service,
-    send_voice_message_service
+    req_sllm_service, res_sllm_service
 )
 
 import os
@@ -21,12 +21,6 @@ from dotenv import load_dotenv
 from services.get_db import get_db
 
 load_dotenv()
-
-
-# 의존성 관리 코드 포함
-DATABASE_URL = os.getenv("GENBOTDB_LOCAL_URL")  # 실제 환경에 맞게 수정
-engine = create_async_engine(DATABASE_URL, echo=False)
-AsyncSessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False)
 
 router = APIRouter()
 
@@ -63,11 +57,11 @@ async def end_session(
 ):
     return await end_session_service(session_id, db)
 
-# 5. STT 음성 메시지 전송
-@router.post("/{session_id}/speech", response_model=SendMessageResponse)
-async def send_voice_message(
-    session_id: str,
-    request: SendMessageRequest,
-    db: AsyncSession = Depends(get_db)
-):
-    return await send_voice_message_service(session_id, request, db)
+# # 수정 중
+# @router.post("/{session_id}/sllm")
+# async def request_sllm(session_id: str):
+#     return await req_sllm_service(session_id)
+
+# @router.get("/{session_id}/sllm")
+# async def response_sllm(session_id: str):
+#     return await res_sllm_service(session_id)
