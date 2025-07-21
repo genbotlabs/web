@@ -7,9 +7,11 @@ from datetime import datetime
 from uuid import uuid4
 from fastapi import Form, UploadFile, File, HTTPException
 from services.s3 import upload_pdf_to_s3
+from services.pdf_parser import parse_pdfs_from_s3
 from models.data import Data
 from typing import List
 import traceback  # 추가
+import os
 
 async def service_create_bot(
     company: str = Form(...),
@@ -37,7 +39,7 @@ async def service_create_bot(
         uploaded_urls = []
         data_items = []
         folder_name = f"bot_{detail.company_name}_{detail.detail_id}"
-        
+
         for file in files:
             if file.filename.endswith(".pdf"):
                 url = upload_pdf_to_s3(file.file, file.filename, folder_name)
@@ -60,6 +62,11 @@ async def service_create_bot(
 
         await session.commit()
 
+        # 👇 PDF 파서 호출 추가
+        bucket_name = os.getenv("AWS_S3_BUCKET_NAME")
+        parse_message = parse_pdfs_from_s3(bucket_name, folder_name)
+        print(parse_message)
+
         # BotDetailItem 반환
         bot_response = BotDetailItem(
             bot_id="bot_" + str(detail.detail_id),
@@ -77,7 +84,7 @@ async def service_create_bot(
 
     except Exception as e:
         await session.rollback()
-        print("[ERROR]", traceback.format_exc())  # ✅ 콘솔에서 확인 가능
+        print("[ERROR]", traceback.format_exc())  
         raise HTTPException(status_code=500, detail="서버 내부 오류가 발생했습니다.")
     finally:
         await session.close()

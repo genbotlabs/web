@@ -1,7 +1,7 @@
 import './Header.css';
 import logo from '../../icons/logo.png';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+// import axios from 'axios';
 import { useEffect, useState } from 'react';
 
 export default function Header({ user, setUser }) {
