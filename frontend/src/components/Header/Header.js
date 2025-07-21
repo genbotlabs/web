@@ -85,34 +85,34 @@ export default function Header({ user, setUser }) {
                 <img src={logo} alt="GenBot Logo" className="header__logo-img" />
                 <span className="header__logo-text">GenBot</span>
             </div>
-            <nav className="header__nav">
-                <ul className="header__menu">
-                    <li><Link to="/">홈</Link></li>
-                    <li><Link to="/generate">봇 생성</Link></li>
-                    <li><Link to="/guide">GenBot 사용법</Link></li>
-                    <li><Link to="/pricing">요금제</Link></li>
-                    <li><Link to="/pricing">체험하기</Link></li>
-                </ul>
-            </nav>
-            <div className="header__login">
-                {user ? (
-                    <ul className='header__my'>
-                        <Link to="#" onClick={handleLogout}>로그아웃</Link>
-                        <Link to="#" onClick={handleDeleteAccount}>회원탈퇴</Link>
-                        <Link to="/mypage">
-                            <img
-                                src={user.profile_image}
-                                alt="프로필"
-                                className="header__profile-img"
-                                style={{ width: "36px", height: "36px", borderRadius: "50%" }}
-                            />
-                        </Link>
+            {user ? (
+                <>
+                    <nav className="header__nav">
+                    <ul className="header__menu">
+                        <li><Link to="/">홈</Link></li>
+                        <li><Link to="/myaccount">내 계정</Link></li>
+                        <li><Link to="/generate">봇 생성</Link></li>
+                        <li><Link to="/manage">봇 관리</Link></li>
                     </ul>
-                    
-                ) : (
-                    <Link to="/login" id="login-button">로그인</Link>
-                )}
-            </div>
+                    </nav>
+                    <div className="header__login">
+                        <ul className='header__my'>
+                            <Link to="#" onClick={handleLogout}>로그아웃</Link>
+                            <Link to="#" onClick={handleDeleteAccount}>회원탈퇴</Link>
+                            <Link to="/mypage">
+                                <img
+                                    src={user.profile_image}
+                                    alt="프로필"
+                                    className="header__profile-img"
+                                    style={{ width: "36px", height: "36px", borderRadius: "50%" }}
+                                />
+                            </Link>
+                        </ul>
+                    </div>  
+                </>
+            ) : (
+                <Link to="/login" id="login-button">로그인</Link>
+            )}
         </header>
     );
 }
