@@ -86,19 +86,18 @@ export default function Header({ user, setUser }) {
                 <span className="header__logo-text">GenBot</span>
             </div>
             {user ? (
-                <>
+                <div className="header__container">
                     <nav className="header__nav">
-                    <ul className="header__menu">
-                        <li><Link to="/">홈</Link></li>
-                        <li><Link to="/myaccount">내 계정</Link></li>
-                        <li><Link to="/generate">봇 생성</Link></li>
-                        <li><Link to="/manage">봇 관리</Link></li>
-                    </ul>
+                        <ul className="header__menu">
+                            <li><Link to="/">홈</Link></li>
+                            <li><Link to="/myaccount">내 계정</Link></li>
+                            <li><Link to="/manage">봇 관리</Link></li>
+                            <li><Link to="/generate">봇 생성</Link></li>
+                        </ul>
                     </nav>
                     <div className="header__login">
                         <ul className='header__my'>
                             <Link to="#" onClick={handleLogout}>로그아웃</Link>
-                            <Link to="#" onClick={handleDeleteAccount}>회원탈퇴</Link>
                             <Link to="/mypage">
                                 <img
                                     src={user.profile_image}
@@ -109,7 +108,7 @@ export default function Header({ user, setUser }) {
                             </Link>
                         </ul>
                     </div>  
-                </>
+                </div>
             ) : (
                 <Link to="/login" id="login-button">로그인</Link>
             )}
