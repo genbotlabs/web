@@ -10,6 +10,7 @@ from services.s3 import upload_pdf_to_s3
 from models.data import Data
 from typing import List
 import traceback  # 추가
+from models.lang_graph.lang_graph import run_langgraph  # langgraph model_bot
 
 async def service_create_bot(
     company: str = Form(...),
@@ -81,3 +82,8 @@ async def service_create_bot(
         raise HTTPException(status_code=500, detail="서버 내부 오류가 발생했습니다.")
     finally:
         await session.close()
+
+
+# 모델 실행 부분
+def run_langgraph_answer(question: str) -> str:
+    return run_langgraph(question)
