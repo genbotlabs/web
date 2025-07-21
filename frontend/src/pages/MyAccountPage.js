@@ -4,6 +4,14 @@ import logo from '../icons/logo.png';
 import '../styles/MyAccountPage.css';
 
 const MyAccountPage = ({ user }) => {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!user) {
+            navigate('/login');
+        }
+    }, [user, navigate]);
+
     return (
         <div className="mypage-container">
             <div className="mypage-account">
