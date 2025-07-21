@@ -1,4 +1,6 @@
 from pydantic import BaseModel
 
 class ChatResponse(BaseModel):
-    answer: str
+    context: str
+    turn:int
+    role:str
