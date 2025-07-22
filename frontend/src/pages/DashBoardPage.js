@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, lazy, useRef } from 'react';
 import { Card } from 'antd';
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
-import { Column } from '@ant-design/plots';
 
 import MainSection from './MainSection';
 import '../styles/DashBoardPage.css';
@@ -25,8 +24,13 @@ const columnData = [
     { day: '일', users: 120 },
 ];
 
+const Column = lazy(() => import('@ant-design/plots').then(mod => ({ default: mod.Column })));
+
 const DashBoardPage = ({user}) => {
     const [currentCard, setCurrentCard] = useState(0);
+    // const [mounted, setMounted] = useState(false);
+    const chartRef = useRef(null);
+    const [canRenderChart, setCanRenderChart] = useState(false);
 
     const nextCard = () => {
         setCurrentCard((prev) => (prev + 1) % cardData.length);
@@ -40,6 +44,20 @@ const DashBoardPage = ({user}) => {
         ? cardData.slice(currentCard, currentCard + 3)
         : [...cardData.slice(currentCard), ...cardData.slice(0, 3 - (cardData.length - currentCard))];
 
+
+    // useEffect(() => setMounted(true), []);
+
+    useEffect(() => {
+        const observer = new ResizeObserver((entries) => {
+          if (entries[0].contentRect.width > 0) {
+            setCanRenderChart(true);
+          }
+        });
+        if (chartRef.current) {
+          observer.observe(chartRef.current);
+        }
+        return () => observer.disconnect();
+    }, []);
     
     const columnConfig = {
         data: columnData,
@@ -47,19 +65,14 @@ const DashBoardPage = ({user}) => {
         yField: 'users',
         columnWidthRatio: 0.6,
         label: {
-            position: 'top',
-            style: {
+          position: 'top',
+          style: {
             fill: '#000',
-            },
-            layout: [
-              { type: 'interval-adjust-position' },
-              { type: 'interval-hide-overlap' }, 
-            ],
+          },
         },
-        appendPadding: [20, 0, 0, 0],
         color: '#69b1ff',
         tooltip: {
-            showMarkers: false,
+          showMarkers: false,
         },
         interactions: [{ type: 'active-region' }],
     };
@@ -98,16 +111,14 @@ const DashBoardPage = ({user}) => {
                                 <button className="nav-button" onClick={nextCard}><RightOutlined /></button>
                             </div>
                             <div className='dashboard-bottom'>
-                                <div className='dashboard-bottom-left'>
-                                    <div className="chart-header">
-                                        <span className="chart-title">일별 사용자 이용 수</span>
-                                        <span className="chart-period">2025년 7월 21일 - 2025년 7월 27일</span>
-                                    </div>
-                                    {typeof window !== 'undefined' && columnData.length > 0 && (
-                                        <Column {...columnConfig} style={{ height: 500 }} />
-                                    )}
-                                    <div className="avg-line">평균 200명</div>
+                            <div className="dashboard-bottom-left" ref={chartRef}>
+                                <div className="chart-header">
+                                    <span className="chart-title">일별 사용자 이용 수</span>
+                                    <span className="chart-period">2025년 7월 21일 - 2025년 7월 27일</span>
                                 </div>
+                                {canRenderChart && <Column {...columnConfig} style={{ height: 300 }} />}
+                                <div className="avg-line">평균 200명</div>
+                            </div>
                                 <div className='dashboard-bottom-right'>
                                     bye
                                 </div>

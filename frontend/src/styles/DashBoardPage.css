@@ -52,7 +52,10 @@ section {
     padding: 40px;
     text-align: center;
     font-weight: bold;
-    margin: 10px;
+}
+
+.dashboard-bottom-left {
+    margin: 0px 10px 0px 0px;
 }
 
 .chart-header {
@@ -89,9 +92,14 @@ section {
 }
 
 .ant-card-custom {
-    border: 2px solid #d5d5d5 !important;
+    border: 2px solid #1F5FF8 !important;
     border-radius: 12px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-title-text {
+    font-weight: bold;
+    font-size: 24px;
 }
   
 /* .ant-card-custom:hover {
@@ -100,13 +108,20 @@ section {
 } */
 
 .ant-card-custom:hover {
-    border-color: #F97874 !important;
+    border-color: #1F5FF8 !important;
+    background-color: #1F5FF8 !important;
+    color: white !important;
     box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
 }
 
-.ant-card-custom:hover .circle-user-count {
+.ant-card-custom:hover .card-title-text {
+    color: white !important;
+}
+
+.ant-card-custom:hover .circle-user-count{
     background-color: #D6EAFF;
     border-color: #D6EAFF;
+    color: #484848;
     transition: background-color 0.3s ease;
 }
   
@@ -154,8 +169,8 @@ section {
 .nav-button {
     width: 48px;
     height: 100%;
-    background-color: #f4f9ff;
-    border: 2px solid #1F5FF8;
+    background-color: #bddbff;
+    border: 2px solid #bddbff;
     border-radius: 24px;
     display: flex;
     justify-content: center;
@@ -172,6 +187,7 @@ section {
   
 .nav-button:hover {
     background-color: #1F5FF8;
+    border: 2px solid #1F5FF8;
 }
 
 .nav-button:hover svg {
