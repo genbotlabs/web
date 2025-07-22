@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/charts": "^2.6.1",
     "@ant-design/icons": "5.x",
+    "@ant-design/plots": "^2.6.1",
     "@react-three/drei": "^10.3.0",
     "@react-three/fiber": "^9.1.2",
     "@splinetool/react-spline": "^4.0.0",

@@ -45,12 +45,35 @@ section {
 
 .dashboard-bottom-left,
 .dashboard-bottom-right {
-    background-color: #ff6f6f;
+    /* background-color: #ff6f6f; */
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
     flex: 1;
     padding: 40px;
     text-align: center;
     font-weight: bold;
     margin: 10px;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background-color: #D6EAFF;
+    padding: 10px;
+    border-radius: 16px;
+}
+
+.chart-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.chart-period {
+    font-size: 1rem;
+    color: #666;
 }
 
 .card-container {
