@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import MainSection from './MainSection';
+import DashBoardPage from './DashBoardPage';
 
-const MainPage = ({ setUser }) => {
+const MainPage = ({ user, setUser }) => {
     const location = useLocation();
     const navigate = useNavigate();
+    console.log(">>" ,user)
     
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -23,7 +25,11 @@ const MainPage = ({ setUser }) => {
 
     return (
         <div>
-            <MainSection />
+            {user ? (
+                <DashBoardPage user={user}/>
+            ) : (
+                <MainSection />
+            )}
         </div>
     );
 };

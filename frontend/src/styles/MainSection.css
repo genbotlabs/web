@@ -31,8 +31,8 @@
     min-height: 200px;
 }
 
-.left-container {
-    flex: 0 0 40%;
+/* .left-container {
+    flex: 0 0 38%;
     height: 100%;
     overflow-y: auto;
     padding: 20px;
@@ -40,10 +40,10 @@
     box-sizing: border-box;
     justify-content: space-between;
     margin-right: 20px;
-}
+} */
 
 .right-container {
-    flex: 0 0 60%;
+    flex: 0 0 58%;
     height: 100%;
     overflow-y: auto;
     padding: 20px;
@@ -75,6 +75,45 @@
     }
 }
 
+.left-container {
+    flex: 0 0 38%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    background-color: #fff;
+    box-sizing: border-box;
+    margin-right: 20px;
+}
+
+.text-wrapper>p {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.subtext {
+    margin-top: 20px;
+    color: #555;
+    line-height: 1.6;
+}
+
+.generate-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 30px;
+    transition: background-color 0.2s;
+}
+
+
 .chatbox {
     display: flex;
     flex-direction: column;
@@ -89,32 +128,34 @@
     animation: slideUp 0.3s ease-out;
 }
 
-.bot-message {
-    background-color: #f8f8f8;
-    align-self: flex-start;
+.user-message {
+    background-color: #FF7E86;
+    color: white;
+    align-self: flex-end;
 }
 
-.user-message {
-    background-color: #a9d8ff;
-    align-self: flex-end;
+.bot-message {
+    background-color: #007bff;
+    color: white;
+    align-self: flex-start;
 }
 
 .text-wrapper {
     height: 60vh;
 }
 
-.text-wrapper>p {
+/* .text-wrapper>p {
     text-align: center;
     font-size: 30px;
     font-weight: bold;
-}
+} */
 
 .button-wrapper {
     display: flex;
     justify-content: center;
 }
 
-.generate-button {
+/* .generate-button {
     background-color: #007bff;
     color: white;
     border: none;
@@ -124,8 +165,17 @@
     font-size: 20px;
     transition: background-color 0.2s;
     padding: 15px 40px 15px 40px;
-}
+} */
 
 .generate-button:hover {
     background-color: #005fcc;
+}
+
+.text-wrapper>.line1 {
+    color: #484848;
+}
+
+.highlight {
+    color: #F97874;
+    background: linear-gradient(to top, rgba(255, 185, 183, 0.33) 60%, transparent 60%);
 }
