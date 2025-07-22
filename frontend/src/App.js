@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from  'react-router-dom';
 import { useState } from 'react';
+import 'antd/dist/reset.css'; 
 
 import Header from './components/Header/Header';
 import MainPage from './pages/MainPage'

@@ -1,117 +1,75 @@
-import './Header.css';
+import React from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { Layout, Avatar, Dropdown, Button } from 'antd';
+import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
 import logo from '../../icons/logo.png';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-// import axios from 'axios';
-import { useEffect, useState } from 'react';
+import useIsMobile from '../../hooks/useIsMobile';
+import '../Header/Header.css';
+
+const { Header: AntHeader } = Layout;
 
 export default function Header({ user, setUser }) {
-    const location = useLocation();
     const navigate = useNavigate();
+    const location = useLocation();
+    const isMobile = useIsMobile();
 
-    useEffect(() => {
-        console.log(">>>", window.location.search);
-        const params = new URLSearchParams(window.location.search);
-        const access_token = params.get("access_token");
-        const refresh_token = params.get("refresh_token");
-        const user_id = params.get("user_id");
-        const nickname = params.get("nickname");
-        const profile_image = params.get("profile_image");
-        const provider = params.get("provider");
-
-        if (access_token) {
-            localStorage.setItem("access_token", access_token);
-            localStorage.setItem("refresh_token", refresh_token);
-            localStorage.setItem("user_id", user_id);
-            localStorage.setItem("nickname", nickname);
-            localStorage.setItem("profile_image", profile_image);
-            localStorage.setItem("provider", provider);
-            navigate("/", { replace: true });
-        }
-    }, [location, navigate]);
-
-    const handleLogout = async () => {
-        try {
-            const response = await fetch(`http://localhost:8000/auth/logout`, {
-                method: "POST"
-            });
-             if (response.ok) {
-                localStorage.removeItem("access_token");
-                localStorage.removeItem("refresh_token");
-                localStorage.removeItem("user_id");
-                localStorage.removeItem("nickname");
-                localStorage.removeItem("profile_image");
-                localStorage.removeItem("provider");
-                setUser(null);
-                alert("로그아웃이 완료되었습니다.");
-                navigate("/");
-            } else {
-                alert("로그아웃에 실패했습니다.");
-            }
-        } catch (err) {
-            console.error("로그아웃 요청 중 오류 발생:", err);
-            alert("네트워크 오류 또는 서버에 연결할 수 없습니다.\n잠시 후 다시 시도해주세요.");
-        }
+    const handleLogout = () => {
+        localStorage.clear();
+        setUser(null);
+        alert("로그아웃 완료");
+        navigate('/');
     };
 
-    const handleDeleteAccount = async () => {
-        const access_token = localStorage.getItem("access_token");
-        const user_id = localStorage.getItem("user_id");
-        if (!access_token) {
-            alert("로그인 정보가 없습니다.");
-            return;
-        }
-        try {
-            const response = await fetch(`http://localhost:8000/auth/delete?user_id=${user_id}`, {
-                method: "DELETE",
-                headers: { "Authorization": `Bearer ${access_token}` },
-            });
-            console.log(response)
-            if (response.ok) {
-                localStorage.clear();
-                setUser(null);
-                alert("회원 탈퇴가 완료되었습니다.");
-                navigate("/");
-            } else {
-                alert("회원 탈퇴에 실패했습니다.");
-            }
-        } catch (err) {
-            alert("네트워크 오류 또는 서버에 연결할 수 없습니다.");
-        }
+    const handleDeleteAccount = () => {
+        localStorage.clear();
+        setUser(null);
+        alert("회원 탈퇴 완료");
+        navigate('/');
     };
+
+    const userMenu = (
+        <div className="user-menu">
+            <p onClick={handleLogout}>로그아웃</p>
+            <p onClick={handleDeleteAccount} className="danger">회원 탈퇴</p>
+        </div>
+    );
+
+    const tabs = [
+        { key: '/', label: '홈' },
+        { key: '/myaccount', label: '내 계정' },
+        { key: '/generate', label: '봇 생성' },
+        { key: '/dashboard', label: '봇 관리' },
+    ];
 
     return (
-        <header className="header">
-            <div className="header__logo">
-                <img src={logo} alt="GenBot Logo" className="header__logo-img" />
-                <span className="header__logo-text">GenBot</span>
-            </div>
-            {user ? (
-                <div className="header__container">
-                    <nav className="header__nav">
-                        <ul className="header__menu">
-                            <li><Link to="/">홈</Link></li>
-                            <li><Link to="/myaccount">내 계정</Link></li>
-                            <li><Link to="/dashboard">봇 관리</Link></li>
-                            <li><Link to="/generate">봇 생성</Link></li>
-                        </ul>
-                    </nav>
-                    <div className="header__login">
-                        <ul className='header__my'>
-                            <Link to="#" onClick={handleLogout}>로그아웃</Link>
-                            <Link to="/mypage">
-                                <img
-                                    src={user.profile_image}
-                                    alt="프로필"
-                                    className="header__profile-img"
-                                    style={{ width: "36px", height: "36px", borderRadius: "50%" }}
-                                />
-                            </Link>
-                        </ul>
-                    </div>  
+        <AntHeader className="custom-header">
+            <div className="header-left">
+                <img src={logo} alt="GenBot" className="logo" />
+                <span className="title">GenBot</span>
+                <div className="nav-tabs">
+                    {tabs.map(tab => (
+                        <div
+                            key={tab.key}
+                            className={`tab ${location.pathname === tab.key ? 'active' : ''}`}
+                            onClick={() => navigate(tab.key)}
+                        >
+                            {tab.label}
+                        </div>
+                    ))}
                 </div>
-            ) : (
-                <Link to="/login" id="login-button">로그인</Link>
-            )}
-        </header>
+            </div>
+
+            <div className="header-right">
+                {user ? (
+                    <Dropdown overlay={userMenu} placement="bottomRight">
+                        <Avatar src={user.profile_image} icon={<UserOutlined />} style={{ cursor: 'pointer' }} />
+                    </Dropdown>
+                ) : (
+                    <Link to="/login">
+                        <Button type="primary" icon={<UserOutlined />}>로그인</Button>
+                    </Link>
+                )}
+            </div>
+        </AntHeader>
     );
 }
