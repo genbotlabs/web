@@ -42,21 +42,10 @@ export default function Header({ user, setUser }) {
     ];
 
     return (
-        <AntHeader className="custom-header">
+        <div className="header-container">
             <div className="header-left">
-                <img src={logo} alt="GenBot" className="logo" />
-                <span className="title">GenBot</span>
-                <div className="nav-tabs">
-                    {tabs.map(tab => (
-                        <div
-                            key={tab.key}
-                            className={`tab ${location.pathname === tab.key ? 'active' : ''}`}
-                            onClick={() => navigate(tab.key)}
-                        >
-                            {tab.label}
-                        </div>
-                    ))}
-                </div>
+                <img src={logo} alt="GenBot" className="header-logo" />
+                <span className="header-title">GenBot</span>
             </div>
 
             <div className="header-right">
@@ -66,10 +55,10 @@ export default function Header({ user, setUser }) {
                     </Dropdown>
                 ) : (
                     <Link to="/login">
-                        <Button type="primary" icon={<UserOutlined />}>로그인</Button>
+                        로그인하기
                     </Link>
                 )}
             </div>
-        </AntHeader>
+        </div>
     );
 }
