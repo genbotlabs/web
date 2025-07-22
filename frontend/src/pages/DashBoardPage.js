@@ -52,8 +52,8 @@ const DashBoardPage = ({user}) => {
             fill: '#000',
             },
             layout: [
-              { type: 'interval-adjust-position' }, // 위치 자동 조정
-              { type: 'interval-hide-overlap' },    // 겹침 제거
+              { type: 'interval-adjust-position' },
+              { type: 'interval-hide-overlap' }, 
             ],
         },
         appendPadding: [20, 0, 0, 0],
@@ -104,7 +104,7 @@ const DashBoardPage = ({user}) => {
                                         <span className="chart-period">2025년 7월 21일 - 2025년 7월 27일</span>
                                     </div>
                                     {typeof window !== 'undefined' && columnData.length > 0 && (
-                                        <Column {...columnConfig} style={{ height: 300 }} />
+                                        <Column {...columnConfig} style={{ height: 500 }} />
                                     )}
                                     <div className="avg-line">평균 200명</div>
                                 </div>
