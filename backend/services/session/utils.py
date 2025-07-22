@@ -1,9 +1,9 @@
 import os
 import boto3
-from transformers import pipeline
 import openai
 import io
 import torch
+from faster_whisper import WhisperModel
 
 # --- S3 Whisper 모델 동기화 ---
 def s3_sync_folder(bucket, s3_prefix, local_dir):
@@ -24,13 +24,8 @@ LOCAL_MODEL_PATH = "uploads/whisper-small-ko"
 def prepare_whisper_model():
     if not (os.path.exists(LOCAL_MODEL_PATH) and len(os.listdir(LOCAL_MODEL_PATH)) > 2):
         s3_sync_folder(S3_BUCKET, S3_PREFIX, LOCAL_MODEL_PATH)
-    return pipeline(
-        "automatic-speech-recognition",
-        model=LOCAL_MODEL_PATH,
-        tokenizer=LOCAL_MODEL_PATH,
-        feature_extractor=LOCAL_MODEL_PATH,
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-    )
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    return WhisperModel(LOCAL_MODEL_PATH, device=device)
 
 whisper_pipe = prepare_whisper_model()
 

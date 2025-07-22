@@ -6,6 +6,9 @@ from fastapi import HTTPException, UploadFile, Query
 from fastapi.responses import JSONResponse, StreamingResponse
 from services.session.utils import text_to_speech, whisper_pipe
 import tempfile
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # 1. STT 서비스 (음성→텍스트)
 async def load_stt_service(session_id: str, audio: UploadFile, db):
@@ -23,8 +26,8 @@ async def load_stt_service(session_id: str, audio: UploadFile, db):
     with tempfile.NamedTemporaryFile(suffix=".wav") as tmp:
         tmp.write(audio.file.read())
         tmp.flush()
-        stt_result = whisper_pipe(tmp.name, chunk_length_s=30)
-    text = stt_result["text"]
+        segments, info = whisper_pipe.transcribe(tmp.name, language="ko")
+        text = "".join([seg.text for seg in segments])
 
     # VoiceLog 저장 (선택)
     now = datetime.utcnow()
