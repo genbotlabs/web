@@ -1,12 +1,8 @@
 from datetime import datetime
-from sqlalchemy.future import select
-from sqlalchemy import func
-from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.response.session import SendMessageResponse, MessageItemResponse
+from sqlalchemy import func, select
 from models.voicelog import VoiceLog
 from models.session import Session as SessionModel
-from schemas.request.session import SendMessageRequest
-from fastapi import HTTPException, UploadFile
+from fastapi import HTTPException, UploadFile, Query
 from fastapi.responses import JSONResponse, StreamingResponse
 from services.session.utils import text_to_speech, whisper_pipe
 import tempfile
@@ -42,7 +38,6 @@ async def load_stt_service(session_id: str, audio: UploadFile, db):
     return JSONResponse({"session_id": session_id, "text": text})
 
 # 2. TTS 서비스 (텍스트→음성)
-async def trans_tts_service(session_id: str, text: str, db):
-    # (세션 체크 필요시 추가)
-    audio_bytes = text_to_speech(text)
-    return StreamingResponse(iter([audio_bytes]), media_type="audio/wav")
+async def trans_tts_service(session_id: str, text: str):
+    audio_stream = text_to_speech(text)
+    return StreamingResponse(audio_stream, media_type="audio/mpeg")

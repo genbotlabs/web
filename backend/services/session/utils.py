@@ -2,6 +2,8 @@ import os
 import boto3
 from transformers import pipeline
 import openai
+import io
+import torch
 
 # --- S3 Whisper 모델 동기화 ---
 def s3_sync_folder(bucket, s3_prefix, local_dir):
@@ -27,17 +29,16 @@ def prepare_whisper_model():
         model=LOCAL_MODEL_PATH,
         tokenizer=LOCAL_MODEL_PATH,
         feature_extractor=LOCAL_MODEL_PATH,
-        device="cuda"
+        device = "cuda" if torch.cuda.is_available() else "cpu"
     )
 
 whisper_pipe = prepare_whisper_model()
 
 # --- OpenAI TTS 함수 ---
-def text_to_speech(text):
+def text_to_speech(text, voice="alloy"):
     response = openai.audio.speech.create(
         model="tts-1",
-        input=text,
-        voice="alloy",
-        response_format="wav"
+        voice=voice,
+        input=text
     )
-    return response.content
+    return io.BytesIO(response.content)

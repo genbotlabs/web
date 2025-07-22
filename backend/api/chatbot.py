@@ -1,13 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-from contextlib import asynccontextmanager
 
 from schemas.request.session import CreateSessionRequest, SendMessageRequest
 from schemas.response.session import (
     CreateSessionResponse, SendMessageResponse,
     MessageListResponse, EndSessionResponse
 )
-from web.backend.services.session.chatbot import (
+from services.session.chatbot import (
     create_session_service,
     send_message_service,
     get_session_messages_service,
