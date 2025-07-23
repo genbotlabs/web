@@ -3,7 +3,10 @@ import boto3
 import openai
 import io
 import torch
-from faster_whisper import WhisperModel
+from transformers import pipeline
+import librosa
+import soundfile as sf
+import numpy as np
 
 # --- S3 Whisper 모델 동기화 ---
 def s3_sync_folder(bucket, s3_prefix, local_dir):
@@ -21,19 +24,56 @@ S3_BUCKET = "genbot-stt"
 S3_PREFIX = "whisper-small-ko/"
 LOCAL_MODEL_PATH = "uploads/whisper-small-ko"
 
+def vad_librosa(input_path, output_path, frame_length=2048, hop_length=512, energy_threshold=0.02, margin_sec=0.4):
+    """
+    librosa로 VAD 처리: 에너지 기반으로 음성 구간만 추출해서 저장
+    input_path: 입력 wav 경로
+    output_path: 음성만 추출한 새 wav 경로
+    """
+    # 1. 오디오 불러오기 (16kHz 권장)
+    y, sr = librosa.load(input_path, sr=16000)
+    
+    # 2. 프레임별 root mean square 에너지 계산
+    energy = librosa.feature.rms(y=y, frame_length=frame_length, hop_length=hop_length)[0]
+    
+    # 3. Threshold 이상 프레임 index 구함
+    frames = np.where(energy > energy_threshold)[0]
+    if frames.size == 0:
+        # 음성 없음: 전체 무음
+        sf.write(output_path, np.zeros(int(sr * 1.0)), sr)
+        return False
+
+    # 4. 구간 시작/끝 시간 찾기
+    start_frame = frames[0]
+    end_frame = frames[-1]
+    start_sample = max(0, start_frame * hop_length - int(margin_sec * sr))
+    end_sample = min(len(y), (end_frame + 1) * hop_length + int(margin_sec * sr))
+
+    # 5. 음성 구간만 잘라 저장
+    y_vad = y[start_sample:end_sample]
+    sf.write(output_path, y_vad, sr)
+    return True
+
 def prepare_whisper_model():
     if not (os.path.exists(LOCAL_MODEL_PATH) and len(os.listdir(LOCAL_MODEL_PATH)) > 2):
         s3_sync_folder(S3_BUCKET, S3_PREFIX, LOCAL_MODEL_PATH)
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    return WhisperModel(LOCAL_MODEL_PATH, device=device)
+    pipe = pipeline(
+        "automatic-speech-recognition",
+        model=LOCAL_MODEL_PATH,
+        tokenizer=LOCAL_MODEL_PATH,
+        feature_extractor=LOCAL_MODEL_PATH,
+        device=0 if device == "cuda" else -1,
+    )
+    return pipe
 
 whisper_pipe = prepare_whisper_model()
 
 # --- OpenAI TTS 함수 ---
-def text_to_speech(text, voice="alloy"):
+def text_to_speech(content, voice="alloy"):
     response = openai.audio.speech.create(
         model="tts-1",
         voice=voice,
-        input=text
+        input=content
     )
     return io.BytesIO(response.content)
