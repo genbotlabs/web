@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, NavLink } from 'react-router-dom';
 import { Avatar, Dropdown } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import logo from '../../icons/logo.png';
@@ -37,10 +37,10 @@ export default function Header({ user, setUser }) {
                 <span>GenBot</span>
             </div>
             <div className="header-menu">
-                <Link to="/">홈</Link>
-                <Link to="/myaccount">내 계정</Link>
-                <Link to="/dashboard">봇 관리</Link>
-                <Link to="/generate">봇 생성</Link>
+                <NavLink to="/">홈</NavLink>
+                <NavLink to="/myaccount">내 계정</NavLink>
+                <NavLink to="/dashboard">봇 관리</NavLink>
+                <NavLink to="/generate">봇 생성</NavLink>
             </div>
             <div className="header-right">
                 {user ? (
