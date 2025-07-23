@@ -9,14 +9,16 @@ import GenerateBotPage from './pages/GenerateBotPage';
 import PendingPage from './pages/PendingPage';
 import MyAccountPage from './pages/MyAccountPage';
 import DashBoardPage from './pages/DashBoardPage';
+// import SideBar from './pages/SideBar';
 
 export default function App() {
   const [user, setUser] = useState(null);
-  console.log(user)
+  
   return (
     <>
       <BrowserRouter>
         <Header user={user} setUser={setUser}/>
+        {/* <SideBar user={user}/> */}
         <Routes>
           <Route path='/' element={<MainPage user={user} setUser={setUser} />}></Route>
           <Route path='/login' element={<LoginPage/>}></Route>
