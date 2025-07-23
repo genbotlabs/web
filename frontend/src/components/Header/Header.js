@@ -38,7 +38,7 @@ export default function Header({ user, setUser }) {
             </div>
             <div className="header-menu">
                 <NavLink to="/">홈</NavLink>
-                <NavLink to="/myaccount">내 계정</NavLink>
+                {/* <NavLink to="/myaccount">내 계정</NavLink> */}
                 <NavLink to="/dashboard">봇 관리</NavLink>
                 <NavLink to="/generate">봇 생성</NavLink>
             </div>
