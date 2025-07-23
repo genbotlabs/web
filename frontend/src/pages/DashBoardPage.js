@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Spin, Tag, Drawer } from "antd";
+import { Table, Spin, Tag, Drawer, Button, Popconfirm } from "antd";
+import { DeleteOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
 import MainPage from './MainPage';
@@ -75,6 +76,13 @@ export default function DashBoardPage({user}) {
             updated_at: "2025-07-14T12:10:00Z"
         }
     ];
+
+    function handleDelete(record) {
+        // 실제로는 API 호출 및 state 관리 필요
+        console.log('삭제할 봇:', record);
+        // setData 등으로 직접 데이터 제거하면 화면에서도 바로 사라짐!
+    }
+
     const columns = [
         {
             title: 'ID',
@@ -125,6 +133,28 @@ export default function DashBoardPage({user}) {
                 }
                 return <Tag color={color}>{status}</Tag>
             }
+        },
+        {
+            title: '삭제',
+            key: 'delete',
+            align: 'center',
+            render: (text, record) => (
+                <Popconfirm
+                    title="정말 삭제하시겠습니까?"
+                    okText="삭제"
+                    cancelText="취소"
+                    onConfirm={() => handleDelete(record)}
+                >
+                    <Button
+                        type="primary"
+                        danger
+                        icon={<DeleteOutlined />}
+                        size="small"
+                    >
+                        삭제
+                    </Button>
+                </Popconfirm>
+            ),
         }
     ];
 
