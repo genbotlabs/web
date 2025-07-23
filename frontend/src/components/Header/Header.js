@@ -25,10 +25,14 @@ export default function Header({ user, setUser }) {
 
     const userMenu = (
         <div className="user-menu">
+            {/* <p>{user.name}</p> */}
+            <p>사용중인 plan</p>
             <p onClick={handleLogout}>로그아웃</p>
             <p onClick={handleDeleteAccount} className="danger">회원 탈퇴</p>
         </div>
     );
+
+    console.log('Header user:', user);
 
     return (
         <header className="header-container">
@@ -37,10 +41,10 @@ export default function Header({ user, setUser }) {
                 <span>GenBot</span>
             </div>
             <div className="header-menu">
-                <NavLink to="/">홈</NavLink>
+                {/* <NavLink to="/">홈</NavLink> */}
                 {/* <NavLink to="/myaccount">내 계정</NavLink> */}
-                <NavLink to="/dashboard">봇 관리</NavLink>
-                <NavLink to="/generate">봇 생성</NavLink>
+                {/* <NavLink to="/dashboard">봇 관리</NavLink> */}
+                {/* <NavLink to="/generate">봇 생성</NavLink> */}
             </div>
             <div className="header-right">
                 {user ? (

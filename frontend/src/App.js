@@ -13,7 +13,7 @@ import DashBoardPage from './pages/DashBoardPage';
 
 export default function App() {
   const [user, setUser] = useState(null);
-  console.log(user)
+  
   return (
     <>
       <BrowserRouter>
