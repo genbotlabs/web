@@ -3,7 +3,7 @@ import { Card } from 'antd';
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import { Column } from '@ant-design/plots';
 
-import MainSection from './MainSection';
+import MainPage from './MainPage';
 import '../styles/DashBoardPage.css';
 
 // 임시
@@ -118,7 +118,7 @@ const DashBoardPage = ({user}) => {
                     )}
                 </div>
             ) : (
-                <MainSection />
+                <MainPage />
             )}
         </section>
     );

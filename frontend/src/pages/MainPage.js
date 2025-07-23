@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import '../styles/MainSection.css';
+import '../styles/MainPage.css';
 
 const MainPage = ({ setUser }) => {
     const location = useLocation();
