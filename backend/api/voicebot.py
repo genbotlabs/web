@@ -1,9 +1,8 @@
-from fastapi import APIRouter, Depends, UploadFile, File, Query, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from fastapi import APIRouter, Depends, UploadFile, File
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.session.voicebot import voicebot_service
 
-import os
 from dotenv import load_dotenv
 
 from services.get_db import get_db

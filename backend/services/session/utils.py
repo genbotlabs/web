@@ -3,7 +3,8 @@ import boto3
 import openai
 import io
 import torch
-from transformers import pipeline
+# from transformers import pipeline
+from faster_whisper import WhisperModel
 import librosa
 import soundfile as sf
 import numpy as np
@@ -21,8 +22,14 @@ def s3_sync_folder(bucket, s3_prefix, local_dir):
 
 # --- Whisper 싱글턴 파이프라인 준비 ---
 S3_BUCKET = "genbot-stt"
-S3_PREFIX = "whisper-small-ko/"
-LOCAL_MODEL_PATH = "uploads/whisper-small-ko"
+
+# --- no faster_whisper ---
+# S3_PREFIX = "whisper-small-ko/"
+# LOCAL_MODEL_PATH = "uploads/whisper-small-ko"
+
+# --- faster_whisper ---
+S3_PREFIX = "whisper-small-ko-ct2/"
+LOCAL_MODEL_PATH = "uploads/whisper-small-ko-ct2"
 
 def vad_librosa(input_path, output_path, frame_length=2048, hop_length=512, energy_threshold=0.02, margin_sec=0.4):
     """
@@ -58,14 +65,22 @@ def prepare_whisper_model():
     if not (os.path.exists(LOCAL_MODEL_PATH) and len(os.listdir(LOCAL_MODEL_PATH)) > 2):
         s3_sync_folder(S3_BUCKET, S3_PREFIX, LOCAL_MODEL_PATH)
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    pipe = pipeline(
-        "automatic-speech-recognition",
-        model=LOCAL_MODEL_PATH,
-        tokenizer=LOCAL_MODEL_PATH,
-        feature_extractor=LOCAL_MODEL_PATH,
-        device=0 if device == "cuda" else -1,
+
+    # # no faster_whisper
+    # pipe = pipeline(
+    #     "automatic-speech-recognition",
+    #     model=LOCAL_MODEL_PATH,
+    #     tokenizer=LOCAL_MODEL_PATH,
+    #     feature_extractor=LOCAL_MODEL_PATH,
+    #     device=0 if device == "cuda" else -1,
+    # )
+    # return pipe
+    # faster_whisper
+
+    return WhisperModel(
+        LOCAL_MODEL_PATH,
+        device=device,
     )
-    return pipe
 
 whisper_pipe = prepare_whisper_model()
 

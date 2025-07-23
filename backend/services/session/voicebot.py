@@ -1,11 +1,11 @@
-import os, httpx, io, tempfile
+import os, httpx, tempfile
 from datetime import datetime
 from sqlalchemy import func, select
 from models.voicelog import VoiceLog
 from models.session import Session as SessionModel
-from fastapi import HTTPException, UploadFile, Query
-from fastapi.responses import JSONResponse, StreamingResponse
-from services.session.utils import text_to_speech, whisper_pipe, vad_librosa
+from fastapi import HTTPException, UploadFile
+from fastapi.responses import StreamingResponse
+from services.session.utils import text_to_speech, whisper_pipe
 import tempfile 
 import shutil
 from dotenv import load_dotenv
@@ -24,27 +24,46 @@ async def voicebot_service(session_id: str, audio: UploadFile, db):
     )
     turn = (turn_result.scalar_one() or 0) + 1
 
-    # 2. Whisper + librosa VAD
     with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_in:
         shutil.copyfileobj(audio.file, tmp_in)
         tmp_in_path = tmp_in.name
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_vad:
-        tmp_vad_path = tmp_vad.name
 
     try:
-        # 2. VAD 적용 (이제 임시파일은 모두 닫힌 상태)
-        vad_ok = vad_librosa(tmp_in_path, tmp_vad_path)
-        if not vad_ok:
-            content = ""
-        else:
-            stt_result = whisper_pipe(tmp_vad_path)
-            content = stt_result["text"]
+        # WhisperModel에서 VAD까지 한 번에 처리!
+        segments, info = whisper_pipe.transcribe(
+            tmp_in_path,
+            language="ko",
+            vad_filter=True,
+            vad_parameters=dict(min_silence_duration_ms=1000)  # 필요에 따라 margin 등 조정
+        )
+        # segments는 generator이므로 리스트로 변환
+        content = "".join([seg.text for seg in segments])
+
     finally:
-        # 임시파일 삭제(안전하게)
         if os.path.exists(tmp_in_path):
             os.remove(tmp_in_path)
-        if os.path.exists(tmp_vad_path):
-            os.remove(tmp_vad_path)
+
+    # # 2. Whisper + librosa VAD
+    # with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_in:
+    #     shutil.copyfileobj(audio.file, tmp_in)
+    #     tmp_in_path = tmp_in.name
+    # with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_vad:
+    #     tmp_vad_path = tmp_vad.name
+
+    # try:
+    #     # 2. VAD 적용 (이제 임시파일은 모두 닫힌 상태)
+    #     vad_ok = vad_librosa(tmp_in_path, tmp_vad_path)
+    #     if not vad_ok:
+    #         content = ""
+    #     else:
+    #         stt_result = whisper_pipe(tmp_vad_path)
+    #         content = stt_result["text"]
+    # finally:
+    #     # 임시파일 삭제(안전하게)
+    #     if os.path.exists(tmp_in_path):
+    #         os.remove(tmp_in_path)
+    #     if os.path.exists(tmp_vad_path):
+    #         os.remove(tmp_vad_path)
 
     # 3. VoiceLog 저장
     now = datetime.utcnow()
