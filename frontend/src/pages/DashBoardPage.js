@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Spin, Tag, Drawer, Button, Popconfirm } from "antd";
+import { useNavigate } from 'react-router-dom';
+import { Table, Spin, Tag, Drawer, Button, Popconfirm, Tabs } from "antd";
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
 import MainPage from './MainPage';
 import '../styles/DashBoardPage.css';
 
-
 export default function DashBoardPage({user}) {
     // const [data, setData] = useState([]);
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [drawerVisible, setDrawerVisible] = useState(false);
     const [selectedBot, setSelectedBot] = useState(null);
+    const [activeTab, setActiveTab] = useState('all');
     const API_URL = "http://localhost:8000/bots";
+
     const data = [
         {
             bot_id: "bot_001",
@@ -179,6 +182,21 @@ export default function DashBoardPage({user}) {
         }
     };
 
+    const tabItems = [
+        { key: 'all', label: '전체 봇' },
+        { key: 'active', label: '활성화' },
+        { key: 'inactive', label: '비활성화' },
+        { key: 'error', label: '생성 중 오류' }
+    ];
+
+    const filteredData = data.filter(bot => {
+        if (activeTab === 'all') return true;
+        if (activeTab === 'active') return bot.status === '활성화';
+        if (activeTab === 'inactive') return bot.status === '비활성화';
+        if (activeTab === 'error') return bot.status === '오류';
+        return true;
+    });
+
     // useEffect(() => {
     //     async function fetchBots() {
     //         setLoading(true);
@@ -204,18 +222,25 @@ export default function DashBoardPage({user}) {
                             type="primary" 
                             className='dashboard-add-button'
                             icon={<PlusOutlined />}
+                            onClick={() => {navigate('/generate')}}
                         >
                             봇 생성
                         </Button>
                     </div>
                     <div className="dashboard-bot-count">{data.length}개의 상담봇</div>
+                    <Tabs
+                        defaultActiveKey="all"
+                        items={tabItems}
+                        onChange={setActiveTab}
+                        className='dashboard-tabs'
+                    />
                 </div>
                 {loading ? (
                         <Spin />
                     ) : (
                         <Table
                             rowSelection={rowSelection}
-                            dataSource={data.map(bot => ({ ...bot, key: bot.bot_id }))}
+                            dataSource={filteredData.map(bot => ({ ...bot, key: bot.bot_id }))}
                             columns={columns}
                             pagination={{ pageSize: 8 }}
                         />

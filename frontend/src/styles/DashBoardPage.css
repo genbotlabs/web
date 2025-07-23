@@ -35,7 +35,11 @@ html, body {
 .dashboard-bot-count {
     font-size: 1.3rem;
     color: #484848;
-    padding-bottom: 50px;
+    padding-bottom: 30px;
+}
+
+.dashboard-tabs .ant-tabs-tab {
+    font-size: 1.5rem;
 }
 
 .ant-table-thead {
