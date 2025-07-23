@@ -77,7 +77,7 @@ export default function DashBoardPage({user}) {
     ];
     const columns = [
         {
-            title: 'Bot ID',
+            title: 'ID',
             dataIndex: 'bot_id',
             key: 'bot_id',
         },
@@ -92,7 +92,17 @@ export default function DashBoardPage({user}) {
             key: 'bot_name',
         },
         {
-            title: '상태',
+            title: '대표 이메일',
+            dataIndex: 'email',
+            key: 'email',
+        },
+        {
+            title: '고객센터',
+            dataIndex: 'cs_number',
+            key: 'cs_number',
+        },
+        {
+            title: '상태', // padding 똑같이 주기
             dataIndex: 'status',
             key: 'status',
             render: (status) => {
@@ -115,16 +125,6 @@ export default function DashBoardPage({user}) {
                 }
                 return <Tag color={color}>{status}</Tag>
             }
-        },
-        {
-            title: '대표 이메일',
-            dataIndex: 'email',
-            key: 'email',
-        },
-        {
-            title: '고객센터',
-            dataIndex: 'cs_number',
-            key: 'cs_number',
         }
     ];
 
@@ -161,7 +161,10 @@ export default function DashBoardPage({user}) {
     return ( 
         <div style={{ display: 'flex', flexDirection: 'column'}}>
             <section className='dashboard-section'>
-                <h1>봇 목록</h1>
+                <div>
+                    <h1>봇 목록</h1>
+                    <div className="dashboard-bot-count">{data.length}개의 상담봇</div>
+                </div>
                 {loading ? (
                         <Spin />
                     ) : (
