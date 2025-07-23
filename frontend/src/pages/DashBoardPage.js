@@ -213,7 +213,7 @@ export default function DashBoardPage({user}) {
     // }, []);
       
     return ( 
-        <div style={{ display: 'flex', flexDirection: 'column'}}>
+        <div className='dashboard-main' style={{ display: 'flex', flexDirection: 'column'}}>
             <section className='dashboard-section'>
                 <div>
                     <div className='dashboard-header'>

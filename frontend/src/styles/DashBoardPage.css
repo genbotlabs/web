@@ -4,6 +4,10 @@ html, body {
     padding: 0;
 }
 
+.dashboard-main {
+    font-family: 'NanumSquare', 'Noto Sans KR', Arial, sans-serif;
+}
+
 .dashboard-section {
     margin-top: 80px !important;
     padding: 30px 50px 50px 50px;
@@ -14,6 +18,11 @@ html, body {
     padding-bottom: 10px;
     font-size: 2rem;
     font-weight: bold;
+}
+
+.dashboard-section .ant-table-thead > tr > th,
+.dashboard-section .ant-table-tbody > tr > td {
+    font-family: 'NanumSquare', 'Noto Sans KR', Arial, sans-serif !important;
 }
 
 .dashboard-header {
@@ -39,7 +48,7 @@ html, body {
 }
 
 .dashboard-tabs .ant-tabs-tab {
-    font-size: 1.5rem;
+    font-size: 22px;
 }
 
 .ant-table-thead {
