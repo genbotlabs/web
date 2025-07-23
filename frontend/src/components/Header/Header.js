@@ -1,17 +1,13 @@
 import React from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Layout, Avatar, Dropdown, Button, Tabs } from 'antd';
-import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
+import { useNavigate, Link } from 'react-router-dom';
+import { Avatar, Dropdown } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import logo from '../../icons/logo.png';
-import useIsMobile from '../../hooks/useIsMobile';
 import '../Header/Header.css';
 
-const { Header: AntHeader } = Layout;
 
 export default function Header({ user, setUser }) {
     const navigate = useNavigate();
-    const location = useLocation();
-    const isMobile = useIsMobile();
 
     const handleLogout = () => {
         localStorage.clear();
@@ -34,16 +30,6 @@ export default function Header({ user, setUser }) {
         </div>
     );
 
-    const tabs = [
-        { key: '/', label: '홈' },
-        { key: '/myaccount', label: '내 계정' },
-        { key: '/generate', label: '봇 생성' },
-        { key: '/dashboard', label: '봇 관리' },
-    ];
-
-    const handleTabChange = (key) => {
-        navigate(key);
-    };
 
     return (
         <header className="header-container">

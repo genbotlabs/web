@@ -9,7 +9,7 @@ import GenerateBotPage from './pages/GenerateBotPage';
 import PendingPage from './pages/PendingPage';
 import MyAccountPage from './pages/MyAccountPage';
 import DashBoardPage from './pages/DashBoardPage';
-import SideBar from './pages/SideBar';
+// import SideBar from './pages/SideBar';
 
 export default function App() {
   const [user, setUser] = useState(null);
