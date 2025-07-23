@@ -113,8 +113,9 @@ export default function DashBoardPage({user}) {
     // }, []);
       
     return ( 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'column'}}>
             <section className='dashboard-section'>
+                <h1>봇 목록</h1>
                 {loading ? (
                         <Spin />
                     ) : (
