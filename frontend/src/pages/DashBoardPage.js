@@ -131,7 +131,13 @@ export default function DashBoardPage({user}) {
                     default:
                         color = 'blue';
                 }
-                return <Tag color={color}>{status}</Tag>
+                return (
+                    <Tag 
+                        color={color} 
+                        style={{ width: 100, textAlign: 'center', display: 'inline-block' }}
+                    >
+                        {status}
+                    </Tag>)
             }
         },
         {
