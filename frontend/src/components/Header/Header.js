@@ -32,8 +32,6 @@ export default function Header({ user, setUser }) {
         </div>
     );
 
-    console.log('Header user:', user);
-
     return (
         <header className="header-container">
             <div className="header-left">
