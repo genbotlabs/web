@@ -88,3 +88,4 @@ async def service_create_bot(
         raise HTTPException(status_code=500, detail="서버 내부 오류가 발생했습니다.")
     finally:
         await session.close()
+
