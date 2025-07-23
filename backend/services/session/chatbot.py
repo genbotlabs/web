@@ -3,7 +3,7 @@ from sqlalchemy import select, func
 from fastapi import HTTPException
 from uuid import uuid4
 from datetime import datetime
-
+import httpx, os
 from models.session import Session as SessionModel
 from models.chatlog import ChatLog
 from schemas.request.session import CreateSessionRequest, SendMessageRequest
@@ -11,6 +11,8 @@ from schemas.response.session import (
     CreateSessionResponse, SendMessageResponse,
     MessageItemResponse, MessageListResponse, EndSessionResponse
 )
+
+client = httpx.AsyncClient()
 
 # 1. 세션 생성
 async def create_session_service(request: CreateSessionRequest, db: AsyncSession) -> CreateSessionResponse:
@@ -39,9 +41,6 @@ async def send_message_service(session_id: str, request: SendMessageRequest, db:
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
-    # turn_result = await db.execute(
-    #     select(func.count()).select_from(ChatLog).where(ChatLog.session_id == session_id)
-    # )
     turn_result = await db.execute(
         select(func.max(ChatLog.turn)).where(ChatLog.session_id == session_id)
     )
@@ -58,27 +57,17 @@ async def send_message_service(session_id: str, request: SendMessageRequest, db:
     await db.commit()
     await db.refresh(user_msg)
 
-    # assistant 답변 생성 후 저장
-    assistant_reply = await get_llm_reply(request.message) # LLM이 답변 주는 함수명 받아오기
-    assistant_msg = ChatLog(
-        session_id=session_id,
-        turn=next_turn,
-        role="bot",
-        content=assistant_reply
-    )
-    db.add(assistant_msg)
-    await db.commit()
-    await db.refresh(assistant_msg)
+    # SLLM 호출 (실제 답변 받아오기)
+    assistant_reply = await req_sllm_service(session_id, request.message, next_turn)
 
-    # user 메시지만 반환
-    user_response = MessageItemResponse(
-        sender="user",
-        message=request.message,
-        timestamp=user_msg.created_at,
+    bot_response = MessageItemResponse(
+        sender="bot",
+        message=assistant_reply,
+        timestamp=datetime.utcnow(),
         message_type="text"
     )
 
-    return SendMessageResponse(session_id=session_id,message=user_response)
+    return SendMessageResponse(session_id=session_id, message=bot_response)
 
 
 # 3. 세션 기록 전체 조회
@@ -115,11 +104,17 @@ async def end_session_service(session_id: str, db: AsyncSession) -> EndSessionRe
 
     return EndSessionResponse(success=True, message="세션이 성공적으로 종료되었습니다.")
 
-# 여기 수정하기
-async def req_sllm_service(session_id: str, db):
-    # SLM 요청 처리 (비동기 태스크 등)
-    return {"message": "SLM 요청됨"}
-
-async def res_sllm_service(session_id: str, db):
-    # SLM 응답 반환 (임시)
-    return {"result": "SLM 응답 예시"}
+# 5. SLLM 요청
+async def req_sllm_service(session_id: str, message: str, turn: int):
+    resp = await client.post(
+        "http://localhost:3000/{session_id}/sllm",
+        json={
+            "session_id": session_id,
+            "content": message,
+            "turn": turn
+        }
+    )
+    resp.raise_for_status()
+    result = resp.json()
+    answer = result.get("answer", "")
+    return answer

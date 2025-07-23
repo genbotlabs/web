@@ -11,7 +11,7 @@ from services.session.chatbot import (
     send_message_service,
     get_session_messages_service,
     end_session_service,
-    req_sllm_service, res_sllm_service
+    req_sllm_service
 )
 
 import os
@@ -55,12 +55,3 @@ async def end_session(
     db: AsyncSession = Depends(get_db)
 ):
     return await end_session_service(session_id, db)
-
-# # 수정 중
-# @router.post("/{session_id}/sllm")
-# async def request_sllm(session_id: str):
-#     return await req_sllm_service(session_id)
-
-# @router.get("/{session_id}/sllm")
-# async def response_sllm(session_id: str):
-#     return await res_sllm_service(session_id)
