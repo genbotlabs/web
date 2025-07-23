@@ -1,91 +1,91 @@
 @import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
 
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 32px;
-  background: #fff;
-  border-bottom: 1px solid #eee;
-  min-height: 48px;
+body {
   font-family: 'Alexandria', 'Noto Sans KR', sans-serif;
+  color: #484848;
 }
 
-.header__logo {
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 50px;
+  margin: 20px;
+  height: 60px;
+  background-color: white;
+}
+
+.header-left {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
+  flex-grow: 1;
 }
 
-.header__logo-img {
-  width: 32px;
-  height: 32px;
+.header-right a {
+  text-decoration: none;
+  color: inherit;
 }
 
-.header__logo-text {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #111;
-  letter-spacing: -1px;
+.header-logo {
+  display: inline-block;
+  vertical-align: middle;
+  width: 35px;
 }
 
-.header__nav {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-}
-
-.header__menu {
-  display: flex;
-  gap: 28px;
-  list-style: none;
-  padding: 0;
+.header-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #484848;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 40px;
   margin: 0;
 }
 
-.header__menu li {
-  font-size: 1rem;
-  color: #222;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.header__menu li a {
-  text-decoration: none;
-  color: inherit;
-}
-
-.header__menu li:hover {
-  color: #007aff;
-}
-
-.header__login {
-  font-size: 1rem;
-  color: #222;
-  cursor: pointer;
-  font-weight: 400;
-  margin-left: 24px;
-}
-
-.header__login #login-button {
-  text-decoration: none;
-  color: inherit;
-}
-
-.header__login #login-button:hover {
-  color: #007aff;
-}
-
-.header__my {
+.nav-tabs {
   display: flex;
   align-items: center;
-  gap: 14px;
-  list-style: none;
-  padding: 0;
-  margin: 0;
+  height: 64px;
+  margin-left: 40px;
+  gap: 32px;
 }
 
-.header__my a {
-  text-decoration: none;
-  color: inherit;
+.tab {
+  cursor: pointer;
+  padding-bottom: 4px;
+  font-size: 16px;
+  color: #484848;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.tab:hover {
+  color: #1677ff;
+}
+
+.tab.active {
+  color: #1677ff;
+  font-weight: 500;
+  border-bottom: 2px solid #1677ff;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-menu {
+  padding: 8px 12px;
+}
+
+.user-menu p {
+  margin: 0;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.user-menu .danger {
+  color: red;
 }

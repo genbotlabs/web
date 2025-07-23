@@ -5,6 +5,10 @@ import '../styles/MainSection.css';
 const MainSection = () => {
     const navigate = useNavigate();
     const [messages, setMessages] = useState([]);
+    const firstLine = '클릭 한 번이면 ';
+    const secondLine = '상담봇이 완성';
+    const [firstText, setFirstText] = useState('');
+    const [secondText, setSecondText] = useState('');
     const [index, setIndex] = useState(0);
     const messageQueue = [
         { text: "안녕하세요. Genbot의 문의봇입니다. 무엇을 도와드릴까요?", sender: 'bot' },
@@ -17,7 +21,7 @@ const MainSection = () => {
     ];
 
     const handleClick = () => {
-        navigate('/generate');
+        navigate('/login');
     };
 
     useEffect(() => {
@@ -42,11 +46,11 @@ const MainSection = () => {
             <div className="content-wrapper">
                 <div className="left-container">
                     <div className="text-wrapper">
-                        <p>자동으로 만들어지는 대화<br/>
-클릭 한 번으로 상담봇을 완성하세요 </p>
+                        <p className="line1">{firstLine}<br /><span className="highlight">{secondLine}</span></p>
+                        <div className="subtext">어쩌꾸어쩌꾸어쩌꾸어쩌꾸<br />어쩌꾸어쩌꾸어쩌꾸어쩌꾸</div>
                     </div>
                     <div className="button-wrapper">
-                        <button className="generate-button" onClick={handleClick}>🤖 챗봇, 보이스봇 생성하기</button>
+                        <button className="generate-button" onClick={handleClick}>시작하기</button>
                     </div>
                         
                 </div>
