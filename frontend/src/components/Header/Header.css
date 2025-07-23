@@ -81,7 +81,8 @@ header {
   transition: opacity 0.2s, left 0.2s, right 0.2s;
 }
 
-.header-menu a:hover::after {
+.header-menu a:hover::after,
+.header-menu a.active::after {
   opacity: 1;
 }
 

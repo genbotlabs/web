@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/MainSection.css';
 
-const MainSection = () => {
+const MainSection = ({ user }) => {
     const navigate = useNavigate();
     const [messages, setMessages] = useState([]);
     const firstLine = '클릭 한 번이면 ';

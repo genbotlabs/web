@@ -30,7 +30,6 @@ export default function Header({ user, setUser }) {
         </div>
     );
 
-
     return (
         <header className="header-container">
             <div className="header-left">
