@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../styles/MainSection.css';
 
-const MainSection = () => {
+import '../styles/MainPage.css';
+
+export default function MainPageNoUser() {
     const navigate = useNavigate();
     const [messages, setMessages] = useState([]);
     const firstLine = '클릭 한 번이면 ';
     const secondLine = '상담봇이 완성';
-    const [firstText, setFirstText] = useState('');
-    const [secondText, setSecondText] = useState('');
     const [index, setIndex] = useState(0);
     const messageQueue = [
         { text: "안녕하세요. Genbot의 문의봇입니다. 무엇을 도와드릴까요?", sender: 'bot' },
@@ -19,7 +18,7 @@ const MainSection = () => {
         { text: "그럼 음료 반입은 가능한가요?", sender: 'user' },
         { text: "네. 저희 Genbot 스터디룸은 음료 반입이 가능합니다. 다만, 재활용은 직접 해주셔야 합니다.", sender: 'bot' },
     ];
-
+    
     const handleClick = () => {
         navigate('/login');
     };
@@ -52,24 +51,21 @@ const MainSection = () => {
                     <div className="button-wrapper">
                         <button className="generate-button" onClick={handleClick}>시작하기</button>
                     </div>
-                        
                 </div>
 
                 <div className="right-container">
                     <div className="chatbox">
-                    {messages.length > 0 && messages.map((message, index) => (
-                        <div
-                            key={index}
-                            className={`message ${message.sender === 'user' ? 'user-message' : 'bot-message'}`}
-                        >
-                            <p>{message.text}</p>
-                        </div>
-                    ))}
+                        {messages.length > 0 && messages.map((message, index) => (
+                            <div
+                                key={index}
+                                className={`message ${message.sender === 'user' ? 'user-message' : 'bot-message'}`}
+                            >
+                                <p>{message.text}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
         </section>
     );
 };
-
-export default MainSection;
