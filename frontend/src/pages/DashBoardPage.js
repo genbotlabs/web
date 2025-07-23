@@ -1,292 +1,363 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Table, Spin, Tag, Drawer, Button, Popconfirm, Tabs } from "antd";
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import axios from 'axios';
+import { useState } from "react"
+import {
+  SearchOutlined,
+  PlusOutlined,
+  ExportOutlined,
+  CalendarOutlined,
+  FilterOutlined,
+  MoreOutlined,
+} from "@ant-design/icons"
+import { Drawer, Tag } from "antd"
+import "../styles/DashBoardPage.css"
+import { useNavigate } from "react-router-dom"
 
-import MainPage from './MainPage';
-import '../styles/DashBoardPage.css';
+export default function DashBoardPage({ user }) {
+  const [selectedRows, setSelectedRows] = useState([])
+  const [activeTab, setActiveTab] = useState("all")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [drawerVisible, setDrawerVisible] = useState(false)
+  const [selectedBot, setSelectedBot] = useState(null)
 
-export default function DashBoardPage({user}) {
-    // const [data, setData] = useState([]);
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-    const [drawerVisible, setDrawerVisible] = useState(false);
-    const [selectedBot, setSelectedBot] = useState(null);
-    const [activeTab, setActiveTab] = useState('all');
-    const API_URL = "http://localhost:8000/bots";
+  const navigate = useNavigate()
 
-    const data = [
+  const data = [
+    {
+      bot_id: "bot_001",
+      company_name: "GenBot",
+      bot_name: "문의",
+      status: "활성화",
+      email: "user@example.com",
+      cs_number: "1522-0000",
+      created_at: "2025-07-14T12:00:00Z",
+      updated_at: "2025-07-14T12:10:00Z",
+      data: [
         {
-            bot_id: "bot_001",
-            company_name: "GenBot",
-            bot_name: "문의",
-            status: "활성화",
-            first_text: "설명1.",
-            email: "user@example.com",
-            cs_number: "1522-0000",
-            created_at: "2025-07-14T12:00:00Z",
-            updated_at: "2025-07-14T12:10:00Z",
-            data: [
-                {
-                    "data_id": "data_001",
-                    "data_name": "문의",
-                    "url": "s3://genbot-json-s3/data/세부주제정리.pdf",
-                    "created_at": "2025-07-14T12:00:00Z",
-                    "updated_at": "2025-07-14T12:10:00Z"
-                },
-                {
-                    "data_id": "data_002",
-                    "data_name": "test",
-                    "url": "s3://genbot-json-s3/data/세부주제정리.pdf",
-                    "created_at": "2025-07-14T12:00:00Z",
-                    "updated_at": "2025-07-14T12:10:00Z"
-                }
-            ]
+          data_id: "data_001",
+          data_name: "문의",
+          url: "s3://genbot-json-s3/data/세부주제정리.pdf",
+          created_at: "2025-07-14T12:00:00Z",
+          updated_at: "2025-07-14T12:10:00Z",
         },
         {
-            bot_id: "bot_002",
-            company_name: "GenBot",
-            bot_name: "상담",
-            status: "비활성화",
-            first_text: "설명2.",
-            email: "support@genbot.com",
-            cs_number: "1522-0101",
-            created_at: "2025-07-14T12:00:00Z",
-            updated_at: "2025-07-14T12:10:00Z"
+          data_id: "data_002",
+          data_name: "test",
+          url: "s3://genbot-json-s3/data/세부주제정리.pdf",
+          created_at: "2025-07-14T12:00:00Z",
+          updated_at: "2025-07-14T12:10:00Z",
         },
-        {
-            bot_id: "bot_003",
-            company_name: "GenBot",
-            bot_name: "문의",
-            status: "삭제",
-            first_text: "설명3.",
-            email: "user@example.com",
-            cs_number: "1522-0000",
-            created_at: "2025-07-14T12:00:00Z",
-            updated_at: "2025-07-14T12:10:00Z"
-        },
-        {
-            bot_id: "bot_004",
-            company_name: "GenBot",
-            bot_name: "상담",
-            status: "오류",
-            first_text: "설명4.",
-            email: "support@genbot.com",
-            cs_number: "1522-0101",
-            created_at: "2025-07-14T12:00:00Z",
-            updated_at: "2025-07-14T12:10:00Z"
-        }
-    ];
+      ],
+    },
+    {
+      bot_id: "bot_002",
+      company_name: "GenBot",
+      bot_name: "상담",
+      status: "비활성화",
+      email: "support@genbot.com",
+      cs_number: "1522-0101",
+      created_at: "2025-07-14T12:00:00Z",
+      updated_at: "2025-07-14T12:10:00Z",
+    },
+    {
+      bot_id: "bot_003",
+      company_name: "GenBot",
+      bot_name: "문의",
+      status: "삭제",
+      email: "user@example.com",
+      cs_number: "1522-0000",
+      created_at: "2025-07-14T12:00:00Z",
+      updated_at: "2025-07-14T12:10:00Z",
+    },
+    {
+      bot_id: "bot_004",
+      company_name: "GenBot",
+      bot_name: "상담",
+      status: "오류",
+      email: "support@genbot.com",
+      cs_number: "1522-0101",
+      created_at: "2025-07-14T12:00:00Z",
+      updated_at: "2025-07-14T12:10:00Z",
+    },
+  ]
 
-    function handleDelete(record) {
-        // 실제로는 API 호출 및 state 관리 필요
-        console.log('삭제할 봇:', record);
-        // setData 등으로 직접 데이터 제거하면 화면에서도 바로 사라짐!
+  const getStatusBadge = (status) => {
+    const statusClasses = {
+      활성화: "status-badge status-active",
+      비활성화: "status-badge status-inactive",
+      삭제: "status-badge status-deleted",
+      오류: "status-badge status-error",
     }
 
-    const columns = [
-        {
-            title: 'ID',
-            dataIndex: 'bot_id',
-            key: 'bot_id',
-        },
-        {
-            title: '회사명',
-            dataIndex: 'company_name',
-            key: 'company_name',
-        },
-        {
-            title: '봇 이름',
-            dataIndex: 'bot_name',
-            key: 'bot_name',
-        },
-        {
-            title: '대표 이메일',
-            dataIndex: 'email',
-            key: 'email',
-        },
-        {
-            title: '고객센터',
-            dataIndex: 'cs_number',
-            key: 'cs_number',
-        },
-        {
-            title: '상태', // padding 똑같이 주기
-            dataIndex: 'status',
-            key: 'status',
-            render: (status) => {
-                let color = '';
-                switch (status) {
-                    case '활성화':
-                        color = 'green';
-                        break;
-                    case '비활성화':
-                        color = 'default';
-                        break;
-                    case '삭제':
-                        color = 'red';
-                        break;
-                    case '오류':
-                        color = 'volcano';
-                        break;
-                    default:
-                        color = 'blue';
-                }
-                return (
-                    <Tag 
-                        color={color} 
-                        style={{ width: 100, textAlign: 'center', display: 'inline-block', padding: '5px' }}
-                    >
-                        {status}
-                    </Tag>)
-            }
-        },
-        {
-            title: '삭제',
-            key: 'delete',
-            align: 'center',
-            render: (text, record) => (
-                <Popconfirm
-                    title="정말 삭제하시겠습니까?"
-                    okText="삭제"
-                    cancelText="취소"
-                    onConfirm={() => handleDelete(record)}
-                >
-                    <Button
-                        type="primary"
-                        danger
-                        icon={<DeleteOutlined />}
-                        size="small"
-                    >
-                        삭제
-                    </Button>
-                </Popconfirm>
-            ),
-        }
-    ];
+    return <span className={statusClasses[status] || "status-badge status-inactive"}>{status}</span>
+  }
 
-    const rowSelection = {
-        type: "radio",
-        selectedRowKeys,
-        onChange: (newSelectedRowKeys, selectedRows) => {
-          setSelectedRowKeys(newSelectedRowKeys);
-          if (selectedRows.length > 0) {
-            setSelectedBot(selectedRows[0]);
-            setDrawerVisible(true);
-          } else {
-            setDrawerVisible(false);
-            setSelectedBot(null);
-          }
-        }
-    };
+  const filteredData = data.filter((bot) => {
+    const matchesTab =
+      activeTab === "all" ||
+      (activeTab === "active" && bot.status === "활성화") ||
+      (activeTab === "inactive" && bot.status === "비활성화") ||
+      (activeTab === "error" && bot.status === "오류")
 
-    const tabItems = [
-        { key: 'all', label: '전체 봇' },
-        { key: 'active', label: '활성화' },
-        { key: 'inactive', label: '비활성화' },
-        { key: 'error', label: '생성 중 오류' }
-    ];
+    const matchesSearch =
+      bot.bot_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      bot.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      bot.email.toLowerCase().includes(searchQuery.toLowerCase())
 
-    const filteredData = data.filter(bot => {
-        if (activeTab === 'all') return true;
-        if (activeTab === 'active') return bot.status === '활성화';
-        if (activeTab === 'inactive') return bot.status === '비활성화';
-        if (activeTab === 'error') return bot.status === '오류';
-        return true;
-    });
+    return matchesTab && matchesSearch
+  })
 
-    // useEffect(() => {
-    //     async function fetchBots() {
-    //         setLoading(true);
-    //         try {
-    //             const res = await axios.get(API_URL);
-    //             setData(res.data.bots);
-    //         } catch (e) {
-    //             message.error("봇 목록 불러오기 실패!");
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     }
-    //     fetchBots();
-    // }, []);
-      
-    return ( 
-        <div className='dashboard-main' style={{ display: 'flex', flexDirection: 'column'}}>
-            <section className='dashboard-section'>
-                <div>
-                    <div className='dashboard-header'>
-                        <h1>봇 목록</h1>
-                        <Button 
-                            type="primary" 
-                            className='dashboard-add-button'
-                            icon={<PlusOutlined />}
-                            onClick={() => {navigate('/generate')}}
-                        >
-                            봇 생성
-                        </Button>
-                    </div>
-                    <div className="dashboard-bot-count">{data.length}개의 상담봇</div>
-                    <Tabs
-                        defaultActiveKey="all"
-                        items={tabItems}
-                        onChange={setActiveTab}
-                        className='dashboard-tabs'
-                    />
-                </div>
-                {loading ? (
-                        <Spin />
-                    ) : (
-                        <Table
-                            rowSelection={rowSelection}
-                            dataSource={filteredData.map(bot => ({ ...bot, key: bot.bot_id }))}
-                            columns={columns}
-                            pagination={{ pageSize: 8 }}
-                        />
-                        
-                    )
-                }
-            </section>
-            <Drawer
-                title={selectedBot ? `${selectedBot.bot_name} 상세정보` : ""}
-                placement="right"
-                onClose={() => { setDrawerVisible(false); setSelectedRowKeys([]); }}
-                open={drawerVisible}
-                width={380}
-            >
-                {selectedBot && (
-                    <div>
-                        <p><b>Bot ID:</b> {selectedBot.bot_id}</p>
-                        <p><b>회사명:</b> {selectedBot.company_name}</p>
-                        <p><b>봇 이름:</b> {selectedBot.bot_name}</p>
-                        <p><b>첫 대화:</b> {selectedBot.first_text}</p>
-                        <p><b>상태:</b> <Tag>{selectedBot.status}</Tag></p>
-                        <p><b>대표 이메일:</b> {selectedBot.email}</p>
-                        <p><b>고객센터:</b> {selectedBot.cs_number}</p>
-                        <p><b>생성일:</b> {selectedBot.created_at}</p>
-                        <p><b>수정일:</b> {selectedBot.updated_at}</p>
-                        {selectedBot.data && (
-                            <div style={{ marginTop: '24px' }}>
-                                <b>연결 데이터 목록</b>
-                                <ul>
-                                {selectedBot.data.map(item => (
-                                    <li key={item.data_id}>
-                                    <div>• <b>{item.data_name}</b> ({item.data_id})</div>
-                                    <div style={{ fontSize: '0.95em', color: '#888' }}>
-                                        {item.url}
-                                    </div>
-                                    <div style={{ fontSize: '0.92em', color: '#aaa' }}>
-                                        생성: {new Date(item.created_at).toLocaleString()}, 수정: {new Date(item.updated_at).toLocaleString()}
-                                    </div>
-                                    </li>
-                                ))}
-                                </ul>
-                            </div>
-                        )}
-                    </div>
-                )}
-            </Drawer>
+  const getTabCount = (tabKey) => {
+    if (tabKey === "all") return data.length
+    if (tabKey === "active") return data.filter((bot) => bot.status === "활성화").length
+    if (tabKey === "inactive") return data.filter((bot) => bot.status === "비활성화").length
+    if (tabKey === "error") return data.filter((bot) => bot.status === "오류").length
+    return 0
+  }
+
+  const handleRowSelect = (botId, checked) => {
+    if (checked) {
+      const bot = data.find((b) => b.bot_id === botId)
+      setSelectedRows([botId]) // 단일 선택으로 변경
+      setSelectedBot(bot)
+      setDrawerVisible(true)
+    } else {
+      setSelectedRows([])
+      setSelectedBot(null)
+      setDrawerVisible(false)
+    }
+  }
+
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      // 전체 선택 시에는 drawer를 열지 않음
+      setSelectedRows(filteredData.map((bot) => bot.bot_id))
+    } else {
+      setSelectedRows([])
+      setSelectedBot(null)
+      setDrawerVisible(false)
+    }
+  }
+
+  const handleAddBot = () => {
+    navigate("/generate")
+  }
+
+  return (
+    <div className="dashboard-main">
+      <div className="dashboard-container">
+        {/* Header */}
+        <div className="dashboard-header">
+          <div className="dashboard-title-section">
+            <h1>봇 목록</h1>
+            <p className="dashboard-subtitle">{data.length}개의 상담봇</p>
+          </div>
+          <div className="dashboard-actions">
+            <button className="export-button">
+              <ExportOutlined />
+              Export
+            </button>
+            <button className="add-button" onClick={handleAddBot}>
+              <PlusOutlined />봇 생성
+            </button>
+          </div>
         </div>
-    );
-};
+
+        {/* Tabs */}
+        <div className="dashboard-tabs">
+          <div className="tabs-list">
+            <button
+              className={`tab-trigger ${activeTab === "all" ? "active" : ""}`}
+              onClick={() => setActiveTab("all")}
+            >
+              전체 봇<span className="tab-count">{getTabCount("all")}</span>
+            </button>
+            <button
+              className={`tab-trigger ${activeTab === "active" ? "active" : ""}`}
+              onClick={() => setActiveTab("active")}
+            >
+              활성화
+              <span className="tab-count">{getTabCount("active")}</span>
+            </button>
+            <button
+              className={`tab-trigger ${activeTab === "inactive" ? "active" : ""}`}
+              onClick={() => setActiveTab("inactive")}
+            >
+              비활성화
+              <span className="tab-count">{getTabCount("inactive")}</span>
+            </button>
+            <button
+              className={`tab-trigger ${activeTab === "error" ? "active" : ""}`}
+              onClick={() => setActiveTab("error")}
+            >
+              생성 중 오류
+              <span className="tab-count">{getTabCount("error")}</span>
+            </button>
+          </div>
+
+          {/* Search and Filters */}
+          <div className="search-filter-section">
+            <div className="search-container">
+              <SearchOutlined className="search-icon" />
+              <input
+                type="text"
+                placeholder="검색하기"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+              />
+            </div>
+            <div className="filter-buttons">
+              <button className="filter-button">
+                <CalendarOutlined />
+                Jan 6, 2022 – Jan 13, 2022
+              </button>
+              <button className="filter-button">
+                <FilterOutlined />
+                Filters
+              </button>
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="table-container">
+            <table className="custom-table">
+              <thead className="table-header">
+                <tr>
+                  <th>
+                    <input
+                      type="checkbox"
+                      className="checkbox"
+                      checked={selectedRows.length === filteredData.length && filteredData.length > 0}
+                      onChange={(e) => handleSelectAll(e.target.checked)}
+                    />
+                  </th>
+                  <th>ID</th>
+                  <th>회사명</th>
+                  <th>봇 이름</th>
+                  <th>대표 이메일</th>
+                  <th>고객센터</th>
+                  <th>상태</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody className="table-body">
+                {filteredData.map((bot) => (
+                  <tr key={bot.bot_id}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        className="checkbox"
+                        checked={selectedRows.includes(bot.bot_id)}
+                        onChange={(e) => handleRowSelect(bot.bot_id, e.target.checked)}
+                      />
+                    </td>
+                    <td style={{ fontWeight: "500" }}>{bot.bot_id}</td>
+                    <td>{bot.company_name}</td>
+                    <td>{bot.bot_name}</td>
+                    <td>{bot.email}</td>
+                    <td>{bot.cs_number}</td>
+                    <td style={{ fontSize: "20px" }}>{getStatusBadge(bot.status)}</td>
+                    <td>
+                      <button className="action-button">
+                        <MoreOutlined />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="pagination">
+            <button className="pagination-button" disabled>
+              ← Previous
+            </button>
+            <div className="pagination-numbers">
+              <button className="page-number active">1</button>
+              <button className="page-number">2</button>
+              <button className="page-number">3</button>
+              <span className="page-ellipsis">...</span>
+              <button className="page-number">8</button>
+              <button className="page-number">9</button>
+              <button className="page-number">10</button>
+            </div>
+            <button className="pagination-button">Next →</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Drawer */}
+      <Drawer
+        title={selectedBot ? `${selectedBot.bot_name} 상세정보` : ""}
+        placement="right"
+        onClose={() => {
+          setDrawerVisible(false)
+          setSelectedRows([])
+          setSelectedBot(null)
+        }}
+        open={drawerVisible}
+        width={380}
+      >
+        {selectedBot && (
+          <div style={{ lineHeight: "1.8" }}>
+            <p>
+              <b>Bot ID:</b> {selectedBot.bot_id}
+            </p>
+            <p>
+              <b>회사명:</b> {selectedBot.company_name}
+            </p>
+            <p>
+              <b>봇 이름:</b> {selectedBot.bot_name}
+            </p>
+            <p>
+              <b>상태:</b> <Tag>{selectedBot.status}</Tag>
+            </p>
+            <p>
+              <b>대표 이메일:</b> {selectedBot.email}
+            </p>
+            <p>
+              <b>고객센터:</b> {selectedBot.cs_number}
+            </p>
+            <p>
+              <b>생성일:</b> {new Date(selectedBot.created_at).toLocaleString()}
+            </p>
+            <p>
+              <b>수정일:</b> {new Date(selectedBot.updated_at).toLocaleString()}
+            </p>
+            {selectedBot.data && (
+              <div style={{ marginTop: "24px" }}>
+                <b>연결 데이터 목록</b>
+                <ul style={{ marginTop: "12px", paddingLeft: "0" }}>
+                  {selectedBot.data.map((item) => (
+                    <li
+                      key={item.data_id}
+                      style={{
+                        listStyle: "none",
+                        marginBottom: "16px",
+                        padding: "12px",
+                        background: "#f9f9f9",
+                        borderRadius: "6px",
+                      }}
+                    >
+                      <div style={{ fontWeight: "bold", marginBottom: "4px" }}>
+                        • {item.data_name} ({item.data_id})
+                      </div>
+                      <div style={{ fontSize: "0.9em", color: "#666", marginBottom: "4px", wordBreak: "break-all" }}>
+                        {item.url}
+                      </div>
+                      <div style={{ fontSize: "0.85em", color: "#999" }}>
+                        생성: {new Date(item.created_at).toLocaleString()}
+                        <br />
+                        수정: {new Date(item.updated_at).toLocaleString()}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+      </Drawer>
+    </div>
+  )
+}
