@@ -97,6 +97,13 @@ export default function DashBoardPage({user}) {
         }
     ];
 
+    const rowSelection = {
+        onChange: (selectedRowKeys, selectedRows) => {
+          console.log('선택된 row keys: ', selectedRowKeys);
+          console.log('선택된 row 데이터: ', selectedRows);
+        },
+    };
+
     // useEffect(() => {
     //     async function fetchBots() {
     //         setLoading(true);
@@ -120,6 +127,7 @@ export default function DashBoardPage({user}) {
                         <Spin />
                     ) : (
                         <Table
+                            rowSelection={rowSelection}
                             dataSource={data.map(bot => ({ ...bot, key: bot.bot_id }))}
                             columns={columns}
                             pagination={{ pageSize: 8 }}

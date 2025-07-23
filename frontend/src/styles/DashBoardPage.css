@@ -8,3 +8,30 @@ html, body {
     margin-top: 80px !important;
     padding: 30px 50px 50px 50px;
 }
+
+.dashboard-section h1 {
+    padding-top: 10px;
+    padding-bottom: 20px;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.ant-table-thead {
+    font-size: 1.08rem !important;
+}
+.ant-table-tbody {
+    font-size: 1.08rem !important;
+}
+
+.ant-table .ant-tag {
+    font-size: 1.08rem;
+    font-weight: 500;
+    padding: 0.2em 1em;
+}
+
+/* .ant-table-thead > tr > th {
+    background: #eeeeee !important;
+    color: #fff !important;
+    font-weight: 600;
+    border-bottom: 1px solid #1F5FF8 !important;
+} */
