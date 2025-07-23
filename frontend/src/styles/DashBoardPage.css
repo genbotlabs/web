@@ -16,7 +16,23 @@ html, body {
     font-weight: bold;
 }
 
-.dashboard-section > div > div {
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboard-add-button {
+    color: white;
+    border: none;
+    padding: 20px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.2s;
+}
+
+.dashboard-bot-count {
     font-size: 1.3rem;
     color: #484848;
     padding-bottom: 50px;
@@ -35,9 +51,33 @@ html, body {
     padding: 0.2em 1em;
 }
 
-/* .ant-table-thead > tr > th {
-    background: #eeeeee !important;
-    color: #fff !important;
+.dashboard-section .ant-table-wrapper {
+    background: transparent;
+}
+
+.dashboard-section .ant-table {
+    border-radius: 18px;
+    overflow: hidden;
+    background: #FAFAFA;
+    box-shadow: none;
+}
+
+.dashboard-section .ant-table-thead > tr > th {
+    background: #FAFAFA !important;
+    color: #484848;
     font-weight: 600;
-    border-bottom: 1px solid #1F5FF8 !important;
-} */
+    font-size: 1.08rem;
+    border-bottom: none;
+}
+
+.dashboard-section .ant-table-thead > tr > th:first-child {
+    border-top-left-radius: 18px;
+}
+.dashboard-section .ant-table-thead > tr > th:last-child {
+    border-top-right-radius: 18px;
+}
+
+.dashboard-section .ant-table-tbody > tr > td {
+    background: #FFF;
+    border-bottom: none;
+}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Spin, Tag, Drawer, Button, Popconfirm } from "antd";
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
 import MainPage from './MainPage';
@@ -134,7 +134,7 @@ export default function DashBoardPage({user}) {
                 return (
                     <Tag 
                         color={color} 
-                        style={{ width: 100, textAlign: 'center', display: 'inline-block' }}
+                        style={{ width: 100, textAlign: 'center', display: 'inline-block', padding: '5px' }}
                     >
                         {status}
                     </Tag>)
@@ -165,7 +165,7 @@ export default function DashBoardPage({user}) {
     ];
 
     const rowSelection = {
-        type: "radio", // 단일 선택(1개만), 여러 개 선택하려면 "checkbox"
+        type: "radio",
         selectedRowKeys,
         onChange: (newSelectedRowKeys, selectedRows) => {
           setSelectedRowKeys(newSelectedRowKeys);
@@ -198,7 +198,16 @@ export default function DashBoardPage({user}) {
         <div style={{ display: 'flex', flexDirection: 'column'}}>
             <section className='dashboard-section'>
                 <div>
-                    <h1>봇 목록</h1>
+                    <div className='dashboard-header'>
+                        <h1>봇 목록</h1>
+                        <Button 
+                            type="primary" 
+                            className='dashboard-add-button'
+                            icon={<PlusOutlined />}
+                        >
+                            봇 생성
+                        </Button>
+                    </div>
                     <div className="dashboard-bot-count">{data.length}개의 상담봇</div>
                 </div>
                 {loading ? (
