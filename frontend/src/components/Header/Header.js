@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Layout, Avatar, Dropdown, Button } from 'antd';
+import { Layout, Avatar, Dropdown, Button, Tabs } from 'antd';
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
 import logo from '../../icons/logo.png';
 import useIsMobile from '../../hooks/useIsMobile';
@@ -41,24 +41,37 @@ export default function Header({ user, setUser }) {
         { key: '/dashboard', label: '봇 관리' },
     ];
 
-    return (
-        <div className="header-container">
-            <div className="header-left">
-                <img src={logo} alt="GenBot" className="header-logo" />
-                <span className="header-title">GenBot</span>
-            </div>
+    const handleTabChange = (key) => {
+        navigate(key);
+    };
 
+    return (
+        <header className="header-container">
+            <div className="header-left">
+                <img src={logo} alt="GenBot"/>
+                <span>GenBot</span>
+            </div>
+            <div className="header-menu">
+                <Link to="/">홈</Link>
+                <Link to="/myaccount">내 계정</Link>
+                <Link to="/dashboard">봇 관리</Link>
+                <Link to="/generate">봇 생성</Link>
+            </div>
             <div className="header-right">
                 {user ? (
                     <Dropdown overlay={userMenu} placement="bottomRight">
-                        <Avatar src={user.profile_image} icon={<UserOutlined />} style={{ cursor: 'pointer' }} />
+                        <Avatar 
+                            src={user.profile_image} 
+                            icon={<UserOutlined />} 
+                            style={{ cursor: 'pointer' }} 
+                        />
                     </Dropdown>
-                ) : (
+                ) : (       
                     <Link to="/login">
                         로그인하기
                     </Link>
                 )}
             </div>
-        </div>
+        </header>
     );
 }
