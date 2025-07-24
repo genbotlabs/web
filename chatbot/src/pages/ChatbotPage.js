@@ -87,7 +87,7 @@ export default function ChatbotPage() {
     if (e.key === 'Enter') sendMessage();
   };
 
-  const sendVoice = () => {
+  const sendVoice = async () => {
     const botId = searchParams.get('bot_id') || 'a1';
 
     try {
@@ -110,10 +110,10 @@ export default function ChatbotPage() {
             body: formData,
           });
 
-          const data = await res.json(); // expect { text: "질문입니다." }
-          if (data.text) {
-            setInput(data.text);   // 사용자가 입력한 것처럼 입력창에 채움
-            sendMessage(data.text); // sendMessage 함수에 텍스트 전달
+          const data = await res.json();
+          if (data.text) {  // 인식한 음성 채팅창에 표시
+            setInput(data.text);
+            sendMessage(data.text);
           } else {
             alert('음성 인식에 실패했습니다.');
           }
@@ -126,7 +126,7 @@ export default function ChatbotPage() {
       mediaRecorder.start();
       setTimeout(() => {
         mediaRecorder.stop();
-      }, 3000); // 녹음 시간: 3초
+      }, 3000); 
 
     } catch (err) {
       console.error('마이크 권한 오류:', err);
