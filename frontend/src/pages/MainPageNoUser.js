@@ -26,11 +26,12 @@ export default function MainPageNoUser() {
                 당신의 아이디어를
                 <span className="hero-title-highlight"> 현실로</span> */}
               {/* </Title> */}
-              {/* <Paragraph className="hero-subtitle">
-                혁신적인 솔루션으로 비즈니스를 성장시키고, 더 나은 미래를 만들어보세요
-              </Paragraph> */}
+              <Paragraph className="hero-subtitle">
+                자동으로 만들어지는 대화
+              </Paragraph>
               <p className="line1">{firstLine}<span className="highlight">{secondLine}</span></p>
-              <div className="subtext">어쩌꾸어쩌꾸어쩌꾸어쩌꾸<br />어쩌꾸어쩌꾸어쩌꾸어쩌꾸</div>
+              {/* <div className="subtext">자동으로 만들어지는 대화<br/>
+              클릭 한 번으로 상담봇을 완성하세요</div> */}
             </div>
 
             <Space size="middle" wrap className="hero-buttons">
@@ -56,18 +57,30 @@ export default function MainPageNoUser() {
         </div>
       </section>
 
+      {/* IntroduceSection */}
+      {/* <section className="introduce-section">
+        <div className="introduce-header slide-up">
+          <Title level={2} className="introduce-title">
+            자동으로 만들어지는 대화
+          </Title>
+          <Paragraph className="introduce-subtitle">
+            자동으로 만들어지는 대화
+          </Paragraph>
+        </div>
+      </section> */}
+
       {/* Features Section */}
       <section className="features-section">
-        <div className="features-header slide-up">
+        {/* <div className="features-header slide-up">
           <Title level={2} className="features-title">
             왜 우리를 선택해야 할까요?
           </Title>
           <Paragraph className="features-subtitle">
             검증된 기술과 혁신적인 접근으로 최고의 서비스를 제공합니다
           </Paragraph>
-        </div>
+        </div> */}
 
-        <Row gutter={[32, 32]} className="features-grid">
+        <Row gutter={[46, 46]} className="features-grid">
           <Col xs={24} md={8}>
             <Card className="feature-card slide-up" bordered={false} hoverable>
               <div className="feature-content">
@@ -75,10 +88,11 @@ export default function MainPageNoUser() {
                   <ThunderboltOutlined className="feature-icon" />
                 </div>
                 <Title level={4} className="feature-title">
-                  빠른 성능
+                  클릭 한 번이면 챗봇 완성
                 </Title>
                 <Paragraph className="feature-description">
-                  최적화된 시스템으로 빠르고 안정적인 서비스를 경험하세요
+                  누구나 복잡한 개발 과정 없이,<br/>
+                  버튼 클릭만으로 자신만의 AI 챗봇을 바로 만들 수 있어요
                 </Paragraph>
               </div>
             </Card>
@@ -91,10 +105,10 @@ export default function MainPageNoUser() {
                   <SafetyOutlined className="feature-icon" />
                 </div>
                 <Title level={4} className="feature-title">
-                  안전한 보안
+                  내 데이터로 완벽한 맞춤 상담
                 </Title>
                 <Paragraph className="feature-description">
-                  최고 수준의 보안 시스템으로 데이터를 안전하게 보호합니다
+                  자사 데이터 업로드만으로 <br/>고객 응대/FAQ/업무 자동화에 최적화된 챗봇이 완성됩니다
                 </Paragraph>
               </div>
             </Card>
@@ -107,10 +121,11 @@ export default function MainPageNoUser() {
                   <TeamOutlined className="feature-icon" />
                 </div>
                 <Title level={4} className="feature-title">
-                  24/7 지원
+                  누구나 쉽게, 사용 현황 한눈에
                 </Title>
                 <Paragraph className="feature-description">
-                  언제든지 도움이 필요할 때 전문가 팀이 지원해드립니다
+                  상담 내역, 사용자 통계, AI 답변 정확도를<br/>
+                  한 화면에서 관리할 수 있습니다
                 </Paragraph>
               </div>
             </Card>
