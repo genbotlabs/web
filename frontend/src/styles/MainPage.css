@@ -224,7 +224,7 @@
     max-width: 1200px;
     margin: 0 auto;
     margin-top: 60px !important;
-    padding: 4rem 1rem 6rem;
+    padding: 4rem 1rem;
     text-align: center;
 }
 
@@ -258,7 +258,7 @@
     font-size: 1.25rem !important;
     max-width: 48rem;
     margin: 0 auto !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 30px !important;
 }
 
 @media (min-width: 768px) {
@@ -274,8 +274,9 @@
 .btn-primary-custom {
     background-color: #2563eb;
     color: white;
-    padding: 20px 30px;
+    padding: 20px 40px;
     font-size: 1.2rem;
+    margin-top: 20px;
 }
 
 .btn-primary-custom:hover {
@@ -300,6 +301,7 @@
     font-size: 0.875rem;
     color: #6b7280;
     justify-content: center;
+    margin-top: 10px;
 }
   
 .star-icon {
@@ -310,7 +312,7 @@
 .features-section {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 4rem 1rem;
+    padding: 2rem 1rem;
 }
   
 .features-header {

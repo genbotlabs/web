@@ -8,10 +8,12 @@ import {
   TeamOutlined,
 } from "@ant-design/icons"
 import "../styles/MainPage.css"
+import { useNavigate } from "react-router-dom"
 
 const { Title, Paragraph } = Typography
 
 export default function MainPageNoUser() {
+  const navigate = useNavigate();
   const firstLine = '클릭 한 번이면 ';
   const secondLine = '상담봇이 완성';
 
@@ -22,24 +24,15 @@ export default function MainPageNoUser() {
         <div className="hero-content fade-in">
           <Space direction="vertical" size="large" className="hero-space">
             <div className="hero-title-container">
-              {/* <Title level={1} className="hero-title">
-                당신의 아이디어를
-                <span className="hero-title-highlight"> 현실로</span> */}
-              {/* </Title> */}
               <Paragraph className="hero-subtitle">
                 자동으로 만들어지는 대화
               </Paragraph>
               <p className="line1">{firstLine}<span className="highlight">{secondLine}</span></p>
-              {/* <div className="subtext">자동으로 만들어지는 대화<br/>
-              클릭 한 번으로 상담봇을 완성하세요</div> */}
             </div>
 
             <Space size="middle" wrap className="hero-buttons">
-              <Button type="primary" size="large" icon={<ArrowRightOutlined />} className="btn-primary-custom">
+              <Button type="primary" size="large" icon={<ArrowRightOutlined />} className="btn-primary-custom" onClick={() => navigate("/login")}>
                 시작하기
-              </Button>
-              <Button size="large" className="btn-secondary-custom">
-                더 알아보기
               </Button>
             </Space>
 
@@ -71,15 +64,6 @@ export default function MainPageNoUser() {
 
       {/* Features Section */}
       <section className="features-section">
-        {/* <div className="features-header slide-up">
-          <Title level={2} className="features-title">
-            왜 우리를 선택해야 할까요?
-          </Title>
-          <Paragraph className="features-subtitle">
-            검증된 기술과 혁신적인 접근으로 최고의 서비스를 제공합니다
-          </Paragraph>
-        </div> */}
-
         <Row gutter={[46, 46]} className="features-grid">
           <Col xs={24} md={8}>
             <Card className="feature-card slide-up" bordered={false} hoverable>
@@ -134,7 +118,7 @@ export default function MainPageNoUser() {
       </section>
 
       {/* CTA Section */}
-      <section className="cta-section">
+      {/* <section className="cta-section">
         <Card className="cta-container slide-up" bordered={false}>
           <Space direction="vertical" size="large" className="cta-content">
             <Title level={2} className="cta-title">
@@ -151,10 +135,10 @@ export default function MainPageNoUser() {
             </Space>
           </Space>
         </Card>
-      </section>
+      </section> */}
 
       {/* Stats Section */}
-      <section className="stats-section">
+      {/* <section className="stats-section">
         <Row gutter={[32, 32]} className="stats-grid slide-up">
           <Col xs={12} md={6}>
             <Statistic
@@ -185,7 +169,7 @@ export default function MainPageNoUser() {
             />
           </Col>
         </Row>
-      </section>
+      </section> */}
     </div>
   )
 }
