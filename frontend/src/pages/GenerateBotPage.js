@@ -96,8 +96,9 @@ export default function GenerateBotPage({ user }) {
                 method: "POST",
                 body: formData,
             });
-
+            console.log(response.ok,'if밖')
             if (response.ok) {
+                console.log(response.ok,'뜸')
                 const result = await response.json();
                     localStorage.setItem(
                         "lastBotRequest",
@@ -313,7 +314,8 @@ export default function GenerateBotPage({ user }) {
                 onClick={handleGenerateBot}
                 block
             >
-                {loading ? "생성 중..." : "생성하기"}
+                {/* {loading ? "생성 중..." : "생성하기"} */}
+                생성하기
             </Button>
         </div>
     )
