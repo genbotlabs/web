@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+
+import Header from '../components/Header/Header';
 import '../styles/ChatbotPage.css';
 import logo from '../icons/logo.png'
 import send from '../icons/send.png'
@@ -31,12 +33,7 @@ export default function ChatbotPage() {
 
   return (
     <div className="chatbot-container">
-      <header className="header">
-        <div className="header__logo">
-            <img src={logo} alt="GenBot Logo" className="header__logo-img" />
-            <span className="header__logo-text">GenBot</span>
-        </div>
-      </header>
+      <Header />
       <div className="chat-window">
           {messages.map((msg, idx) => (
             <div key={idx} className={`message ${msg.from}`}>
@@ -56,7 +53,6 @@ export default function ChatbotPage() {
             <img src={send} alt="send" />
           </button>
         </div>
-    </div>
-    
+    </div
   );
 }
