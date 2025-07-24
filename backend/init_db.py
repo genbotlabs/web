@@ -1,5 +1,10 @@
-from database import engine
+import asyncio
 from models import Base
+from database import engine
 
-Base.metadata.create_all(bind=engine)
-print("✅ 테이블 생성 완료")
+async def async_create_all():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+asyncio.run(async_create_all())
+print("✅ DB 초기화 완료")

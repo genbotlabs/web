@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import './LoginPage.css';
+import '../styles/LoginPage.css';
 import logo from '../icons/logo.png';
 import genbot from '../icons/genbot.png';
 import kakao_logo from '../icons/kakao.png';
@@ -17,9 +17,9 @@ const LoginPage = () => {
     const GOOGLE_REDIRECT_URI = process.env.REACT_APP_GOOGLE_REDIRECT_URI;
     const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=email%20profile`;
 
-    const GITHUB_CLIENT_ID = process.env.REACT_APP_GITHUB_CLIENT_ID;
-    const GITHUB_REDIRECT_URI = process.env.REACT_APP_GITHUB_REDIRECT_URI;
-    const GITHUB_AUTH_URL = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${GITHUB_REDIRECT_URI}`;
+    const NAVER_CLIENT_ID = process.env.REACT_APP_NAVER_CLIENT_ID;
+    const NAVER_REDIRECT_URI = process.env.REACT_APP_NAVER_REDIRECT_URI;
+    const NAVER_AUTH_URL = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${encodeURIComponent(NAVER_REDIRECT_URI)}&state=random_state_string`;
 
     const handleEmailLogin = () => {
         navigate('/login/email');
@@ -31,7 +31,7 @@ const LoginPage = () => {
         window.location.href = GOOGLE_AUTH_URL;
     };
     const handleGitHubLogin = () => {
-        window.location.href = GITHUB_AUTH_URL;
+        window.location.href = NAVER_AUTH_URL;
     };
     
 

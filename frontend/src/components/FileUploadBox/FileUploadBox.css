@@ -1,0 +1,90 @@
+.file-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    max-width: 100%;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.tooltip-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid black;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.thumbnail {
+    margin-right: 10px;
+}
+
+.data_info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+}
+
+.tooltip-box {
+    visibility: hidden;
+    transition: opacity 0.2s ease;
+    opacity: 0;
+    position: absolute;
+    top: -25px;
+    left: 0;
+    background-color: #333;
+    color: #fff;
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+}
+
+.tooltip-container:hover .tooltip-box {
+    visibility: visible;
+    opacity: 1;
+}
+
+.check-btn {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #ddd;
+    cursor: pointer;
+}
+
+.check-success {
+    background-color: #00F639;
+    color: white;
+}
+
+.check-fail {
+    background-color: #FE2020;
+    color: white;
+}
+
+.delete-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: red;
+    color: #ccc;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    /* width: 20px; */
+    /* height: 20px; */
+    font-size: 18px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+}
