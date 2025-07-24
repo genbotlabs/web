@@ -89,29 +89,64 @@ export default function ChatbotPage() {
 
   const sendVoice = async () => {
     const botId = searchParams.get('bot_id') || 'a1';
-
+  
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
       const audioChunks = [];
-
+  
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const sourceNode = audioContext.createMediaStreamSource(stream);
+      const analyser = audioContext.createAnalyser();
+      sourceNode.connect(analyser);
+      analyser.fftSize = 2048;
+      const bufferLength = analyser.fftSize;
+      const dataArray = new Uint8Array(bufferLength);
+  
+      let silenceStart = null;
+      const maxSilence = 5000;  // 최대 침묵 시간
+  
+      const detectSilence = () => {
+        analyser.getByteTimeDomainData(dataArray);
+        let sum = 0;
+        for (let i = 0; i < bufferLength; i++) {
+          const normalized = dataArray[i] / 128 - 1;
+          sum += normalized * normalized;
+        }
+        const volume = Math.sqrt(sum / bufferLength);
+  
+        if (volume < 0.01) {
+          if (!silenceStart) silenceStart = Date.now();
+          else if (Date.now() - silenceStart > maxSilence) {
+            console.log('자동 종료: 음성 없음 감지');
+            mediaRecorder.stop();
+            stream.getTracks().forEach(track => track.stop());
+            return;
+          }
+        } else {
+          silenceStart = null; // 다시 말 시작하면 시간 초기화
+        }
+  
+        requestAnimationFrame(detectSilence);
+      };
+  
       mediaRecorder.ondataavailable = (event) => {
         audioChunks.push(event.data);
       };
-
+  
       mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });  // 서버에서 wav 변환 (ffmpeg -i voice.webm voice.wav)
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
         const formData = new FormData();
         formData.append('audio', audioBlob, 'voice.webm');
-
+  
         try {
           const res = await fetch(`http://localhost:8000/bots/${botId}/stt`, {
             method: 'POST',
             body: formData,
           });
-
+  
           const data = await res.json();
-          if (data.text) {  // 인식한 음성 채팅창에 표시
+          if (data.text) {
             setInput(data.text);
             sendMessage(data.text);
           } else {
@@ -122,12 +157,10 @@ export default function ChatbotPage() {
           alert('음성 전송 중 오류가 발생했습니다.');
         }
       };
-
+  
       mediaRecorder.start();
-      setTimeout(() => {
-        mediaRecorder.stop();
-      }, 3000); 
-
+      detectSilence();
+  
     } catch (err) {
       console.error('마이크 권한 오류:', err);
       alert('마이크 권한이 필요합니다.');
