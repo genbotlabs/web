@@ -87,6 +87,7 @@ export default function GenerateBotPage({ user }) {
             formData.append("files", fileObj.file);
         });
 
+        console.log('uploadedFiles',uploadedFiles)
         console.log(">>>",formData.forEach((value, key) => console.log(key, value)))
 
         // 3. API 호출
@@ -103,7 +104,7 @@ export default function GenerateBotPage({ user }) {
                         JSON.stringify({
                         ...form.getFieldsValue(),
                         files: uploadedFiles.map((file) => ({ name: file.name })),
-                        }),
+                    }),
                 );
                 message.success("봇이 성공적으로 생성되었습니다!");
                 navigate("/generate/pending");

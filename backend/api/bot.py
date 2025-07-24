@@ -26,16 +26,15 @@ router = APIRouter()
 # 봇 생성
 @router.post("/", response_model=BotDetailResponse)
 async def create_bot(
-    db: AsyncSession = Depends(get_db),
-    user_id: int = Query(..., description="사용자 ID"),
+    user_id: int = Form(...),
     company: str = Form(...),
     bot_name: str = Form(...),
     email: str = Form(...),
     consultant_number: str = Form(...),
     greeting: str = Form(...),
     files: List[UploadFile] = File(...),
+    # db: AsyncSession = Depends(get_db)
 ):
-    print("api",files)
     global uuid
     while True:
         uuid = generate_unique_id()
