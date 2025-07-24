@@ -1,71 +1,175 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Button, Card, Typography, Row, Col, Space, Statistic } from "antd"
+import {
+  ArrowRightOutlined,
+  StarFilled,
+  UserOutlined,
+  ThunderboltOutlined,
+  SafetyOutlined,
+  TeamOutlined,
+} from "@ant-design/icons"
+import "../styles/MainPage.css"
+import { useNavigate } from "react-router-dom"
 
-import '../styles/MainPage.css';
+const { Title, Paragraph } = Typography
 
 export default function MainPageNoUser() {
-    const navigate = useNavigate();
-    const [messages, setMessages] = useState([]);
-    const firstLine = '클릭 한 번이면 ';
-    const secondLine = '상담봇이 완성';
-    const [index, setIndex] = useState(0);
-    const messageQueue = [
-        { text: "안녕하세요. Genbot의 문의봇입니다. 무엇을 도와드릴까요?", sender: 'bot' },
-        { text: "스터디룸 이용 가능 시간이 어떻게 돼?", sender: 'user' },
-        { text: "24시간 이용 가능합니다!", sender: 'bot' },
-        { text: "스터디룸 안에 에어컨 있어?", sender: 'user' },
-        { text: "네. 모든 스터디룸 안에 에어컨이 설치되어 있습니다. 만약 온도 조절을 희망하시면 카운터로 문의주세요.", sender: 'bot' },
-        { text: "그럼 음료 반입은 가능한가요?", sender: 'user' },
-        { text: "네. 저희 Genbot 스터디룸은 음료 반입이 가능합니다. 다만, 재활용은 직접 해주셔야 합니다.", sender: 'bot' },
-    ];
-    
-    const handleClick = () => {
-        navigate('/login');
-    };
+  const navigate = useNavigate();
+  const firstLine = '클릭 한 번이면 ';
+  const secondLine = '상담봇이 완성';
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (index === 0) {
-                setMessages([messageQueue[0]]);
-                setIndex(1);
-            } else if (index < messageQueue.length) {
-                setMessages((prev) => [...prev, messageQueue[index]]);
-                setIndex(index + 1);
-            } else {
-                setMessages([]);
-                setIndex(0);
-            }
-        }, 2000);
-
-        return () => clearInterval(interval);
-    }, [index]);
-
-    return (
-        <section className="main-section">
-            <div className="content-wrapper">
-                <div className="left-container">
-                    <div className="text-wrapper">
-                        <p className="line1">{firstLine}<br /><span className="highlight">{secondLine}</span></p>
-                        <div className="subtext">어쩌꾸어쩌꾸어쩌꾸어쩌꾸<br />어쩌꾸어쩌꾸어쩌꾸어쩌꾸</div>
-                    </div>
-                    <div className="button-wrapper">
-                        <button className="generate-button" onClick={handleClick}>시작하기</button>
-                    </div>
-                </div>
-
-                <div className="right-container">
-                    <div className="chatbox">
-                        {messages.length > 0 && messages.map((message, index) => (
-                            <div
-                                key={index}
-                                className={`message ${message.sender === 'user' ? 'user-message' : 'bot-message'}`}
-                            >
-                                <p>{message.text}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+  return (
+    <div className="main-page-container">
+      {/* Hero Section */}
+      <section className="hero-section">
+        <div className="hero-content fade-in">
+          <Space direction="vertical" size="large" className="hero-space">
+            <div className="hero-title-container">
+              <Paragraph className="hero-subtitle">
+                자동으로 만들어지는 대화
+              </Paragraph>
+              <p className="line1">{firstLine}<span className="highlight">{secondLine}</span></p>
             </div>
-        </section>
-    );
-};
+
+            <Space size="middle" wrap className="hero-buttons">
+              <Button type="primary" size="large" icon={<ArrowRightOutlined />} className="btn-primary-custom" onClick={() => navigate("/login")}>
+                시작하기
+              </Button>
+            </Space>
+
+            <Space size="large" wrap className="hero-stats">
+              <Space>
+                <StarFilled className="star-icon" />
+                <span>4.9/5 평점</span>
+              </Space>
+              <Space>
+                <UserOutlined />
+                <span>10,000+ 사용자</span>
+              </Space>
+            </Space>
+          </Space>
+        </div>
+      </section>
+
+      {/* IntroduceSection */}
+      {/* <section className="introduce-section">
+        <div className="introduce-header slide-up">
+          <Title level={2} className="introduce-title">
+            자동으로 만들어지는 대화
+          </Title>
+          <Paragraph className="introduce-subtitle">
+            자동으로 만들어지는 대화
+          </Paragraph>
+        </div>
+      </section> */}
+
+      {/* Features Section */}
+      <section className="features-section">
+        <Row gutter={[46, 46]} className="features-grid">
+          <Col xs={24} md={8}>
+            <Card className="feature-card slide-up" bordered={false} hoverable>
+              <div className="feature-content">
+                <div className="feature-icon-container feature-icon-blue">
+                  <ThunderboltOutlined className="feature-icon" />
+                </div>
+                <Title level={4} className="feature-title">
+                  클릭 한 번이면 챗봇 완성
+                </Title>
+                <Paragraph className="feature-description">
+                  누구나 복잡한 개발 과정 없이,<br/>
+                  버튼 클릭만으로 자신만의 AI 챗봇을 바로 만들 수 있어요
+                </Paragraph>
+              </div>
+            </Card>
+          </Col>
+
+          <Col xs={24} md={8}>
+            <Card className="feature-card slide-up" bordered={false} hoverable>
+              <div className="feature-content">
+                <div className="feature-icon-container feature-icon-green">
+                  <SafetyOutlined className="feature-icon" />
+                </div>
+                <Title level={4} className="feature-title">
+                  내 데이터로 완벽한 맞춤 상담
+                </Title>
+                <Paragraph className="feature-description">
+                  자사 데이터 업로드만으로 <br/>고객 응대/FAQ/업무 자동화에 최적화된 챗봇이 완성됩니다
+                </Paragraph>
+              </div>
+            </Card>
+          </Col>
+
+          <Col xs={24} md={8}>
+            <Card className="feature-card slide-up" bordered={false} hoverable>
+              <div className="feature-content">
+                <div className="feature-icon-container feature-icon-purple">
+                  <TeamOutlined className="feature-icon" />
+                </div>
+                <Title level={4} className="feature-title">
+                  누구나 쉽게, 사용 현황 한눈에
+                </Title>
+                <Paragraph className="feature-description">
+                  상담 내역, 사용자 통계, AI 답변 정확도를<br/>
+                  한 화면에서 관리할 수 있습니다
+                </Paragraph>
+              </div>
+            </Card>
+          </Col>
+        </Row>
+      </section>
+
+      {/* CTA Section */}
+      {/* <section className="cta-section">
+        <Card className="cta-container slide-up" bordered={false}>
+          <Space direction="vertical" size="large" className="cta-content">
+            <Title level={2} className="cta-title">
+              지금 바로 시작하세요
+            </Title>
+            <Paragraph className="cta-subtitle">무료로 체험해보고 차이를 느껴보세요</Paragraph>
+            <Space size="middle" wrap>
+              <Button type="primary" size="large" className="btn-cta-primary">
+                무료 체험 시작
+              </Button>
+              <Button size="large" className="btn-cta-secondary">
+                데모 보기
+              </Button>
+            </Space>
+          </Space>
+        </Card>
+      </section> */}
+
+      {/* Stats Section */}
+      {/* <section className="stats-section">
+        <Row gutter={[32, 32]} className="stats-grid slide-up">
+          <Col xs={12} md={6}>
+            <Statistic
+              title="활성 사용자"
+              value="10K+"
+              valueStyle={{ color: "#2563eb", fontSize: "2.5rem", fontWeight: "bold" }}
+            />
+          </Col>
+          <Col xs={12} md={6}>
+            <Statistic
+              title="가동률"
+              value="99.9%"
+              valueStyle={{ color: "#16a34a", fontSize: "2.5rem", fontWeight: "bold" }}
+            />
+          </Col>
+          <Col xs={12} md={6}>
+            <Statistic
+              title="고객 지원"
+              value="24/7"
+              valueStyle={{ color: "#9333ea", fontSize: "2.5rem", fontWeight: "bold" }}
+            />
+          </Col>
+          <Col xs={12} md={6}>
+            <Statistic
+              title="국가 서비스"
+              value="50+"
+              valueStyle={{ color: "#ea580c", fontSize: "2.5rem", fontWeight: "bold" }}
+            />
+          </Col>
+        </Row>
+      </section> */}
+    </div>
+  )
+}
