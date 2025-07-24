@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './ChatbotPage.css';
+import '../styles/ChatbotPage.css';
 import logo from '../icons/logo.png'
 import send from '../icons/send.png'
 
