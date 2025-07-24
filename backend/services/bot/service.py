@@ -7,7 +7,7 @@ from datetime import datetime
 from uuid import uuid4
 from fastapi import Form, UploadFile, File, HTTPException
 from services.s3 import upload_pdf_to_s3
-from services.pdf_parser import parse_pdfs_from_s3
+# from services.pdf_parser import parse_pdfs_from_s3
 from models.data import Data
 from typing import List
 import traceback  # 추가
@@ -19,26 +19,27 @@ from models.csbot import CSbot
 
 # from models.lang_graph.lang_graph import run_langgraph  # langgraph model_bot
 
-
+# 봇 생성
 async def service_create_bot(
     db: AsyncSession,
-    company: str = Form(...),
-    usage: str = Form(...),
-    greeting: str = Form(""),
-    description: str = Form(...),
-    user_id: int = Form(...),
-    type: str = Form(...),
-    files: List[UploadFile] = File(...),
+    user_id: int,
+    bot_id: str,
+    company: str,
+    bot_name: str,
+    email: str,
+    consultant_number: str,
+    greeting: str,
+    files: List[UploadFile],
 ):
     try:
-        # ✅ 비동기 세션 사용
         detail = Detail(
             user_id=user_id,
-            company_name=company,
-            bot_name="장수",
-            first_text=greeting,
-            email="asd@naver.com",
-            cs_number="1522-0000"
+            bot_id=bot_id,
+            company=company,
+            bot_name=bot_name,
+            email=email,
+            consultant_number=consultant_number,
+            greeting=greeting
         )
         db.add(detail)
         await db.commit()
@@ -48,23 +49,22 @@ async def service_create_bot(
         folder_name = f"bot_{detail.company_name}_{detail.detail_id}"
 
         for file in files:
-            if file.filename.endswith(".pdf"):
-                url = upload_pdf_to_s3(file.file, file.filename, folder_name)
+            url = upload_pdf_to_s3(file.file, file.filename, folder_name)
 
-                data = Data(
-                    name=file.filename,
-                    type=True,
-                    storage_url=url,
-                    detail_id=detail.detail_id
-                )
-                db.add(data)
+            data = Data(
+                name=file.filename,
+                type=True,
+                storage_url=url,
+                detail_id=detail.detail_id
+            )
+            db.add(data)
 
-                data_items.append(BotDataItemResponse(
-                    data_id=str(uuid4()),
-                    filename=file.filename,
-                    type=1,
-                    storage_url=url
-                ))
+            data_items.append(BotDataItemResponse(
+                data_id=str(uuid4()),
+                filename=file.filename,
+                type=1,
+                storage_url=url
+            ))
 
         await db.commit()
 

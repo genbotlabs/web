@@ -80,13 +80,14 @@ export default function GenerateBotPage({ user }) {
         formData.append("bot_name", form.getFieldsValue().botName);
         formData.append("email", form.getFieldsValue().email);
         formData.append("consultant_number", form.getFieldsValue().consultantNumber || "");
-        formData.append("greeting", form.getFieldsValue().greeting || "");
+        formData.append("greeting", form.getFieldsValue().greeting || `안녕하세요 ${form.getFieldsValue().botName}입니다. 무엇을 도와드릴까요?`);
 
         uploadedFiles.forEach((fileObj) => {
+            console.log(fileObj.file)
             formData.append("files", fileObj.file);
         });
 
-        console.log(formData)
+        console.log(">>>",formData.forEach((value, key) => console.log(key, value)))
 
         // 3. API 호출
         try {

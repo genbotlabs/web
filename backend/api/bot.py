@@ -1,4 +1,6 @@
 from fastapi import APIRouter, HTTPException, Path
+import uuid
+
 from schemas.request.bot import BotCreateRequest, BotUpdateRequest
 from schemas.response.bot import (
     BotDetailResponse,
@@ -16,29 +18,37 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.get_db import get_db  
 from schemas.response.bot import BotDeleteResponse
 from services.bot.service import service_create_bot,bot_list,delete_bot , update_bot
+from services.bot.utils import generate_unique_id
 
 router = APIRouter()
 
 
-# 봇 생성 (완료)
+# 봇 생성
 @router.post("", response_model=BotDetailResponse)
 async def create_bot(
+    db: AsyncSession = Depends(get_db),
+    user_id: int = Query(..., description="사용자 ID"),
     company: str = Form(...),
-    usage: str = Form(...),
-    greeting: str = Form(""),
-    description: str = Form(""),
-    user_id: int = Form(...),
-    type: str = Form(...),
+    bot_name: str = Form(...),
+    email: str = Form(...),
+    consultant_number: str = Form(...),
+    greeting: str = Form(...),
     files: List[UploadFile] = File(...),
-    db: AsyncSession = Depends(get_db) 
 ):
+    global uuid
+    while True:
+        uuid = generate_unique_id()
+        if not (uuid):
+            break
+    
     return await service_create_bot(
-        company=company,
-        usage=usage,
-        greeting=greeting,
-        description=description,
         user_id=user_id,
-        type=type,
+        bot_id=uuid,
+        company=company,
+        bot_name=bot_name,
+        email=email,
+        consultant_number=consultant_number,
+        greeting=greeting,
         files=files
     )
 
