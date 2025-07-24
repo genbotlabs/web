@@ -91,7 +91,7 @@ async def voicebot_service(session_id: str, audio: UploadFile, db):
         )
         sllm_resp.raise_for_status()
         sllm_data = sllm_resp.json()
-        answer_text = sllm_data.get("answer", "")
+        answer_text = sllm_data.get("content", "")
 
         # 5. VoiceLog에 답변 저장 (bot role)
         # bot_voice = VoiceLog(

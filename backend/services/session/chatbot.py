@@ -33,7 +33,6 @@ async def create_session_service(request: CreateSessionRequest, db: AsyncSession
 
     return CreateSessionResponse(session_id=session_id)
 
-
 # 2. 메시지 전송 (텍스트)
 async def send_message_service(session_id: str, request: SendMessageRequest, db: AsyncSession) -> SendMessageResponse:
     result = await db.execute(select(SessionModel).where(SessionModel.session_id == session_id))
@@ -62,7 +61,7 @@ async def send_message_service(session_id: str, request: SendMessageRequest, db:
 
     bot_response = MessageItemResponse(
         sender="bot",
-        message=assistant_reply,
+        message=assistant_reply.content,
         timestamp=datetime.utcnow(),
         message_type="text"
     )
@@ -116,5 +115,5 @@ async def req_sllm_service(session_id: str, message: str, turn: int):
     )
     resp.raise_for_status()
     result = resp.json()
-    answer = result.get("answer", "")
+    answer = result.get("content", "")
     return answer

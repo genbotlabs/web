@@ -8,6 +8,13 @@ from faster_whisper import WhisperModel
 import librosa
 import soundfile as sf
 import numpy as np
+from dotenv import load_dotenv
+
+load_dotenv()
+
+s3_bucket = os.getenv("S3_BUCKET")
+s3_prefix = os.getenv("S3_PREFIX")
+local_model_path = os.getenv("LOCAL_MODEL_PATH")
 
 # --- S3 Whisper 모델 동기화 ---
 def s3_sync_folder(bucket, s3_prefix, local_dir):
@@ -20,17 +27,8 @@ def s3_sync_folder(bucket, s3_prefix, local_dir):
         os.makedirs(os.path.dirname(local_path), exist_ok=True)
         bucket.download_file(obj.key, local_path)
 
-# --- Whisper 싱글턴 파이프라인 준비 ---
-S3_BUCKET = "genbot-stt"
-
-# --- no faster_whisper ---
-# S3_PREFIX = "whisper-small-ko/"
-# LOCAL_MODEL_PATH = "uploads/whisper-small-ko"
-
-# --- faster_whisper ---
-S3_PREFIX = "whisper-small-ko-ct2/"
-LOCAL_MODEL_PATH = "uploads/whisper-small-ko-ct2"
-
+# --- VAD 처리 함수 ---
+# librosa로 VAD 처리: 에너지 기반으로 음성 구간만 추출
 def vad_librosa(input_path, output_path, frame_length=2048, hop_length=512, energy_threshold=0.02, margin_sec=0.4):
     """
     librosa로 VAD 처리: 에너지 기반으로 음성 구간만 추출해서 저장
@@ -62,23 +60,23 @@ def vad_librosa(input_path, output_path, frame_length=2048, hop_length=512, ener
     return True
 
 def prepare_whisper_model():
-    if not (os.path.exists(LOCAL_MODEL_PATH) and len(os.listdir(LOCAL_MODEL_PATH)) > 2):
-        s3_sync_folder(S3_BUCKET, S3_PREFIX, LOCAL_MODEL_PATH)
+    if not (os.path.exists(local_model_path) and len(os.listdir(local_model_path)) > 2):
+        s3_sync_folder(s3_bucket, s3_prefix, local_model_path)
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     # # no faster_whisper
     # pipe = pipeline(
     #     "automatic-speech-recognition",
-    #     model=LOCAL_MODEL_PATH,
-    #     tokenizer=LOCAL_MODEL_PATH,
-    #     feature_extractor=LOCAL_MODEL_PATH,
+    #     model=local_model_path,
+    #     tokenizer=local_model_path,
+    #     feature_extractor=local_model_path,
     #     device=0 if device == "cuda" else -1,
     # )
     # return pipe
     # faster_whisper
 
     return WhisperModel(
-        LOCAL_MODEL_PATH,
+        local_model_path,
         device=device,
     )
 
