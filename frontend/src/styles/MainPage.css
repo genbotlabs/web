@@ -1,12 +1,9 @@
-/* MainPageNoUser.css - 커스텀 컴포넌트 버전 */
-
 .main-page-container {
     min-height: 100vh;
-    background: linear-gradient(135deg, #dbeafe 0%, #ffffff 50%, #faf5ff 100%);
+    /* background: linear-gradient(135deg, #dbeafe 0%, #ffffff 50%, #faf5ff 100%); */
     padding: 30px 50px 50px 50px;
 }
 
-/* Custom Button Styles */
 .custom-button {
     display: inline-flex;
     align-items: center;
@@ -206,15 +203,32 @@
     margin-bottom: 0.5rem;
 }
   
-  .custom-statistic-title {
+.custom-statistic-title {
     color: #6b7280;
     font-size: 0.875rem;
 }
   
-  /* Hero Section Styles */
+/* Hero Section Styles */
+.line1 {
+    font-size: 2.8rem;
+    font-weight: bold;
+}
+
+.highlight {
+    color: #F97874;
+    background: linear-gradient(to top, rgba(255, 185, 183, 0.33) 60%, transparent 60%);
+}
+
+.subtext {
+    margin-top: 20px;
+    color: #555;
+    line-height: 1.6;
+}
+
 .hero-section {
     max-width: 1200px;
     margin: 0 auto;
+    margin-top: 60px !important;
     padding: 4rem 1rem 6rem;
     text-align: center;
 }
@@ -264,6 +278,8 @@
 .btn-primary-custom {
     background-color: #2563eb;
     color: white;
+    padding: 20px 30px;
+    font-size: 1.2rem;
 }
 
 .btn-primary-custom:hover {
@@ -275,6 +291,8 @@
     background-color: transparent;
     color: #2563eb;
     border: 2px solid #2563eb;
+    padding: 20px 30px;
+    font-size: 1.2rem;
 }
   
 .btn-secondary-custom:hover {

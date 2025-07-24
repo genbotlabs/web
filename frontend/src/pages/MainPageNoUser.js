@@ -12,6 +12,9 @@ import "../styles/MainPage.css"
 const { Title, Paragraph } = Typography
 
 export default function MainPageNoUser() {
+  const firstLine = '클릭 한 번이면 ';
+  const secondLine = '상담봇이 완성';
+
   return (
     <div className="main-page-container">
       {/* Hero Section */}
@@ -19,13 +22,15 @@ export default function MainPageNoUser() {
         <div className="hero-content fade-in">
           <Space direction="vertical" size="large" className="hero-space">
             <div className="hero-title-container">
-              <Title level={1} className="hero-title">
+              {/* <Title level={1} className="hero-title">
                 당신의 아이디어를
-                <span className="hero-title-highlight"> 현실로</span>
-              </Title>
-              <Paragraph className="hero-subtitle">
+                <span className="hero-title-highlight"> 현실로</span> */}
+              {/* </Title> */}
+              {/* <Paragraph className="hero-subtitle">
                 혁신적인 솔루션으로 비즈니스를 성장시키고, 더 나은 미래를 만들어보세요
-              </Paragraph>
+              </Paragraph> */}
+              <p className="line1">{firstLine}<span className="highlight">{secondLine}</span></p>
+              <div className="subtext">어쩌꾸어쩌꾸어쩌꾸어쩌꾸<br />어쩌꾸어쩌꾸어쩌꾸어쩌꾸</div>
             </div>
 
             <Space size="middle" wrap className="hero-buttons">
