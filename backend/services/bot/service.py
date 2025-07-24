@@ -12,6 +12,7 @@ from models.data import Data
 from typing import List
 import traceback  # 추가
 import os
+# from models.lang_graph.lang_graph import run_langgraph  # langgraph model_bot
 
 async def service_create_bot(
     company: str = Form(...),

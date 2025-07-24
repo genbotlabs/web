@@ -6,7 +6,6 @@ class User(Base):
     __tablename__ = "user"
 
     user_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    password = Column(String(255), nullable=True)
     nickname = Column(String(255), nullable=True)
     provider = Column(String(20), nullable=True)
     social_id = Column(String(100), nullable=False)
