@@ -9,8 +9,10 @@ import voice from '../icons/voice.png'
 export default function ChatbotPage() {
   const [searchParams] = useSearchParams();
   const botId = searchParams.get('bot_id') || 'a1';
+
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
 
   // 첫멘트(first_text) 불러오기
   useEffect(() => {
@@ -24,6 +26,62 @@ export default function ChatbotPage() {
         console.error('greeting load error:', err);
       });
   }, [botId]);
+
+  const sendMessage = async () => {
+    if (!input.trim() || loading) return;
+
+    const userMessage = { from: 'user', text: input };
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setLoading(true);
+
+    try {
+      const response = await fetch(`http://localhost:8000/bots/${botId}/sllm`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: input })
+      });
+
+      if (!response.body) throw new Error('스트림 body 없음 오류');
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+
+      let botResponse = '';
+      const appendPartial = (text) => {
+        setMessages(prev => {
+          const last = prev[prev.length - 1];
+          if (last && last.from === 'bot' && last.partial) {
+            return [...prev.slice(0, -1), { from: 'bot', text, partial: true }];
+          } else {
+            return [...prev, { from: 'bot', text, partial: true }];
+          }
+        });
+      };
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        botResponse += decoder.decode(value);
+        appendPartial(botResponse);
+      }
+
+      // 스트리밍 완료되면 partial flag 제거
+      setMessages(prev => {
+        const last = prev[prev.length - 1];
+        if (last && last.partial) {
+          return [...prev.slice(0, -1), { from: 'bot', text: last.text }];
+        }
+        return prev;
+      });
+
+    } catch (err) {
+      console.error('chat error:', err);
+      setMessages(prev => [...prev, { from: 'bot', text: '답변 중 오류가 발생했습니다.' }]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') sendMessage();
