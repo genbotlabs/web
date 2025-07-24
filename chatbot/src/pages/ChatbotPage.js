@@ -53,10 +53,10 @@ export default function ChatbotPage() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
           />
-          <button onClick={sendMessage}>
+          <button onClick={sendMessage} className='send-button'>
             <img src={send} alt="send-message" />
           </button>
-          <button onClick={sendVoice}>
+          <button onClick={sendVoice} className='voice-button'>
             <img src={voice} alt="send-voice" />
           </button>
         </div>

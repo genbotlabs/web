@@ -53,7 +53,7 @@
   outline: none;
 }
 
-.chat-input button {
+.send-button {
   background: #F97874;
   border: none;
   border-radius: 50%;
@@ -63,7 +63,22 @@
   cursor: pointer;
 }
 
-.chat-input img {
+.send-button img {
+  width: 20px;
+  height: 20px;
+}
+
+.voice-button {
+  background: #1F5FF8;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.voice-button img {
   width: 20px;
   height: 20px;
 }
