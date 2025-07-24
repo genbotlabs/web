@@ -80,13 +80,15 @@ export default function GenerateBotPage({ user }) {
         formData.append("bot_name", form.getFieldsValue().botName);
         formData.append("email", form.getFieldsValue().email);
         formData.append("consultant_number", form.getFieldsValue().consultantNumber || "");
-        formData.append("greeting", form.getFieldsValue().greeting || "");
+        formData.append("greeting", form.getFieldsValue().greeting || `안녕하세요 ${form.getFieldsValue().botName}입니다. 무엇을 도와드릴까요?`);
 
         uploadedFiles.forEach((fileObj) => {
+            console.log(fileObj.file)
             formData.append("files", fileObj.file);
         });
 
-        console.log(formData)
+        console.log('uploadedFiles',uploadedFiles)
+        console.log(">>>",formData.forEach((value, key) => console.log(key, value)))
 
         // 3. API 호출
         try {
@@ -94,15 +96,16 @@ export default function GenerateBotPage({ user }) {
                 method: "POST",
                 body: formData,
             });
-
+            console.log(response.ok,'if밖')
             if (response.ok) {
+                console.log(response.ok,'뜸')
                 const result = await response.json();
                     localStorage.setItem(
                         "lastBotRequest",
                         JSON.stringify({
                         ...form.getFieldsValue(),
                         files: uploadedFiles.map((file) => ({ name: file.name })),
-                        }),
+                    }),
                 );
                 message.success("봇이 성공적으로 생성되었습니다!");
                 navigate("/generate/pending");
@@ -311,7 +314,8 @@ export default function GenerateBotPage({ user }) {
                 onClick={handleGenerateBot}
                 block
             >
-                {loading ? "생성 중..." : "생성하기"}
+                {/* {loading ? "생성 중..." : "생성하기"} */}
+                생성하기
             </Button>
         </div>
     )

@@ -14,6 +14,7 @@ s3 = boto3.client('s3',
 
 def upload_pdf_to_s3(file, filename, folder_name):
     try:
+        print("Uploading PDF to S3...")
         aws_s3_region = os.getenv('AWS_S3_REGION')
         bucket_name = os.getenv("AWS_S3_BUCKET_NAME")
 

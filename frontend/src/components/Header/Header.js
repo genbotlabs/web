@@ -3,6 +3,9 @@ import { useNavigate, Link, NavLink } from 'react-router-dom';
 import { Avatar, Dropdown } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import logo from '../../icons/logo.png';
+
+// import axios from 'axios';
+import { useEffect, useState } from 'react';
 import '../Header/Header.css';
 
 

@@ -12,18 +12,17 @@ class BotDataItemResponse(BaseModel):
 
 # 봇 상세
 class BotDetailItem(BaseModel):
-    bot_id: str = Field(..., example="bot_001")
-    company_name: str = Field(..., example="GenBot")
-    bot_name: str = Field(..., example="문의")
-    first_text: str = Field(..., example="안녕하세요! GenBot의 문의봇입니다.")
-    email: str = Field(..., example="user@example.com")
-    cs_number: str = Field(..., example="1522-0000")
-    data: List[BotDataItemResponse]
+    user_id: int = Field(..., example="1"),
+    bot_id: str = Field(..., example="bot_001"),
+    company: str = Field(..., example="GenBot"),
+    bot_name: str = Field(..., example="문의"),
+    email: str = Field(..., example="user@example.com"),
+    consultant_number: str = Field(..., example="1522-0000"),
+    greeting: str = Field(..., example="안녕하세요! GenBot의 문의봇입니다."),
+    files: List[BotDataItemResponse]
     created_at: datetime = Field(..., example="2025-07-14T12:00:00Z")
     updated_at: datetime = Field(..., example="2025-07-14T12:10:00Z")
 
-# 봇 생성
-# 봇 상세 조회
 # 봇 수정
 class BotDetailResponse(BaseModel):
     bot: BotDetailItem
