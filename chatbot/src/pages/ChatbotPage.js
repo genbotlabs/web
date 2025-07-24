@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import Header from '../components/Header/Header';
 import '../styles/ChatbotPage.css';
@@ -6,26 +7,23 @@ import send from '../icons/send.png'
 import voice from '../icons/voice.png'
 
 export default function ChatbotPage() {
-  const [messages, setMessages] = useState([
-    { from: 'bot', text: 'Genbot의 문의봇입니다. 무엇을 도와드릴까요?' }
-  ]);
+  const [searchParams] = useSearchParams();
+  const botId = searchParams.get('bot_id') || 'a1';
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
 
-  const sendMessage = () => {
-    if (!input.trim()) return;
-
-    const newMessages = [...messages, { from: 'user', text: input }];
-    setMessages(newMessages);
-    setInput('');
-
-    // TODO: 실제 AI 응답 연결
-    setTimeout(() => {
-      setMessages(prev => [
-        ...prev,
-        { from: 'bot', text: '죄송합니다. 아직 답변 기능이 구현되지 않았어요.' }
-      ]);
-    }, 500);
-  };
+  // 첫멘트(first_text) 불러오기
+  useEffect(() => {
+    fetch(`http://localhost:8000/bots/${botId}`)
+      .then(res => res.json())
+      .then(data => {
+        const first_text = data.first_text || '안녕하세요! 무엇을 도와드릴까요?';
+        setMessages([{ from: 'bot', text: first_text }]);
+      })
+      .catch(err => {
+        console.error('greeting load error:', err);
+      });
+  }, [botId]);
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') sendMessage();
