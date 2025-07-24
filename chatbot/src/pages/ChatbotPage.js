@@ -53,6 +53,6 @@ export default function ChatbotPage() {
             <img src={send} alt="send" />
           </button>
         </div>
-    </div
+    </div>
   );
 }
