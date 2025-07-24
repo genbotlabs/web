@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 
 import Header from '../components/Header/Header';
 import '../styles/ChatbotPage.css';
-import logo from '../icons/logo.png'
 import send from '../icons/send.png'
+import voice from '../icons/voice.png'
 
 export default function ChatbotPage() {
   const [messages, setMessages] = useState([
@@ -32,6 +31,10 @@ export default function ChatbotPage() {
     if (e.key === 'Enter') sendMessage();
   };
 
+  const sendVoice = () => {
+    console.log('음성 전송');
+  }
+
   return (
     <div className="chatbot-container">
       <Header />
@@ -51,7 +54,10 @@ export default function ChatbotPage() {
             onKeyDown={handleKeyDown}
           />
           <button onClick={sendMessage}>
-            <img src={send} alt="send" />
+            <img src={send} alt="send-message" />
+          </button>
+          <button onClick={sendVoice}>
+            <img src={voice} alt="send-voice" />
           </button>
         </div>
     </div>
