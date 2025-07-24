@@ -2,7 +2,6 @@
 
 .generate-bot-page {
   min-height: 100vh;
-  background-color: #f8fafc;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   padding: 40px 20px;
 }
@@ -12,8 +11,11 @@
   margin: 0 auto;
   background: white;
   border-radius: 16px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); */
   overflow: hidden;
+  margin-top: 80px !important;
+  /* margin: 80px 20px 20px 40px !important; */
+  padding: 30px 0px 0px 0px;
 }
 
 .generate-bot-content {
@@ -24,7 +26,7 @@
 
 /* Left Section - Bot Information */
 .bot-info-section {
-  padding: 40px;
+  padding: 10px 30px;
   border-right: 1px solid #e5e7eb;
 }
 
@@ -87,8 +89,7 @@
 
 /* Right Section - Data Upload */
 .data-section {
-  padding: 40px;
-  background: #f9fafb;
+  padding: 10px 30px;
 }
 
 .upload-area {

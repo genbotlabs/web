@@ -1,24 +1,16 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { Form, Input, Button, message } from "antd"
 import { PlusOutlined, FileTextOutlined, DeleteOutlined } from "@ant-design/icons"
 import "../styles/GenerateBotPage.css"
 
+const { TextArea } = Input
+
 export default function GenerateBotPage({ user }) {
     const navigate = useNavigate()
+    const [form] = Form.useForm()
     const [loading, setLoading] = useState(false)
     const [uploadedFiles, setUploadedFiles] = useState([])
-    const [form, setForm] = useState({
-        company: "",
-        botName: "",
-        email: "",
-        consultantNumber: "",
-        greeting: "",
-    })
-
-    const handleChange = (e) => {
-        const { name, value } = e.target
-        setForm((prev) => ({ ...prev, [name]: value }))
-    }
 
     const handleFileUpload = (e) => {
         const files = Array.from(e.target.files)
@@ -34,7 +26,7 @@ export default function GenerateBotPage({ user }) {
         })
 
         if (validFiles.length !== files.length) {
-        alert("PDF 또는 JSON 파일만 업로드 가능합니다.")
+        message.error("PDF 또는 JSON 파일만 업로드 가능합니다.")
         }
 
         const newFiles = validFiles.map((file) => ({
@@ -55,27 +47,28 @@ export default function GenerateBotPage({ user }) {
         setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId))
     }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-
-        if (!form.company.trim()) return alert("회사명을 입력해주세요.")
-        if (!form.botName.trim()) return alert("봇 이름을 입력해주세요.")
-        if (!form.email.trim()) return alert("이메일을 입력해주세요.")
-        if (uploadedFiles.length === 0) return alert("최소 1개의 파일을 업로드해주세요.")
+    const handleSubmit = async (values) => {
+        if (uploadedFiles.length === 0) {
+        message.error("최소 1개의 파일을 업로드해주세요.")
+        return
+        }
 
         const selectedFiles = uploadedFiles.filter((file) => file.selected)
-        if (selectedFiles.length === 0) return alert("사용할 파일을 선택해주세요.")
+        if (selectedFiles.length === 0) {
+        message.error("사용할 파일을 선택해주세요.")
+        return
+        }
 
         setLoading(true)
 
         const formData = new FormData()
         const user_id = user?.user_id || "test_user"
         formData.append("user_id", user_id)
-        formData.append("company", form.company)
-        formData.append("bot_name", form.botName)
-        formData.append("email", form.email)
-        formData.append("consultant_number", form.consultantNumber || "")
-        formData.append("greeting", form.greeting || "")
+        formData.append("company", values.company)
+        formData.append("bot_name", values.botName)
+        formData.append("email", values.email)
+        formData.append("consultant_number", values.consultantNumber || "")
+        formData.append("greeting", values.greeting || "")
 
         selectedFiles.forEach((fileObj) => {
         formData.append("files", fileObj.file)
@@ -93,115 +86,128 @@ export default function GenerateBotPage({ user }) {
             localStorage.setItem(
             "lastBotRequest",
             JSON.stringify({
-                ...form,
+                ...values,
                 files: selectedFiles.map((file) => ({ name: file.name })),
             }),
             )
+            message.success("봇이 성공적으로 생성되었습니다!")
             navigate("/generate/pending")
         } else {
-            alert("서버 오류가 발생했습니다.")
+            message.error("서버 오류가 발생했습니다.")
         }
         } catch (err) {
         console.error("전송 실패:", err)
-        alert("요청 중 오류가 발생했습니다.")
+        message.error("요청 중 오류가 발생했습니다.")
         } finally {
         setLoading(false)
         }
     }
 
-    const isFormValid =
-        form.company.trim() &&
-        form.botName.trim() &&
-        form.email.trim() &&
+    const isFormValid = () => {
+        const values = form.getFieldsValue()
+        return (
+        values.company?.trim() &&
+        values.botName?.trim() &&
+        values.email?.trim() &&
         uploadedFiles.length > 0 &&
         uploadedFiles.some((file) => file.selected)
+        )
+    }
 
-  return (
-    <div className="generate-bot-page">
-        <div className="generate-bot-container">
-            <div className="generate-bot-content">
-                {/* Left Section - Bot Information */}
-                <div className="bot-info-section">
-                    <h2 className="section-title">봇 정보 입력</h2>
-                    <p className="section-subtitle">봇 생성에 필요한 기본 정보를 입력해주세요.</p>
+    return (
+        <div className="generate-bot-page">
+            <div className="generate-bot-container">
+                <div className="generate-bot-content">
+                    {/* Left Section - Bot Information */}
+                    <div className="bot-info-section">
+                        <h2 className="section-title">봇 정보 입력</h2>
+                        <p className="section-subtitle">봇 생성에 필요한 기본 정보를 입력해주세요.</p>
 
-                    <form onSubmit={handleSubmit}>
-                        <div className="form-group">
-                            <label className="form-label">
-                            회사명 <span className="required">*</span>
-                            </label>
-                            <input
-                            type="text"
+                        <Form form={form} layout="vertical" onFinish={handleSubmit} autoComplete="off" requiredMark={false}>
+                        <Form.Item
+                            label={
+                            <span className="form-label">
+                                회사명 <span className="required">*</span>
+                            </span>
+                            }
                             name="company"
-                            value={form.company}
-                            onChange={handleChange}
-                            placeholder="예시: GenBot"
-                            className="form-input"
-                            required
-                            />
-                        </div>
+                            rules={[
+                            {
+                                required: true,
+                                message: "회사명을 입력해주세요.",
+                            },
+                            {
+                                whitespace: true,
+                                message: "회사명을 입력해주세요.",
+                            },
+                            ]}
+                        >
+                            <Input placeholder="예시: GenBot" className="form-input" size="large" />
+                        </Form.Item>
 
-                        <div className="form-group">
-                            <label className="form-label">
-                            봇 이름 <span className="required">*</span>
-                            </label>
-                            <input
-                            type="text"
+                        <Form.Item
+                            label={
+                            <span className="form-label">
+                                봇 이름 <span className="required">*</span>
+                            </span>
+                            }
                             name="botName"
-                            value={form.botName}
-                            onChange={handleChange}
-                            placeholder="예시: 고객상담봇"
-                            className="form-input"
-                            required
-                            />
-                        </div>
+                            rules={[
+                            {
+                                required: true,
+                                message: "봇 이름을 입력해주세요.",
+                            },
+                            {
+                                whitespace: true,
+                                message: "봇 이름을 입력해주세요.",
+                            },
+                            ]}
+                        >
+                            <Input placeholder="예시: 고객상담봇" className="form-input" size="large" />
+                        </Form.Item>
 
-                        <div className="form-group">
-                            <label className="form-label">
-                            이메일 <span className="required">*</span>
-                            </label>
-                            <input
-                            type="email"
+                        <Form.Item
+                            label={
+                            <span className="form-label">
+                                이메일 <span className="required">*</span>
+                            </span>
+                            }
                             name="email"
-                            value={form.email}
-                            onChange={handleChange}
-                            placeholder="예시: contact@genbot.com"
-                            className="form-input"
-                            required
-                            />
-                        </div>
+                            rules={[
+                            {
+                                required: true,
+                                message: "이메일을 입력해주세요.",
+                            },
+                            {
+                                type: "email",
+                                message: "올바른 이메일 형식을 입력해주세요.",
+                            },
+                            ]}
+                        >
+                            <Input placeholder="예시: contact@genbot.com" className="form-input" size="large" />
+                        </Form.Item>
 
-                        <div className="form-group">
-                            <label className="form-label">상담원 번호</label>
-                            <input
-                            type="text"
-                            name="consultantNumber"
-                            value={form.consultantNumber}
-                            onChange={handleChange}
-                            placeholder="예시: 1588-0000"
-                            className="form-input"
-                            />
-                        </div>
+                        <Form.Item label={<span className="form-label">상담원 번호</span>} name="consultantNumber">
+                            <Input placeholder="예시: 1588-0000" className="form-input" size="large" />
+                        </Form.Item>
 
-                        <div className="form-group">
-                            <label className="form-label">인사말</label>
-                            <textarea
-                            name="greeting"
-                            value={form.greeting}
-                            onChange={handleChange}
+                        <Form.Item label={<span className="form-label">인사말</span>} name="greeting">
+                            <TextArea
                             placeholder="예시: 안녕하세요! 무엇을 도와드릴까요?"
                             className="form-input form-textarea"
+                            rows={4}
+                            size="large"
                             />
-                        </div>
-                    </form>
-                </div>
+                        </Form.Item>
+                        </Form>
+                    </div>
 
-                {/* Right Section - Data Upload */}
-                <div className="data-section">
-                    <h2 className="section-title">사용할 데이터</h2>
-                    <p className="section-subtitle">봇 학습에 사용할 데이터를 업로드하고 선택해주세요.</p>
+                    {/* Right Section - Data Upload */}
+                    <div className="data-section">
+                        <h2 className="section-title">사용할 데이터</h2>
+                        <p className="section-subtitle">봇 학습에 사용할 데이터를 업로드하고 선택해주세요.</p>
 
-                    <div className="upload-area">
+                        <div className="upload-area">
                         <div className="upload-instructions">
                             1. JSON, PDF 파일을 업로드할 수 있습니다.
                             <br />
@@ -225,45 +231,52 @@ export default function GenerateBotPage({ user }) {
                             <PlusOutlined style={{ marginRight: "8px" }} />
                             파일 업로드
                         </label>
-                    </div>
+                        </div>
 
-                    {uploadedFiles.length > 0 && (
+                        {uploadedFiles.length > 0 && (
                         <div className="file-list">
                             {uploadedFiles.map((fileObj) => (
-                                <div key={fileObj.id} className="file-item">
-                                    <div className="file-info">
-                                        <div className="file-icon">
-                                            <FileTextOutlined />
-                                        </div>
-                                        <span className="file-name">{fileObj.name}</span>
-                                    </div>
-                                    <div className="file-actions">
-                                        <button
-                                            type="button"
-                                            className="select-button"
-                                            onClick={() => handleFileSelect(fileObj.id)}
-                                            style={{
-                                                background: fileObj.selected ? "#10b981" : "#3b82f6",
-                                            }}
-                                        >
-                                            {fileObj.selected ? "선택됨" : "선택"}
-                                        </button>
-                                        <button type="button" className="remove-button" onClick={() => handleFileRemove(fileObj.id)}>
-                                            <DeleteOutlined />
-                                        </button>
-                                    </div>
+                            <div key={fileObj.id} className="file-item">
+                                <div className="file-info">
+                                <div className="file-icon">
+                                    <FileTextOutlined />
                                 </div>
+                                <span className="file-name">{fileObj.name}</span>
+                                </div>
+                                <div className="file-actions">
+                                <button
+                                    type="button"
+                                    className="select-button"
+                                    onClick={() => handleFileSelect(fileObj.id)}
+                                    style={{
+                                    background: fileObj.selected ? "#10b981" : "#3b82f6",
+                                    }}
+                                >
+                                    {fileObj.selected ? "선택됨" : "선택"}
+                                </button>
+                                <button type="button" className="remove-button" onClick={() => handleFileRemove(fileObj.id)}>
+                                    <DeleteOutlined />
+                                </button>
+                                </div>
+                            </div>
                             ))}
                         </div>
-                    )}
+                        )}
 
-                    <button type="submit" className="generate-button" onClick={handleSubmit} disabled={!isFormValid || loading}>
-                        {loading && <div className="loading-spinner"></div>}
-                        {loading ? "생성 중..." : "생성하기"}
-                    </button>
+                        <Button
+                            type="primary"
+                            size="large"
+                            className="generate-button"
+                            loading={loading}
+                            disabled={!isFormValid()}
+                            onClick={() => form.submit()}
+                            block
+                        >
+                            {loading ? "생성 중..." : "생성하기"}
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-  )
+    )
 }
