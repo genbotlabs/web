@@ -31,12 +31,6 @@ export default function ChatbotPage() {
 
   return (
     <div className="chatbot-container">
-      <header className="header">
-        <div className="header__logo">
-            <img src={logo} alt="GenBot Logo" className="header__logo-img" />
-            <span className="header__logo-text">GenBot</span>
-        </div>
-      </header>
       <div className="chat-window">
           {messages.map((msg, idx) => (
             <div key={idx} className={`message ${msg.from}`}>
