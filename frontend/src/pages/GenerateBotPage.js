@@ -10,6 +10,7 @@ export default function GenerateBotPage({ user }) {
     const navigate = useNavigate()
     const [form] = Form.useForm()
     const [loading, setLoading] = useState(false)
+    const [formValues, setFormValues] = useState({})
     const [uploadedFiles, setUploadedFiles] = useState([])
 
     const handleFileUpload = (e) => {
@@ -18,22 +19,19 @@ export default function GenerateBotPage({ user }) {
         const fileType = file.type
         const fileName = file.name.toLowerCase()
         return (
-            fileType === "application/pdf" ||
-            fileType === "application/json" ||
-            fileName.endsWith(".pdf") ||
-            fileName.endsWith(".json")
+            fileType === "application/pdf" || fileName.endsWith(".pdf")
         )
         })
 
         if (validFiles.length !== files.length) {
-        message.error("PDF 또는 JSON 파일만 업로드 가능합니다.")
+        message.error("PDF파일만 업로드 가능합니다.")
         }
 
         const newFiles = validFiles.map((file) => ({
-        id: Date.now() + Math.random(),
-        file: file,
-        name: file.name,
-        selected: false,
+            id: Date.now() + Math.random(),
+            file: file,
+            name: file.name,
+            selected: false,
         }))
 
         setUploadedFiles((prev) => [...prev, ...newFiles])
@@ -47,70 +45,85 @@ export default function GenerateBotPage({ user }) {
         setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId))
     }
 
-    const handleSubmit = async (values) => {
+    const handleGenerateBot = async () => {
+        // 1. 유효성 검사
+        console.log(form.getFieldsValue())
+        if (!form.getFieldsValue().company?.trim()) {
+            message.error("회사명을 입력해주세요.");
+            return;
+        }
+        if (!form.getFieldsValue().botName?.trim()) {
+            message.error("봇 이름을 입력해주세요.");
+            return;
+        }
+        if (!form.getFieldsValue().email?.trim()) {
+            message.error("이메일을 입력해주세요.");
+            return;
+        }
         if (uploadedFiles.length === 0) {
-        message.error("최소 1개의 파일을 업로드해주세요.")
-        return
+            message.error("최소 1개의 파일을 업로드해주세요.");
+            return;
         }
-
-        const selectedFiles = uploadedFiles.filter((file) => file.selected)
-        if (selectedFiles.length === 0) {
-        message.error("사용할 파일을 선택해주세요.")
-        return
-        }
+        // const selectedFiles = uploadedFiles.filter((file) => file.selected);
+        // if (selectedFiles.length === 0) {
+        //     message.error("사용할 파일을 선택해주세요.");
+        //     return;
+        // }
 
         setLoading(true)
 
-        const formData = new FormData()
-        const user_id = user?.user_id || "test_user"
-        formData.append("user_id", user_id)
-        formData.append("company", values.company)
-        formData.append("bot_name", values.botName)
-        formData.append("email", values.email)
-        formData.append("consultant_number", values.consultantNumber || "")
-        formData.append("greeting", values.greeting || "")
+        // 2. FormData 구성
+        const formData = new FormData();
+        const user_id = user?.user_id || "test_user";
+        formData.append("user_id", user_id);
+        formData.append("company", form.getFieldsValue().company);
+        formData.append("bot_name", form.getFieldsValue().botName);
+        formData.append("email", form.getFieldsValue().email);
+        formData.append("consultant_number", form.getFieldsValue().consultantNumber || "");
+        formData.append("greeting", form.getFieldsValue().greeting || "");
 
-        selectedFiles.forEach((fileObj) => {
-        formData.append("files", fileObj.file)
-        })
+        uploadedFiles.forEach((fileObj) => {
+            formData.append("files", fileObj.file);
+        });
 
+        console.log(formData)
+
+        // 3. API 호출
         try {
-        const response = await fetch("http://localhost:8000/bots", {
-            method: "POST",
-            body: formData,
-        })
+            const response = await fetch("http://localhost:8000/bots", {
+                method: "POST",
+                body: formData,
+            });
 
-        if (response.ok) {
-            const result = await response.json()
-            console.log("서버 응답:", result)
-            localStorage.setItem(
-            "lastBotRequest",
-            JSON.stringify({
-                ...values,
-                files: selectedFiles.map((file) => ({ name: file.name })),
-            }),
-            )
-            message.success("봇이 성공적으로 생성되었습니다!")
-            navigate("/generate/pending")
-        } else {
-            message.error("서버 오류가 발생했습니다.")
-        }
-        } catch (err) {
-        console.error("전송 실패:", err)
-        message.error("요청 중 오류가 발생했습니다.")
+            if (response.ok) {
+                const result = await response.json();
+                    localStorage.setItem(
+                        "lastBotRequest",
+                        JSON.stringify({
+                        ...form.getFieldsValue(),
+                        files: uploadedFiles.map((file) => ({ name: file.name })),
+                        }),
+                );
+                message.success("봇이 성공적으로 생성되었습니다!");
+                navigate("/generate/pending");
+            } else {
+                message.error("서버 오류가 발생했습니다.");
+            }
+        } catch (error) {
+            console.error("전송 실패:", error);
+            message.error("요청 중 오류가 발생했습니다.");
         } finally {
-        setLoading(false)
+            setLoading(false);
         }
     }
 
     const isFormValid = () => {
         const values = form.getFieldsValue()
         return (
-        values.company?.trim() &&
-        values.botName?.trim() &&
-        values.email?.trim() &&
-        uploadedFiles.length > 0 &&
-        uploadedFiles.some((file) => file.selected)
+            values.company?.trim() &&
+            values.botName?.trim() &&
+            values.email?.trim() &&
+            uploadedFiles.length > 0
         )
     }
 
@@ -123,82 +136,88 @@ export default function GenerateBotPage({ user }) {
                         <h2 className="section-title">봇 정보 입력</h2>
                         <p className="section-subtitle">봇 생성에 필요한 기본 정보를 입력해주세요.</p>
 
-                        <Form form={form} layout="vertical" onFinish={handleSubmit} autoComplete="off" requiredMark={false}>
-                        <Form.Item
-                            label={
-                            <span className="form-label">
-                                회사명 <span className="required">*</span>
-                            </span>
-                            }
-                            name="company"
-                            rules={[
-                            {
-                                required: true,
-                                message: "회사명을 입력해주세요.",
-                            },
-                            {
-                                whitespace: true,
-                                message: "회사명을 입력해주세요.",
-                            },
-                            ]}
+                        <Form 
+                            form={form} 
+                            layout="vertical" 
+                            autoComplete="off" 
+                            requiredMark={false}
+                            onValuesChange={(_, allValues) => setFormValues(allValues)}
                         >
-                            <Input placeholder="예시: GenBot" className="form-input" size="large" />
-                        </Form.Item>
+                            <Form.Item
+                                label={
+                                <span className="form-label">
+                                    회사명 <span className="required">*</span>
+                                </span>
+                                }
+                                name="company"
+                                rules={[
+                                {
+                                    required: true,
+                                    message: "회사명을 입력해주세요.",
+                                },
+                                {
+                                    whitespace: true,
+                                    message: "회사명을 입력해주세요.",
+                                },
+                                ]}
+                            >
+                                <Input placeholder="예시: GenBot" className="form-input" size="large" />
+                            </Form.Item>
 
-                        <Form.Item
-                            label={
-                            <span className="form-label">
-                                봇 이름 <span className="required">*</span>
-                            </span>
-                            }
-                            name="botName"
-                            rules={[
-                            {
-                                required: true,
-                                message: "봇 이름을 입력해주세요.",
-                            },
-                            {
-                                whitespace: true,
-                                message: "봇 이름을 입력해주세요.",
-                            },
-                            ]}
-                        >
-                            <Input placeholder="예시: 고객상담봇" className="form-input" size="large" />
-                        </Form.Item>
+                            <Form.Item
+                                label={
+                                <span className="form-label">
+                                    봇 이름 <span className="required">*</span>
+                                </span>
+                                }
+                                name="botName"
+                                rules={[
+                                {
+                                    required: true,
+                                    message: "봇 이름을 입력해주세요.",
+                                },
+                                {
+                                    whitespace: true,
+                                    message: "봇 이름을 입력해주세요.",
+                                },
+                                ]}
+                            >
+                                <Input placeholder="예시: 고객상담봇" className="form-input" size="large" />
+                            </Form.Item>
 
-                        <Form.Item
-                            label={
-                            <span className="form-label">
-                                이메일 <span className="required">*</span>
-                            </span>
-                            }
-                            name="email"
-                            rules={[
-                            {
-                                required: true,
-                                message: "이메일을 입력해주세요.",
-                            },
-                            {
-                                type: "email",
-                                message: "올바른 이메일 형식을 입력해주세요.",
-                            },
-                            ]}
-                        >
-                            <Input placeholder="예시: contact@genbot.com" className="form-input" size="large" />
-                        </Form.Item>
+                            <Form.Item
+                                label={
+                                <span className="form-label">
+                                    이메일 <span className="required">*</span>
+                                </span>
+                                }
+                                name="email"
+                                rules={[
+                                {
+                                    required: true,
+                                    message: "이메일을 입력해주세요.",
+                                },
+                                {
+                                    type: "email",
+                                    message: "올바른 이메일 형식을 입력해주세요.",
+                                },
+                                ]}
+                            >
+                                <Input placeholder="예시: contact@genbot.com" className="form-input" size="large" />
+                            </Form.Item>
 
-                        <Form.Item label={<span className="form-label">상담원 번호</span>} name="consultantNumber">
-                            <Input placeholder="예시: 1588-0000" className="form-input" size="large" />
-                        </Form.Item>
+                            <Form.Item label={<span className="form-label">상담원 번호</span>} name="consultantNumber">
+                                <Input placeholder="예시: 1588-0000" className="form-input" size="large" />
+                            </Form.Item>
 
-                        <Form.Item label={<span className="form-label">인사말</span>} name="greeting">
-                            <TextArea
-                            placeholder="예시: 안녕하세요! 무엇을 도와드릴까요?"
-                            className="form-input form-textarea"
-                            rows={4}
-                            size="large"
-                            />
-                        </Form.Item>
+                            <Form.Item label={<span className="form-label">인사말</span>} name="greeting">
+                                <TextArea
+                                placeholder="예시: 안녕하세요! 무엇을 도와드릴까요?"
+                                className="form-input form-textarea"
+                                rows={4}
+                                size="large"
+                                />
+                            </Form.Item>
                         </Form>
                     </div>
 
@@ -227,8 +246,14 @@ export default function GenerateBotPage({ user }) {
                             id="file-upload"
                         />
 
+                        {/* <FileUploadBox
+                            onFileChange={setUploadedFiles}
+                            validationResult={validationResult}
+                            setValidationResult={setValidationResult}
+                        /> */}
+
                         <label htmlFor="file-upload" className="upload-button">
-                            <PlusOutlined style={{ marginRight: "8px" }} />
+                            <PlusOutlined style={{ margin: "8px" }} />
                             파일 업로드
                         </label>
                         </div>
@@ -244,7 +269,7 @@ export default function GenerateBotPage({ user }) {
                                 <span className="file-name">{fileObj.name}</span>
                                 </div>
                                 <div className="file-actions">
-                                <button
+                                {/* <button
                                     type="button"
                                     className="select-button"
                                     onClick={() => handleFileSelect(fileObj.id)}
@@ -253,7 +278,7 @@ export default function GenerateBotPage({ user }) {
                                     }}
                                 >
                                     {fileObj.selected ? "선택됨" : "선택"}
-                                </button>
+                                </button> */}
                                 <button type="button" className="remove-button" onClick={() => handleFileRemove(fileObj.id)}>
                                     <DeleteOutlined />
                                 </button>
@@ -263,7 +288,7 @@ export default function GenerateBotPage({ user }) {
                         </div>
                         )}
 
-                        <Button
+                        {/* <Button
                             type="primary"
                             size="large"
                             className="generate-button"
@@ -273,10 +298,21 @@ export default function GenerateBotPage({ user }) {
                             block
                         >
                             {loading ? "생성 중..." : "생성하기"}
-                        </Button>
+                        </Button> */}
                     </div>
                 </div>
             </div>
+            <Button
+                type="primary"
+                size="large"
+                className="generate-button"
+                loading={loading}
+                disabled={!isFormValid()}
+                onClick={handleGenerateBot}
+                block
+            >
+                {loading ? "생성 중..." : "생성하기"}
+            </Button>
         </div>
     )
 }
