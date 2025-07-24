@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional, EmailStr
+from pydantic import BaseModel, Field, EmailStr
+from typing import List, Optional
 
 
 # 데이터 목록

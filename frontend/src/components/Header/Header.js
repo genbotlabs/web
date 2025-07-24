@@ -1,35 +1,62 @@
-import './Header.css';
+import React from 'react';
+import { useNavigate, Link, NavLink } from 'react-router-dom';
+import { Avatar, Dropdown } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import logo from '../../icons/logo.png';
-import { Link } from 'react-router-dom';
+import '../Header/Header.css';
 
-export default function Header({ user }) {
+
+export default function Header({ user, setUser }) {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.clear();
+        setUser(null);
+        alert("로그아웃 완료");
+        navigate('/');
+    };
+
+    const handleDeleteAccount = () => {
+        localStorage.clear();
+        setUser(null);
+        alert("회원 탈퇴 완료");
+        navigate('/');
+    };
+
+    const userMenu = (
+        <div className="user-menu">
+            {/* <p>{user.name}</p> */}
+            <p>사용중인 plan</p>
+            <p onClick={handleLogout}>로그아웃</p>
+            <p onClick={handleDeleteAccount} className="danger">회원 탈퇴</p>
+        </div>
+    );
+
     return (
-        <header className="header">
-            <div className="header__logo">
-                <img src={logo} alt="GenBot Logo" className="header__logo-img" />
-                <span className="header__logo-text">GenBot</span>
+        <header className="header-container">
+            <div className="header-left">
+                <img src={logo} alt="GenBot"/>
+                <span>GenBot</span>
             </div>
-            <nav className="header__nav">
-                <ul className="header__menu">
-                    <li><Link to="/">홈</Link></li>
-                    <li><Link to="/generate">봇 생성</Link></li>
-                    <li><Link to="/guide">GenBot 사용법</Link></li>
-                    <li><Link to="/pricing">요금제</Link></li>
-                    <li><Link to="/pricing">체험하기</Link></li>
-                </ul>
-            </nav>
-            <div className="header__login">
+            <div className="header-menu">
+                {/* <NavLink to="/">홈</NavLink> */}
+                {/* <NavLink to="/myaccount">내 계정</NavLink> */}
+                {/* <NavLink to="/dashboard">봇 관리</NavLink> */}
+                {/* <NavLink to="/generate">봇 생성</NavLink> */}
+            </div>
+            <div className="header-right">
                 {user ? (
-                    <Link to="/mypage">
-                        <img
-                            src={user.profile_image}
-                            alt="프로필"
-                            className="header__profile-img"
-                            style={{ width: "36px", height: "36px", borderRadius: "50%" }}
+                    <Dropdown overlay={userMenu} placement="bottomRight">
+                        <Avatar 
+                            src={user.profile_image} 
+                            icon={<UserOutlined />} 
+                            style={{ cursor: 'pointer' }} 
                         />
+                    </Dropdown>
+                ) : (       
+                    <Link to="/login">
+                        로그인하기
                     </Link>
-                ) : (
-                    <Link to="/login" id="login-button">로그인</Link>
                 )}
             </div>
         </header>
