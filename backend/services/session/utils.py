@@ -12,20 +12,20 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-s3_bucket = os.getenv("S3_BUCKET")
-s3_prefix = os.getenv("S3_PREFIX")
-local_model_path = os.getenv("LOCAL_MODEL_PATH")
+# s3_bucket = os.getenv("S3_BUCKET")
+# s3_prefix = os.getenv("S3_PREFIX")
+model_path = os.getenv("MODEL_PATH")
 
 # --- S3 Whisper 모델 동기화 ---
-def s3_sync_folder(bucket, s3_prefix, local_dir):
-    s3 = boto3.resource('s3')
-    bucket = s3.Bucket(bucket)
-    for obj in bucket.objects.filter(Prefix=s3_prefix):
-        if obj.key.endswith("/"): continue
-        rel_path = os.path.relpath(obj.key, s3_prefix)
-        local_path = os.path.join(local_dir, rel_path)
-        os.makedirs(os.path.dirname(local_path), exist_ok=True)
-        bucket.download_file(obj.key, local_path)
+# def s3_sync_folder(bucket, s3_prefix, local_dir):
+#     s3 = boto3.resource('s3')
+#     bucket = s3.Bucket(bucket)
+#     for obj in bucket.objects.filter(Prefix=s3_prefix):
+#         if obj.key.endswith("/"): continue
+#         rel_path = os.path.relpath(obj.key, s3_prefix)
+#         local_path = os.path.join(local_dir, rel_path)
+#         os.makedirs(os.path.dirname(local_path), exist_ok=True)
+#         bucket.download_file(obj.key, local_path)
 
 # --- VAD 처리 함수 ---
 # librosa로 VAD 처리: 에너지 기반으로 음성 구간만 추출
@@ -60,8 +60,8 @@ def vad_librosa(input_path, output_path, frame_length=2048, hop_length=512, ener
     return True
 
 def prepare_whisper_model():
-    if not (os.path.exists(local_model_path) and len(os.listdir(local_model_path)) > 2):
-        s3_sync_folder(s3_bucket, s3_prefix, local_model_path)
+    # if not (os.path.exists(model_path) and len(os.listdir(model_path)) > 2):
+    #     s3_sync_folder(s3_bucket, s3_prefix, local_model_path)
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     # # no faster_whisper
@@ -76,7 +76,7 @@ def prepare_whisper_model():
     # faster_whisper
 
     return WhisperModel(
-        local_model_path,
+        model_path,
         device=device,
     )
 

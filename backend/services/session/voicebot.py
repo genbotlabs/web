@@ -12,6 +12,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+session_turns = {}
+
+def get_next_turn(session_id, sender):
+    if sender == "user":
+        session_turns[session_id] = session_turns.get(session_id, 0) + 1
+    return session_turns.get(session_id, 1)
+
 # 1. STT 서비스 (음성→텍스트)
 async def voicebot_service(session_id: str, audio: UploadFile, db):
     # 세션 존재 확인
@@ -19,10 +26,10 @@ async def voicebot_service(session_id: str, audio: UploadFile, db):
     session = result.scalar_one_or_none()
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
-    turn_result = await db.execute(
-        select(func.max(VoiceLog.turn)).where(VoiceLog.session_id == session_id)
-    )
-    turn = (turn_result.scalar_one() or 0) + 1
+    
+    # 세션이 존재하면 turn 번호 계산
+    # turn 번호는 해당 세션의 최대 turn + 1
+    turn = get_next_turn(session_id, "user")
 
     with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_in:
         shutil.copyfileobj(audio.file, tmp_in)
