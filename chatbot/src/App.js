@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from  'react-router-dom';
+import 'antd/dist/reset.css'; 
 
 import './App.css';
 import ChatbotPage from './pages/ChatbotPage';
