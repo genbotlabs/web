@@ -56,26 +56,20 @@
     display: flex;
     align-items: center;
 }
-  
-/* Custom Card Styles */
+
 .custom-card {
     border-radius: 1rem;
     background: white;
     transition: all 0.3s ease;
 }
 
-.custom-card-bordered {
-    border: 1px solid #e5e7eb;
+.feature-card {
+    border: 1.5px solid #e1e1e1 !important; 
+    box-shadow: 0 6px 20px rgba(37,99,235,0.2);
 }
 
-.custom-card-borderless {
-    border: none;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
-.custom-card-hoverable:hover {
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    transform: translateY(-5px);
+.feature-card:hover {
+    box-shadow: 0 12px 38px rgba(147, 181, 255, 0.2);
 }
 
 .custom-card-body {
@@ -220,16 +214,17 @@
 }
 
 .subtext {
-    margin-top: 20px;
+    margin-top: 30px;
     color: #555;
     line-height: 1.6;
+    font-size: 1.5rem;
 }
 
 .hero-section {
     max-width: 1200px;
     margin: 0 auto;
     margin-top: 60px !important;
-    padding: 4rem 1rem 6rem;
+    padding: 4rem 1rem;
     text-align: center;
 }
 
@@ -263,6 +258,7 @@
     font-size: 1.25rem !important;
     max-width: 48rem;
     margin: 0 auto !important;
+    margin-bottom: 30px !important;
 }
 
 @media (min-width: 768px) {
@@ -278,8 +274,9 @@
 .btn-primary-custom {
     background-color: #2563eb;
     color: white;
-    padding: 20px 30px;
+    padding: 20px 40px;
     font-size: 1.2rem;
+    margin-top: 20px;
 }
 
 .btn-primary-custom:hover {
@@ -304,6 +301,7 @@
     font-size: 0.875rem;
     color: #6b7280;
     justify-content: center;
+    margin-top: 10px;
 }
   
 .star-icon {
@@ -312,12 +310,12 @@
   
 /* Features Section Styles */
 .features-section {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 4rem 1rem;
+    padding: 2rem 1rem;
 }
   
-  .features-header {
+.features-header {
     text-align: center;
     margin-bottom: 4rem;
 }
@@ -332,14 +330,20 @@
     margin: 0 auto !important;
 }
 
+.features-card {
+    width: 500px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
 .feature-content {
     text-align: center;
     padding: 1rem;
 }
   
 .feature-icon-container {
-    width: 4rem;
-    height: 4rem;
+    width: 5rem;
+    height: 5rem;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -385,7 +389,7 @@
   
   /* CTA Section Styles */
 .cta-section {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 4rem 1rem;
   }

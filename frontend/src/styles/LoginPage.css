@@ -1,91 +1,163 @@
-@import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
-.login__section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-family: 'Alexandria', 'Noto Sans KR', sans-serif;
-    justify-content: center;
-    padding: 20px;
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* background-color: #f8fafc; */
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  padding: 20px;
 }
 
-.logo__container {
-    margin:100px;
-    margin-bottom: 15px;
+.login-container {
+  background: white;
+  border-radius: 16px;
+  /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); */
+  padding: 48px;
+  width: 100%;
+  max-width: 500px;
 }
 
-.logo__container>img {
-    width: 130px;
-    height: 130px;
-    display: block;
-    margin: 0 auto;
+.login-header {
+  text-align: center;
+  margin-bottom: 40px;
 }
 
-.logo__container>p {
-    font-weight: bold;
-    font-size: 64px;
+.login-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 8px 0;
 }
 
-.login__container {
-    flex-direction: column;           
-    /* margin-top: 40px;  */
-    display: flex;
-    align-items: center;
-    gap: 8px; 
+.login-subtitle {
+  font-size: 18px;
+  color: #6b7280;
+  margin: 0;
 }
 
-/* .login__container>img {
-    padding:5px;
-} */
-
-.email-login,
-.kakao-login,
-.google-login,
-.github-login {
-    display: inline-flex;
-    font-family: 'Alexandria', 'Noto Sans KR', sans-serif;
-    font-weight: bold;
+.social-login-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.email-login {
-    background-color: #007BFF;
-    border-style: none;
-    color: white;
+.social-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  color: #374151;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
 }
 
-.kakao-login {
-    background-color: #FEE702;
-    border-style: none;
+.social-button:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.google-login {
-    background-color: #FFFFFF;
-    border: 1px solid #E6E6E6;
+.social-button img {
+  width: 28px;
+  height: 28px;
 }
 
-.github-login {
-    background-color: #000000;
-    border-style: none;
-    color: white;
+.google-button {
+  border-color: #e5e7eb;
 }
 
-.email-login>p,
-.kakao-login>p,
-.google-login>p,
-.github-login>p {
-    font-size:20px
+.google-button:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
 }
 
-.login__container>button {
-    padding: 20px 50px 20px 50px;
-    font-size: 20px;
-    text-align: center;
-    align-items: center;
-    width: 300px;             /* 고정 너비 설정 */
-    height: 60px;             /* 고정 높이 설정 */
-    padding: 0 20px; 
+.kakao-button {
+  background: #fee500 !important;
+  border-color: #fee500 !important;
+  color: #000 !important;
 }
 
-.login__container>button>img {
-    padding:10px;
+.kakao-button:hover {
+  background: #fdd835 !important;
+  border-color: #fdd835 !important;
+}
+
+.naver-button {
+  background: #03c75a !important;
+  border-color: #03c75a !important;
+  color: white !important;
+}
+
+.naver-button:hover {
+  background: #03c75a !important;
+  border-color: #03c75a !important;
+}
+
+.footer-text {
+  text-align: center;
+  margin-top: 32px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.footer-text a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.footer-text a:hover {
+  text-decoration: underline;
+}
+
+/* 로딩 상태 */
+.social-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f4f6;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .login-container {
+    padding: 32px 24px;
+    margin: 16px;
+  }
+
+  .login-title {
+    font-size: 28px;
+  }
+
+  .social-button {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
 }
