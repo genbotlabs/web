@@ -88,7 +88,50 @@ export default function ChatbotPage() {
   };
 
   const sendVoice = () => {
-    console.log('음성 전송');
+    const botId = searchParams.get('bot_id') || 'a1';
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      const audioChunks = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        audioChunks.push(event.data);
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });  // 서버에서 wav 변환 (ffmpeg -i voice.webm voice.wav)
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'voice.webm');
+
+        try {
+          const res = await fetch(`http://localhost:8000/bots/${botId}/stt`, {
+            method: 'POST',
+            body: formData,
+          });
+
+          const data = await res.json(); // expect { text: "질문입니다." }
+          if (data.text) {
+            setInput(data.text);   // 사용자가 입력한 것처럼 입력창에 채움
+            sendMessage(data.text); // sendMessage 함수에 텍스트 전달
+          } else {
+            alert('음성 인식에 실패했습니다.');
+          }
+        } catch (err) {
+          console.error('STT 전송 실패:', err);
+          alert('음성 전송 중 오류가 발생했습니다.');
+        }
+      };
+
+      mediaRecorder.start();
+      setTimeout(() => {
+        mediaRecorder.stop();
+      }, 3000); // 녹음 시간: 3초
+
+    } catch (err) {
+      console.error('마이크 권한 오류:', err);
+      alert('마이크 권한이 필요합니다.');
+    }
   }
 
   return (
