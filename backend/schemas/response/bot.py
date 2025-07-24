@@ -22,8 +22,6 @@ class BotDetailItem(BaseModel):
     created_at: datetime = Field(..., example="2025-07-14T12:00:00Z")
     updated_at: datetime = Field(..., example="2025-07-14T12:10:00Z")
 
-# 봇 생성
-# 봇 상세 조회
 # 봇 수정
 class BotDetailResponse(BaseModel):
     bot: BotDetailItem
