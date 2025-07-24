@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import Header from '../components/Header/Header';
 import '../styles/ChatbotPage.css';
-// import logo from '../icons/logo.png'
+import logo from '../icons/logo.png'
 import send from '../icons/send.png'
 
 export default function ChatbotPage() {
