@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   SearchOutlined,
   PlusOutlined,
@@ -6,78 +6,48 @@ import {
   CalendarOutlined,
   FilterOutlined,
   MoreOutlined,
+  DeleteOutlined 
 } from "@ant-design/icons"
-import { Drawer, Tag } from "antd"
+import { Drawer, Tag, Modal, Popconfirm, message, DatePicker } from "antd"
 import "../styles/DashBoardPage.css"
 import { useNavigate } from "react-router-dom"
+import axios from "axios"
+import dayjs from "dayjs";
+
+const { RangePicker } = DatePicker;
 
 export default function DashBoardPage({ user }) {
+  const [bots, setBots] = useState([])
+  const [deletedBotId, setDeletedBotId] = useState(null);
   const [selectedRows, setSelectedRows] = useState([])
   const [activeTab, setActiveTab] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [drawerVisible, setDrawerVisible] = useState(false)
   const [selectedBot, setSelectedBot] = useState(null)
-
+  const [previewVisible, setPreviewVisible] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState("")
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 4;
+  const [dateRange, setDateRange] = useState([null, null]);
   const navigate = useNavigate()
 
-  const data = [
-    {
-      bot_id: "bot_001",
-      company_name: "GenBot",
-      bot_name: "문의",
-      status: "활성화",
-      email: "user@example.com",
-      cs_number: "1522-0000",
-      created_at: "2025-07-14T12:00:00Z",
-      updated_at: "2025-07-14T12:10:00Z",
-      data: [
-        {
-          data_id: "data_001",
-          data_name: "문의",
-          url: "s3://genbot-json-s3/data/세부주제정리.pdf",
-          created_at: "2025-07-14T12:00:00Z",
-          updated_at: "2025-07-14T12:10:00Z",
-        },
-        {
-          data_id: "data_002",
-          data_name: "test",
-          url: "s3://genbot-json-s3/data/세부주제정리.pdf",
-          created_at: "2025-07-14T12:00:00Z",
-          updated_at: "2025-07-14T12:10:00Z",
-        },
-      ],
-    },
-    {
-      bot_id: "bot_002",
-      company_name: "GenBot",
-      bot_name: "상담",
-      status: "비활성화",
-      email: "support@genbot.com",
-      cs_number: "1522-0101",
-      created_at: "2025-07-14T12:00:00Z",
-      updated_at: "2025-07-14T12:10:00Z",
-    },
-    {
-      bot_id: "bot_003",
-      company_name: "GenBot",
-      bot_name: "문의",
-      status: "삭제",
-      email: "user@example.com",
-      cs_number: "1522-0000",
-      created_at: "2025-07-14T12:00:00Z",
-      updated_at: "2025-07-14T12:10:00Z",
-    },
-    {
-      bot_id: "bot_004",
-      company_name: "GenBot",
-      bot_name: "상담",
-      status: "오류",
-      email: "support@genbot.com",
-      cs_number: "1522-0101",
-      created_at: "2025-07-14T12:00:00Z",
-      updated_at: "2025-07-14T12:10:00Z",
-    },
-  ]
+  useEffect(() => {
+    console.log("DashBoard useEffect 실행됨. user:", user)
+    if (!user?.user_id) return;
+  
+    const fetchBots = async () => {
+      try {
+        console.log("user.user_id", user.user_id)
+        const response = await axios.get(`http://localhost:8000/bots/${user.user_id}`)
+        console.log("response", response)
+        setBots(response.data.bots)
+      } catch (error) {
+        console.error("봇 목록 가져오기 실패:", error)
+      }
+    }
+  
+    fetchBots()
+  }, [user])
 
   const getStatusBadge = (status) => {
     const statusClasses = {
@@ -90,7 +60,7 @@ export default function DashBoardPage({ user }) {
     return <span className={statusClasses[status] || "status-badge status-inactive"}>{status}</span>
   }
 
-  const filteredData = data.filter((bot) => {
+  const filteredData = bots.filter((bot) => {
     const matchesTab =
       activeTab === "all" ||
       (activeTab === "active" && bot.status === "활성화") ||
@@ -101,22 +71,28 @@ export default function DashBoardPage({ user }) {
       bot.bot_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       bot.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       bot.email.toLowerCase().includes(searchQuery.toLowerCase())
+    
+    const [startDate, endDate] = dateRange || [];
+    const matchesDate =
+      !startDate || !endDate ||
+      (dayjs(bot.created_at).isAfter(startDate, "day") &&
+       dayjs(bot.created_at).isBefore(endDate, "day"));
 
-    return matchesTab && matchesSearch
+    return matchesTab && matchesSearch && matchesDate
   })
 
   const getTabCount = (tabKey) => {
-    if (tabKey === "all") return data.length
-    if (tabKey === "active") return data.filter((bot) => bot.status === "활성화").length
-    if (tabKey === "inactive") return data.filter((bot) => bot.status === "비활성화").length
-    if (tabKey === "error") return data.filter((bot) => bot.status === "오류").length
+    if (tabKey === "all") return bots.length
+    if (tabKey === "active") return bots.filter((bot) => bot.status === "활성화").length
+    if (tabKey === "inactive") return bots.filter((bot) => bot.status === "비활성화").length
+    if (tabKey === "error") return bots.filter((bot) => bot.status === "오류").length
     return 0
   }
 
   const handleRowSelect = (botId, checked) => {
     if (checked) {
-      const bot = data.find((b) => b.bot_id === botId)
-      setSelectedRows([botId]) // 단일 선택으로 변경
+      const bot = bots.find((b) => b.bot_id === botId)
+      setSelectedRows([botId]) // 단일 선택
       setSelectedBot(bot)
       setDrawerVisible(true)
     } else {
@@ -128,7 +104,6 @@ export default function DashBoardPage({ user }) {
 
   const handleSelectAll = (checked) => {
     if (checked) {
-      // 전체 선택 시에는 drawer를 열지 않음
       setSelectedRows(filteredData.map((bot) => bot.bot_id))
     } else {
       setSelectedRows([])
@@ -141,6 +116,55 @@ export default function DashBoardPage({ user }) {
     navigate("/generate")
   }
 
+  const handleClickFile = async (url) => {
+    const s3Key = url.split(".com/")[1]
+    try {
+      const response = await axios.get(`http://localhost:8000/s3?s3_key=${s3Key}`)
+      
+      setPreviewUrl(response.data.url)
+      setPreviewVisible(true)
+    } catch (err) {
+      alert("파일을 미리보기할 수 없습니다.")
+      console.error(err)
+    }
+  }
+
+  const handleClickBotName = (botId) => {
+    const chatbotUrl = process.env.REACT_APP_CHATBOT_URL
+    window.location.href = `${chatbotUrl}/?bot_id=${botId}`
+  }
+
+  const handleDeleteBot = async (botId) => {
+    try {
+      await axios.delete(`http://localhost:8000/bots/${botId}`)
+      setDeletedBotId(botId);
+      message.success("봇이 삭제되었습니다.")
+      setBots(prev => prev.filter(bot => bot.bot_id !== botId))
+
+      if (selectedBot?.bot_id === botId) {
+        setDrawerVisible(false);
+        setSelectedBot(null);
+        setSelectedRows([]);
+      }
+    } catch (error) {
+      console.error("삭제 실패:", error)
+      message.error("삭제에 실패했습니다.")
+    }
+  }
+  
+  useEffect(() => {
+    if (deletedBotId) {
+      setBots((prevBots) => prevBots.filter(bot => bot.bot_id !== deletedBotId));
+      setDeletedBotId(null);
+    }
+  }, [deletedBotId]);
+
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
   return (
     <div className="dashboard-main">
       <div className="dashboard-container">
@@ -148,7 +172,7 @@ export default function DashBoardPage({ user }) {
         <div className="dashboard-header">
           <div className="dashboard-title-section">
             <h1>봇 목록</h1>
-            <p className="dashboard-subtitle">{data.length}개의 상담봇</p>
+            <p className="dashboard-subtitle">{bots.length}개의 상담봇</p>
           </div>
           <div className="dashboard-actions">
             <button className="export-button">
@@ -164,33 +188,21 @@ export default function DashBoardPage({ user }) {
         {/* Tabs */}
         <div className="dashboard-tabs">
           <div className="tabs-list">
-            <button
-              className={`tab-trigger ${activeTab === "all" ? "active" : ""}`}
-              onClick={() => setActiveTab("all")}
-            >
-              전체 봇<span className="tab-count">{getTabCount("all")}</span>
-            </button>
-            <button
-              className={`tab-trigger ${activeTab === "active" ? "active" : ""}`}
-              onClick={() => setActiveTab("active")}
-            >
-              활성화
-              <span className="tab-count">{getTabCount("active")}</span>
-            </button>
-            <button
-              className={`tab-trigger ${activeTab === "inactive" ? "active" : ""}`}
-              onClick={() => setActiveTab("inactive")}
-            >
-              비활성화
-              <span className="tab-count">{getTabCount("inactive")}</span>
-            </button>
-            <button
-              className={`tab-trigger ${activeTab === "error" ? "active" : ""}`}
-              onClick={() => setActiveTab("error")}
-            >
-              생성 중 오류
-              <span className="tab-count">{getTabCount("error")}</span>
-            </button>
+            {[
+              { key: "all", label: "전체 봇" },
+              { key: "active", label: "활성화" },
+              { key: "inactive", label: "비활성화" },
+              { key: "error", label: "생성 중 오류" },
+            ].map((tab) => (
+              <button
+                key={tab.key}
+                className={`tab-trigger ${activeTab === tab.key ? "active" : ""}`}
+                onClick={() => setActiveTab(tab.key)}
+              >
+                {tab.label}
+                <span className="tab-count">{getTabCount(tab.key)}</span>
+              </button>
+            ))}
           </div>
 
           {/* Search and Filters */}
@@ -206,10 +218,10 @@ export default function DashBoardPage({ user }) {
               />
             </div>
             <div className="filter-buttons">
-              <button className="filter-button">
-                <CalendarOutlined />
-                Jan 6, 2022 – Jan 13, 2022
-              </button>
+              <RangePicker
+                onChange={(dates) => setDateRange(dates)}
+                style={{ marginRight: "12px" }}
+              />
               <button className="filter-button">
                 <FilterOutlined />
                 Filters
@@ -230,17 +242,17 @@ export default function DashBoardPage({ user }) {
                       onChange={(e) => handleSelectAll(e.target.checked)}
                     />
                   </th>
-                  <th>ID</th>
+                  <th>상담봇 명</th>
                   <th>회사명</th>
-                  <th>봇 이름</th>
+                  <th>상태</th>
                   <th>대표 이메일</th>
                   <th>고객센터</th>
-                  <th>상태</th>
-                  <th></th>
+                  <th>생성일</th>
+                  <th style={{ width: "80px" }}>삭제</th>
                 </tr>
               </thead>
               <tbody className="table-body">
-                {filteredData.map((bot) => (
+                {paginatedData.map((bot) => (
                   <tr key={bot.bot_id}>
                     <td>
                       <input
@@ -250,16 +262,32 @@ export default function DashBoardPage({ user }) {
                         onChange={(e) => handleRowSelect(bot.bot_id, e.target.checked)}
                       />
                     </td>
-                    <td style={{ fontWeight: "500" }}>{bot.bot_id}</td>
+                    <td 
+                      style={{ fontWeight: "500", color: "#1890ff", cursor: "pointer", textDecoration: "underline" }}
+                      onClick={() => handleClickBotName(bot.bot_id)}
+                    >
+                      {bot.bot_name}
+                    </td>
                     <td>{bot.company_name}</td>
-                    <td>{bot.bot_name}</td>
+                    <td style={{ fontSize: "20px" }}>{getStatusBadge(bot.status || "비활성화")}</td>
                     <td>{bot.email}</td>
                     <td>{bot.cs_number}</td>
-                    <td style={{ fontSize: "20px" }}>{getStatusBadge(bot.status)}</td>
                     <td>
-                      <button className="action-button">
-                        <MoreOutlined />
-                      </button>
+                      {new Date(bot.created_at).toLocaleDateString("ko-KR", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric"
+                      })}
+                    </td>
+                    <td>
+                      <Popconfirm
+                        title="정말 삭제하시겠습니까?"
+                        onConfirm={() => handleDeleteBot(bot.bot_id)}
+                        okText="삭제"
+                        cancelText="취소"
+                      >
+                        <DeleteOutlined style={{ color: "red", cursor: "pointer" }} />
+                      </Popconfirm>
                     </td>
                   </tr>
                 ))}
@@ -269,19 +297,36 @@ export default function DashBoardPage({ user }) {
 
           {/* Pagination */}
           <div className="pagination">
-            <button className="pagination-button" disabled>
+            <button
+              className="pagination-button"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            >
               ← Previous
             </button>
+
             <div className="pagination-numbers">
-              <button className="page-number active">1</button>
-              <button className="page-number">2</button>
-              <button className="page-number">3</button>
-              <span className="page-ellipsis">...</span>
-              <button className="page-number">8</button>
-              <button className="page-number">9</button>
-              <button className="page-number">10</button>
+              {[...Array(totalPages)].map((_, i) => {
+                const page = i + 1;
+                return (
+                  <button
+                    key={page}
+                    className={`page-number ${currentPage === page ? "active" : ""}`}
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </button>
+                );
+              })}
             </div>
-            <button className="pagination-button">Next →</button>
+
+            <button
+              className="pagination-button"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            >
+              Next →
+            </button>
           </div>
         </div>
       </div>
@@ -301,7 +346,7 @@ export default function DashBoardPage({ user }) {
         {selectedBot && (
           <div style={{ lineHeight: "1.8" }}>
             <p>
-              <b>Bot ID:</b> {selectedBot.bot_id}
+              <b>챗봇 바로가기:</b>
             </p>
             <p>
               <b>회사명:</b> {selectedBot.company_name}
@@ -324,11 +369,11 @@ export default function DashBoardPage({ user }) {
             <p>
               <b>수정일:</b> {new Date(selectedBot.updated_at).toLocaleString()}
             </p>
-            {selectedBot.data && (
+            {selectedBot.files && (
               <div style={{ marginTop: "24px" }}>
                 <b>연결 데이터 목록</b>
                 <ul style={{ marginTop: "12px", paddingLeft: "0" }}>
-                  {selectedBot.data.map((item) => (
+                  {selectedBot.files.map((item) => (
                     <li
                       key={item.data_id}
                       style={{
@@ -340,15 +385,10 @@ export default function DashBoardPage({ user }) {
                       }}
                     >
                       <div style={{ fontWeight: "bold", marginBottom: "4px" }}>
-                        • {item.data_name} ({item.data_id})
+                        • {item.name} ({item.data_id})
                       </div>
-                      <div style={{ fontSize: "0.9em", color: "#666", marginBottom: "4px", wordBreak: "break-all" }}>
-                        {item.url}
-                      </div>
-                      <div style={{ fontSize: "0.85em", color: "#999" }}>
-                        생성: {new Date(item.created_at).toLocaleString()}
-                        <br />
-                        수정: {new Date(item.updated_at).toLocaleString()}
+                      <div style={{ fontSize: "0.9em", color: "#666", marginBottom: "4px", wordBreak: "break-all" }} onClick={() => handleClickFile(item.storage_url)}>
+                        {item.storage_url}
                       </div>
                     </li>
                   ))}
@@ -357,6 +397,26 @@ export default function DashBoardPage({ user }) {
             )}
           </div>
         )}
+        <Modal
+          open={previewVisible}
+          onCancel={() => setPreviewVisible(false)}
+          footer={null}
+          width="80%"
+          title="파일 미리보기"
+          style={{ top: 20 }}
+        >
+          <h1>hi</h1>
+          {previewUrl.includes(".pdf") ? (
+            <iframe
+              src={previewUrl}
+              width="100%"
+              height="600px"
+              style={{ border: "none" }}
+            />
+          ) : (
+            <p>미리보기를 지원하지 않는 파일 형식입니다.</p>
+          )}
+        </Modal>
       </Drawer>
     </div>
   )

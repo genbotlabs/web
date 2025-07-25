@@ -1,4 +1,6 @@
 from fastapi import APIRouter, HTTPException, Path
+import uuid
+
 from schemas.request.bot import BotCreateRequest, BotUpdateRequest
 from schemas.response.bot import (
     BotDetailResponse,
@@ -7,8 +9,6 @@ from schemas.response.bot import (
     UploadedDataListResponse,
     BotDetailItem
 )
-from datetime import datetime
-from uuid import uuid4
 from fastapi import Form, File, UploadFile
 from typing import List
 from fastapi import Depends, Query
@@ -16,36 +16,46 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.get_db import get_db  
 from schemas.response.bot import BotDeleteResponse
 from services.bot.service import service_create_bot,bot_list,delete_bot , update_bot
+from services.bot.utils import generate_unique_bot_id
 
 router = APIRouter()
 
 
-# 봇 생성 (완료)
-@router.post("", response_model=BotDetailResponse)
+# 봇 생성
+@router.post("/", response_model=BotDetailResponse)
 async def create_bot(
-    company: str = Form(...),
-    usage: str = Form(...),
-    greeting: str = Form(""),
-    description: str = Form(""),
     user_id: int = Form(...),
-    type: str = Form(...),
+    company_name: str = Form(...),
+    bot_name: str = Form(...),
+    email: str = Form(...),
+    cs_number: str = Form(...),
+    first_text: str = Form(...),
     files: List[UploadFile] = File(...),
-    db: AsyncSession = Depends(get_db) 
+    db: AsyncSession = Depends(get_db)
 ):
+    print("user_id",user_id,"company_name",company_name,"bot_name",bot_name,"email",email,"cs_number",cs_number,"first_text",first_text,"files",files)
+    print("db",db)
+
+    bot_id = await generate_unique_bot_id(db)
+    # bot_id = str(bot_id)
+    print('bot_id',bot_id)
+
     return await service_create_bot(
-        company=company,
-        usage=usage,
-        greeting=greeting,
-        description=description,
+        db=db,
+        bot_id=bot_id,
         user_id=user_id,
-        type=type,
+        company_name=company_name,
+        bot_name=bot_name,
+        email=email,
+        cs_number=cs_number,
+        first_text=first_text,
         files=files
     )
 
 # 봇 목록 조회
-@router.get("/bots/{bot_id}", response_model=BotListResponse)
+@router.get("/{user_id}", response_model=BotListResponse)
 async def get_bot_list(
-    user_id: int = Query(..., description="조회할 사용자의 ID"),
+    user_id: int,
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -55,24 +65,21 @@ async def get_bot_list(
     return BotListResponse(bots=bots)
 
 # 봇 삭제
-@router.delete("/bots/{bot_id}", response_model=BotDeleteResponse)
+@router.delete("/{bot_id}", response_model=BotDeleteResponse)
 async def delete_user_bot(
-    bot_id: int = Path(..., description="삭제할 봇 ID"),
-    user_id: int = Query(..., description="사용자 ID"),
+    bot_id: str,
     db: AsyncSession = Depends(get_db)
 ):
     """
     user_id가 소유한 봇 중에서 특정 봇 ID를 삭제합니다.
     """
-    await delete_bot(bot_id=bot_id, user_id=user_id, db=db)
-    return {"message": f"봇 {bot_id} 삭제 완료"}
+    return await delete_bot(bot_id=bot_id, db=db)
 
 # 봇 수정
-@router.patch("/bots/{bot_id}", response_model=BotDeleteResponse)
+@router.patch("/{bot_id}", response_model=BotDeleteResponse)
 async def patch_bot_info(
-    bot_id: int = Path(..., description="수정할 봇 ID"),
-    user_id: int = Query(..., description="수정 요청한 사용자 ID"),
+    bot_id: str,
     update_data: BotUpdateRequest = Depends(),
     db: AsyncSession = Depends(get_db)
 ):
-    return await update_bot(bot_id, user_id, update_data, db)
+    return await update_bot(bot_id, update_data, db)

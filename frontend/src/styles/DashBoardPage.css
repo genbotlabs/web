@@ -12,7 +12,7 @@ body {
 }
 
 .dashboard-container {
-  max-width: 1200px;
+    width: 80%;
   margin: 0 auto;
   padding: 24px;
 }
@@ -77,6 +77,12 @@ body {
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.2s;
+}
+
+.nav-button svg {
+    color: #1F5FF8;
+    font-size: 60px;
+    font-weight: bold;
 }
   
 .add-button:hover {
