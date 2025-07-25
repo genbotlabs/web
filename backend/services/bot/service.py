@@ -110,13 +110,14 @@ async def service_create_bot(
 
         return {
             "bot": BotDetailItem(
-                bot_id="bot_" + str(detail.detail_id),
-                company_name=detail.company_name,
-                bot_name=detail.bot_name,
-                first_text=detail.first_text,
-                email=detail.email,
-                cs_number=detail.cs_number,
-                data=data_items,
+                user_id=user_id,
+                bot_id=bot_id,
+                company_name=company_name,
+                bot_name=bot_name,
+                email=email,
+                cs_number=cs_number,
+                first_text=first_text,
+                files=data_items,
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow()
             )
@@ -137,15 +138,16 @@ async def bot_list(user_id: int, db: AsyncSession) -> List[BotDetailItem]:
 
     return [
         BotDetailItem(
-            bot_id=str(detail.detail_id),
+            user_id=detail.user_id,
+            bot_id=detail.bot_id,
             company_name=detail.company_name,
             bot_name=detail.bot_name,
-            first_text=detail.first_text or "",
             email=detail.email,
+            first_text=detail.first_text,
             cs_number=detail.cs_number,
-            data=[
+            files=[
                 BotDataItemResponse(
-                    data_id=str(d.data_id),
+                    data_id=d.data_id,
                     filename=d.filename,
                     type=d.type,
                     storage_url=d.storage_url
@@ -157,9 +159,10 @@ async def bot_list(user_id: int, db: AsyncSession) -> List[BotDetailItem]:
         for detail in details
     ]
 
+
 # 봇 삭제
 async def delete_bot(bot_id: str, user_id: int, db: AsyncSession):
-    # 1. UUID로 CSbot 조회
+    # csbot 조회
     result = await db.execute(
         select(CSbot).where(CSbot.bot_id == bot_id, CSbot.user_id == user_id)
     )
@@ -167,29 +170,28 @@ async def delete_bot(bot_id: str, user_id: int, db: AsyncSession):
     if not csbot:
         raise HTTPException(status_code=404, detail="봇이 존재하지 않거나 삭제 권한이 없습니다.")
 
-    # 2. 해당 detail_id로 Detail 조회
-    result = await db.execute(
-        select(Detail).where(Detail.detail_id == csbot.detail_id)
-    )
-    detail = result.scalar_one_or_none()
+    # # detail 조회
+    # result = await db.execute(
+    #     select(Detail).where(Detail.detail_id == csbot.detail_id)
+    # )
+    # detail = result.scalar_one_or_none()
 
-    # 3. 연결된 Data 삭제
-    for data in detail.datas:
-        await db.delete(data)
+    # # 3. 연결된 Data 삭제
+    # for data in detail.datas:
+    #     await db.delete(data)
 
-    # 4. Detail 삭제
-    await db.delete(detail)
+    # # 4. Detail 삭제
+    # await db.delete(detail)
 
-    # 5. CSbot 삭제
+    # csbot 삭제
     await db.delete(csbot)
 
     await db.commit()
 
 
-
 # 봇 수정
 async def update_bot(
-    bot_id: int,
+    bot_id: str,
     user_id: int,
     update_data: BotUpdateRequest,
     db: AsyncSession

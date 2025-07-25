@@ -67,7 +67,7 @@ async def get_bot_list(
 # 봇 삭제
 @router.delete("/bots/{bot_id}", response_model=BotDeleteResponse)
 async def delete_user_bot(
-    bot_id: int = Path(..., description="삭제할 봇 ID"),
+    bot_id: str = Path(..., description="삭제할 봇 ID"),
     user_id: int = Query(..., description="사용자 ID"),
     db: AsyncSession = Depends(get_db)
 ):
@@ -80,7 +80,7 @@ async def delete_user_bot(
 # 봇 수정
 @router.patch("/bots/{bot_id}", response_model=BotDeleteResponse)
 async def patch_bot_info(
-    bot_id: int = Path(..., description="수정할 봇 ID"),
+    bot_id: str = Path(..., description="수정할 봇 ID"),
     user_id: int = Query(..., description="수정 요청한 사용자 ID"),
     update_data: BotUpdateRequest = Depends(),
     db: AsyncSession = Depends(get_db)
