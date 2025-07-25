@@ -7,7 +7,7 @@ import {
   FilterOutlined,
   MoreOutlined,
 } from "@ant-design/icons"
-import { Drawer, Tag } from "antd"
+import { Drawer, Tag, Modal } from "antd"
 import "../styles/DashBoardPage.css"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
@@ -19,6 +19,8 @@ export default function DashBoardPage({ user }) {
   const [searchQuery, setSearchQuery] = useState("")
   const [drawerVisible, setDrawerVisible] = useState(false)
   const [selectedBot, setSelectedBot] = useState(null)
+  const [previewVisible, setPreviewVisible] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState("")
 
   const navigate = useNavigate()
 
@@ -99,6 +101,11 @@ export default function DashBoardPage({ user }) {
 
   const handleAddBot = () => {
     navigate("/generate")
+  }
+
+  const handleClickFile = (url) => {
+    setPreviewUrl(url)
+    setPreviewVisible(true)
   }
 
   return (
@@ -288,15 +295,10 @@ export default function DashBoardPage({ user }) {
                       }}
                     >
                       <div style={{ fontWeight: "bold", marginBottom: "4px" }}>
-                        • {item.data_name} ({item.data_id})
+                        • {item.name} ({item.data_id})
                       </div>
-                      <div style={{ fontSize: "0.9em", color: "#666", marginBottom: "4px", wordBreak: "break-all" }}>
-                        {item.url}
-                      </div>
-                      <div style={{ fontSize: "0.85em", color: "#999" }}>
-                        생성: {new Date(item.created_at).toLocaleString()}
-                        <br />
-                        수정: {new Date(item.updated_at).toLocaleString()}
+                      <div style={{ fontSize: "0.9em", color: "#666", marginBottom: "4px", wordBreak: "break-all" }} onClick={() => handleClickFile(item.storage_url)}>
+                        {item.storage_url}
                       </div>
                     </li>
                   ))}
@@ -305,6 +307,25 @@ export default function DashBoardPage({ user }) {
             )}
           </div>
         )}
+        <Modal
+          open={previewVisible}
+          onCancel={() => setPreviewVisible(false)}
+          footer={null}
+          width="80%"
+          title="파일 미리보기"
+          style={{ top: 20 }}
+        >
+          {previewUrl.endsWith(".pdf") ? (
+            <iframe
+              src={previewUrl}
+              width="100%"
+              height="600px"
+              style={{ border: "none" }}
+            />
+          ) : (
+            <p>미리보기를 지원하지 않는 파일 형식입니다.</p>
+          )}
+        </Modal>
       </Drawer>
     </div>
   )

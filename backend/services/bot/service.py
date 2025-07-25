@@ -173,6 +173,9 @@ async def bot_list(user_id: int, db: AsyncSession) -> List[BotDetailItem]:
             for data in data_items
         ]
 
+        for file in files:
+            print('/////',file.storage_url)
+
         bot_items.append(
             BotDetailItem(
                 user_id=csbot.user_id,
