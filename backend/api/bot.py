@@ -53,7 +53,7 @@ async def create_bot(
     )
 
 # 봇 목록 조회
-@router.get("/bots/{bot_id}", response_model=BotListResponse)
+@router.get("/{user_id}", response_model=BotListResponse)
 async def get_bot_list(
     user_id: int,
     db: AsyncSession = Depends(get_db)
@@ -65,7 +65,7 @@ async def get_bot_list(
     return BotListResponse(bots=bots)
 
 # 봇 삭제
-@router.delete("/bots/{bot_id}", response_model=BotDeleteResponse)
+@router.delete("/{bot_id}", response_model=BotDeleteResponse)
 async def delete_user_bot(
     bot_id: str,
     db: AsyncSession = Depends(get_db)
@@ -77,7 +77,7 @@ async def delete_user_bot(
     return {"message": f"봇 {bot_id} 삭제 완료"}
 
 # 봇 수정
-@router.patch("/bots/{bot_id}", response_model=BotDeleteResponse)
+@router.patch("/{bot_id}", response_model=BotDeleteResponse)
 async def patch_bot_info(
     bot_id: str,
     update_data: BotUpdateRequest = Depends(),

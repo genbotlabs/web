@@ -94,7 +94,7 @@ async def service_create_bot(
             data_items.append(
                 BotDataItemResponse(
                     data_id=data.data_id,
-                    filename=file.filename,
+                    name=file.filename,
                     storage_url=url
                 )
             )
@@ -132,33 +132,63 @@ async def service_create_bot(
 
 # 봇 목록 조회
 async def bot_list(user_id: int, db: AsyncSession) -> List[BotDetailItem]:
-    result = await db.execute(
-        select(Detail).where(Detail.user_id == user_id)
-    )
-    details = result.scalars().all()
+    '''
+        1. csbot.user_id와 user_id가 일치하는 csbot 테이블을 조회
+        2. csbot.detail_id를 detail 테이블의 detail_id와 일치하는 detail 테이블을 조회
+        3. detail 테이블의 detail_id를 data 테이블의 detail_id와 일치하는 data 테이블을 조회
+    '''
 
-    return [
-        BotDetailItem(
-            user_id=detail.user_id,
-            bot_id=detail.bot_id,
-            company_name=detail.company_name,
-            bot_name=detail.bot_name,
-            email=detail.email,
-            first_text=detail.first_text,
-            cs_number=detail.cs_number,
-            files=[
-                BotDataItemResponse(
-                    data_id=d.data_id,
-                    filename=d.filename,
-                    # type=d.type,
-                    storage_url=d.storage_url
-                ) for d in detail.datas
-            ],
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+    bot_items = []
+
+    # 1번. csbot 테이블 조회
+    result = await db.execute(
+        select(CSbot).where(CSbot.user_id == user_id)
+    )
+    csbots = result.scalars().all()
+    
+    # 2번
+    for csbot in csbots:
+        # detail 테이블 조회
+        detail_result = await db.execute(
+            select(Detail).where(Detail.detail_id == csbot.detail_id)
         )
-        for detail in details
-    ]
+        detail = detail_result.scalar_one_or_none()
+
+        if not detail:
+            continue
+
+        # Data 목록 조회
+        data_result = await db.execute(
+            select(Data).where(Data.detail_id == detail.detail_id)
+        )
+        data_items = data_result.scalars().all()
+
+        # files: List[BotDataItemResponse] 구성
+        files = [
+            BotDataItemResponse(
+                data_id=data.data_id,
+                name=data.name,
+                storage_url=data.storage_url
+            )
+            for data in data_items
+        ]
+
+        bot_items.append(
+            BotDetailItem(
+                user_id=csbot.user_id,
+                bot_id=csbot.bot_id,
+                company_name=detail.company_name,
+                bot_name=detail.bot_name,
+                email=detail.email,
+                cs_number=detail.cs_number,
+                first_text=detail.first_text,
+                files=files,
+                created_at=csbot.created_at,
+                updated_at=csbot.updated_at
+            )
+        )
+    
+    return bot_items
 
 
 # 봇 삭제
@@ -238,7 +268,7 @@ async def update_bot(
             files=[
                 BotDataItemResponse(
                     data_id=d.data_id,
-                    filename=d.filename,
+                    name=d.name,
                     storage_url=d.storage_url
                 ) for d in detail.datas
             ],
