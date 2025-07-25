@@ -84,21 +84,22 @@ async def service_create_bot(
             data = Data(
                 detail_id=detail.detail_id,
                 name=file.filename,
-                type=True,
+                # type=True,
                 storage_url=url
             )
             db.add(data)
+            await db.commit()
+            await db.refresh(data)
 
             data_items.append(
                 BotDataItemResponse(
-                    data_id=str(uuid4()),
+                    data_id=data.data_id,
                     filename=file.filename,
-                    # type=1,
                     storage_url=url
                 )
             )
 
-        await db.commit()
+        # await db.commit()
 
         print("✅ data 테이블 저장 완료")
         print('✅ pdf 파싱 시작')

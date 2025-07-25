@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   SearchOutlined,
   PlusOutlined,
@@ -10,6 +10,7 @@ import {
 import { Drawer, Tag } from "antd"
 import "../styles/DashBoardPage.css"
 import { useNavigate } from "react-router-dom"
+import axios from "axios"
 
 export default function DashBoardPage({ user }) {
   const [selectedRows, setSelectedRows] = useState([])
@@ -19,6 +20,20 @@ export default function DashBoardPage({ user }) {
   const [selectedBot, setSelectedBot] = useState(null)
 
   const navigate = useNavigate()
+
+  // useEffect(async () => {
+  //   try {
+  //     const response = await axios.get(`http://localhost:8000/bots/${bot_id}`)
+  //     console.log(response.data)
+
+  //     if (response.ok) {
+  //       const result = await response.json()
+  //       console.log(result) 
+  //     }
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }, [])
 
   const data = [
     {
