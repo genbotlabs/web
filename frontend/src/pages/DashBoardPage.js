@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   SearchOutlined,
   PlusOutlined,
@@ -10,8 +10,10 @@ import {
 import { Drawer, Tag } from "antd"
 import "../styles/DashBoardPage.css"
 import { useNavigate } from "react-router-dom"
+import axios from "axios"
 
 export default function DashBoardPage({ user }) {
+  const [bots, setBots] = useState([])
   const [selectedRows, setSelectedRows] = useState([])
   const [activeTab, setActiveTab] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
@@ -20,64 +22,23 @@ export default function DashBoardPage({ user }) {
 
   const navigate = useNavigate()
 
-  const data = [
-    {
-      bot_id: "bot_001",
-      company_name: "GenBot",
-      bot_name: "문의",
-      status: "활성화",
-      email: "user@example.com",
-      cs_number: "1522-0000",
-      created_at: "2025-07-14T12:00:00Z",
-      updated_at: "2025-07-14T12:10:00Z",
-      data: [
-        {
-          data_id: "data_001",
-          data_name: "문의",
-          url: "s3://genbot-json-s3/data/세부주제정리.pdf",
-          created_at: "2025-07-14T12:00:00Z",
-          updated_at: "2025-07-14T12:10:00Z",
-        },
-        {
-          data_id: "data_002",
-          data_name: "test",
-          url: "s3://genbot-json-s3/data/세부주제정리.pdf",
-          created_at: "2025-07-14T12:00:00Z",
-          updated_at: "2025-07-14T12:10:00Z",
-        },
-      ],
-    },
-    {
-      bot_id: "bot_002",
-      company_name: "GenBot",
-      bot_name: "상담",
-      status: "비활성화",
-      email: "support@genbot.com",
-      cs_number: "1522-0101",
-      created_at: "2025-07-14T12:00:00Z",
-      updated_at: "2025-07-14T12:10:00Z",
-    },
-    {
-      bot_id: "bot_003",
-      company_name: "GenBot",
-      bot_name: "문의",
-      status: "삭제",
-      email: "user@example.com",
-      cs_number: "1522-0000",
-      created_at: "2025-07-14T12:00:00Z",
-      updated_at: "2025-07-14T12:10:00Z",
-    },
-    {
-      bot_id: "bot_004",
-      company_name: "GenBot",
-      bot_name: "상담",
-      status: "오류",
-      email: "support@genbot.com",
-      cs_number: "1522-0101",
-      created_at: "2025-07-14T12:00:00Z",
-      updated_at: "2025-07-14T12:10:00Z",
-    },
-  ]
+  useEffect(() => {
+    console.log("DashBoard useEffect 실행됨. user:", user)
+    if (!user?.user_id) return;
+  
+    const fetchBots = async () => {
+      try {
+        console.log("user.user_id", user.user_id)
+        const response = await axios.get(`http://localhost:8000/bots/${user.user_id}`)
+        console.log("response", response)
+        setBots(response.data.bots)
+      } catch (error) {
+        console.error("봇 목록 가져오기 실패:", error)
+      }
+    }
+  
+    fetchBots()
+  }, [user])
 
   const getStatusBadge = (status) => {
     const statusClasses = {
@@ -90,7 +51,7 @@ export default function DashBoardPage({ user }) {
     return <span className={statusClasses[status] || "status-badge status-inactive"}>{status}</span>
   }
 
-  const filteredData = data.filter((bot) => {
+  const filteredData = bots.filter((bot) => {
     const matchesTab =
       activeTab === "all" ||
       (activeTab === "active" && bot.status === "활성화") ||
@@ -106,17 +67,17 @@ export default function DashBoardPage({ user }) {
   })
 
   const getTabCount = (tabKey) => {
-    if (tabKey === "all") return data.length
-    if (tabKey === "active") return data.filter((bot) => bot.status === "활성화").length
-    if (tabKey === "inactive") return data.filter((bot) => bot.status === "비활성화").length
-    if (tabKey === "error") return data.filter((bot) => bot.status === "오류").length
+    if (tabKey === "all") return bots.length
+    if (tabKey === "active") return bots.filter((bot) => bot.status === "활성화").length
+    if (tabKey === "inactive") return bots.filter((bot) => bot.status === "비활성화").length
+    if (tabKey === "error") return bots.filter((bot) => bot.status === "오류").length
     return 0
   }
 
   const handleRowSelect = (botId, checked) => {
     if (checked) {
-      const bot = data.find((b) => b.bot_id === botId)
-      setSelectedRows([botId]) // 단일 선택으로 변경
+      const bot = bots.find((b) => b.bot_id === botId)
+      setSelectedRows([botId]) // 단일 선택
       setSelectedBot(bot)
       setDrawerVisible(true)
     } else {
@@ -128,7 +89,6 @@ export default function DashBoardPage({ user }) {
 
   const handleSelectAll = (checked) => {
     if (checked) {
-      // 전체 선택 시에는 drawer를 열지 않음
       setSelectedRows(filteredData.map((bot) => bot.bot_id))
     } else {
       setSelectedRows([])
@@ -148,7 +108,7 @@ export default function DashBoardPage({ user }) {
         <div className="dashboard-header">
           <div className="dashboard-title-section">
             <h1>봇 목록</h1>
-            <p className="dashboard-subtitle">{data.length}개의 상담봇</p>
+            <p className="dashboard-subtitle">{bots.length}개의 상담봇</p>
           </div>
           <div className="dashboard-actions">
             <button className="export-button">
@@ -164,33 +124,21 @@ export default function DashBoardPage({ user }) {
         {/* Tabs */}
         <div className="dashboard-tabs">
           <div className="tabs-list">
-            <button
-              className={`tab-trigger ${activeTab === "all" ? "active" : ""}`}
-              onClick={() => setActiveTab("all")}
-            >
-              전체 봇<span className="tab-count">{getTabCount("all")}</span>
-            </button>
-            <button
-              className={`tab-trigger ${activeTab === "active" ? "active" : ""}`}
-              onClick={() => setActiveTab("active")}
-            >
-              활성화
-              <span className="tab-count">{getTabCount("active")}</span>
-            </button>
-            <button
-              className={`tab-trigger ${activeTab === "inactive" ? "active" : ""}`}
-              onClick={() => setActiveTab("inactive")}
-            >
-              비활성화
-              <span className="tab-count">{getTabCount("inactive")}</span>
-            </button>
-            <button
-              className={`tab-trigger ${activeTab === "error" ? "active" : ""}`}
-              onClick={() => setActiveTab("error")}
-            >
-              생성 중 오류
-              <span className="tab-count">{getTabCount("error")}</span>
-            </button>
+            {[
+              { key: "all", label: "전체 봇" },
+              { key: "active", label: "활성화" },
+              { key: "inactive", label: "비활성화" },
+              { key: "error", label: "생성 중 오류" },
+            ].map((tab) => (
+              <button
+                key={tab.key}
+                className={`tab-trigger ${activeTab === tab.key ? "active" : ""}`}
+                onClick={() => setActiveTab(tab.key)}
+              >
+                {tab.label}
+                <span className="tab-count">{getTabCount(tab.key)}</span>
+              </button>
+            ))}
           </div>
 
           {/* Search and Filters */}
@@ -255,7 +203,7 @@ export default function DashBoardPage({ user }) {
                     <td>{bot.bot_name}</td>
                     <td>{bot.email}</td>
                     <td>{bot.cs_number}</td>
-                    <td style={{ fontSize: "20px" }}>{getStatusBadge(bot.status)}</td>
+                    <td style={{ fontSize: "20px" }}>{getStatusBadge(bot.status || "비활성화")}</td>
                     <td>
                       <button className="action-button">
                         <MoreOutlined />
@@ -324,11 +272,11 @@ export default function DashBoardPage({ user }) {
             <p>
               <b>수정일:</b> {new Date(selectedBot.updated_at).toLocaleString()}
             </p>
-            {selectedBot.data && (
+            {selectedBot.files && (
               <div style={{ marginTop: "24px" }}>
                 <b>연결 데이터 목록</b>
                 <ul style={{ marginTop: "12px", paddingLeft: "0" }}>
-                  {selectedBot.data.map((item) => (
+                  {selectedBot.files.map((item) => (
                     <li
                       key={item.data_id}
                       style={{

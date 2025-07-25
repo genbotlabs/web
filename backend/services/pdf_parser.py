@@ -55,6 +55,8 @@ def parse_pdfs_from_s3(bucket_name: str, base_folder: str):
         logger=logger,
     )
 
+    print("Parser API 사용 가능")
+
     health_status = client.health_check()
     if health_status["status"] != "ok":
         print("Parser API 사용 불가1")
