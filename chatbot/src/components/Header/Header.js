@@ -5,7 +5,6 @@ import './Header.css';
 
 
 export default function Header() {
-
     const handleClick = () => {
         window.location.href = '/';
     }

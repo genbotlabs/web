@@ -36,10 +36,15 @@ export default function ChatbotPage() {
     setLoading(true);
 
     try {
+      const turn = messages.filter(msg => msg.from === 'user').length + 1;
       const response = await fetch(`http://localhost:8000/bots/${botId}/sllm`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: input })
+        body: JSON.stringify({ 
+          turn: turn, 
+          role: 'user', 
+          content: input 
+        })
       });
 
       if (!response.body) throw new Error('스트림 body 없음 오류');
@@ -169,7 +174,6 @@ export default function ChatbotPage() {
 
   return (
     <div className="chatbot-container">
-      <Header />
       <div className="chat-window">
           {messages.map((msg, idx) => (
             <div key={idx} className={`message ${msg.from}`}>
