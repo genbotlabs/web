@@ -14,7 +14,7 @@ app.add_middleware(
 
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(chatbot.router, prefix="/chatbot", tags=["Chatbot"])
-app.include_router(voicebot.router, prefix="/voicebot", tags=["Voicebot"])
+# app.include_router(voicebot.router, prefix="/voicebot", tags=["Voicebot"])
 app.include_router(bot.router, prefix="/bots", tags=["Bot"])
 # app.include_router(session.router, prefix="/sessions", tags=["Session"])
 app.include_router(model_bot.router, prefix="/sessions", tags=["ModelBot"])
