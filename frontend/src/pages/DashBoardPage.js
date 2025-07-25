@@ -54,7 +54,7 @@ export default function DashBoardPage({ user }) {
       활성화: "status-badge status-active",
       비활성화: "status-badge status-inactive",
       삭제: "status-badge status-deleted",
-      오류: "status-badge status-error",
+      제작중: "status-badge status-pending",
     }
 
     return <span className={statusClasses[status] || "status-badge status-inactive"}>{status}</span>
@@ -222,10 +222,10 @@ export default function DashBoardPage({ user }) {
                 onChange={(dates) => setDateRange(dates)}
                 style={{ marginRight: "12px" }}
               />
-              <button className="filter-button">
+              {/* <button className="filter-button">
                 <FilterOutlined />
                 Filters
-              </button>
+              </button> */}
             </div>
           </div>
 
@@ -355,7 +355,7 @@ export default function DashBoardPage({ user }) {
               <b>봇 이름:</b> {selectedBot.bot_name}
             </p>
             <p>
-              <b>상태:</b> <Tag>{selectedBot.status}</Tag>
+              <b>상태:</b> {getStatusBadge(selectedBot.status)}
             </p>
             <p>
               <b>대표 이메일:</b> {selectedBot.email}
