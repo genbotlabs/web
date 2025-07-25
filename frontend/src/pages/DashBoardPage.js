@@ -8,10 +8,13 @@ import {
   MoreOutlined,
   DeleteOutlined 
 } from "@ant-design/icons"
-import { Drawer, Tag, Modal, Popconfirm, message } from "antd"
+import { Drawer, Tag, Modal, Popconfirm, message, DatePicker } from "antd"
 import "../styles/DashBoardPage.css"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
+import dayjs from "dayjs";
+
+const { RangePicker } = DatePicker;
 
 export default function DashBoardPage({ user }) {
   const [bots, setBots] = useState([])
@@ -25,6 +28,7 @@ export default function DashBoardPage({ user }) {
   const [previewUrl, setPreviewUrl] = useState("")
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
+  const [dateRange, setDateRange] = useState([null, null]);
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -67,8 +71,13 @@ export default function DashBoardPage({ user }) {
       bot.bot_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       bot.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       bot.email.toLowerCase().includes(searchQuery.toLowerCase())
+    
+    const matchesDate =
+      !dateRange[0] || !dateRange[1] || // 날짜 선택 안 했으면 통과
+      (dayjs(bot.created_at).isAfter(dateRange[0], "day") &&
+       dayjs(bot.created_at).isBefore(dateRange[1], "day"));
 
-    return matchesTab && matchesSearch
+    return matchesTab && matchesSearch && matchesDate
   })
 
   const getTabCount = (tabKey) => {
@@ -208,10 +217,10 @@ export default function DashBoardPage({ user }) {
               />
             </div>
             <div className="filter-buttons">
-              <button className="filter-button">
-                <CalendarOutlined />
-                Jan 6, 2022 – Jan 13, 2022
-              </button>
+              <RangePicker
+                onChange={(dates) => setDateRange(dates)}
+                style={{ marginRight: "12px" }}
+              />
               <button className="filter-button">
                 <FilterOutlined />
                 Filters
