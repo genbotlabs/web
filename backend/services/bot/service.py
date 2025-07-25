@@ -23,6 +23,7 @@ from models.csbot import CSbot
 async def service_create_bot(
     db: AsyncSession,
     bot_id: str,
+    user_id: int,
     company: str,
     bot_name: str,
     email: str,
@@ -30,14 +31,33 @@ async def service_create_bot(
     greeting: str,
     files: List[UploadFile],
 ):
+
+    '''
+        1. user_id로 csbot 생성
+        2. detail 생성
+        3. data 생성
+    '''
+
     try:
+        csbot = CSbot(
+            bot_id=bot_id,
+            user_id=user_id,
+            bot_url=f'http://localhost:3000/?bot_id={bot_id}',
+            status=0,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
+        )
+        db.add(csbot)
+        await db.commit()
+        await db.refresh(csbot)
+
         detail = Detail(
             bot_id=bot_id,
             company=company,
             bot_name=bot_name,
+            greeting=greeting,
             email=email,
-            consultant_number=consultant_number,
-            greeting=greeting
+            consultant_number=consultant_number
         )
         db.add(detail)
         await db.commit()
@@ -50,19 +70,21 @@ async def service_create_bot(
             url = upload_pdf_to_s3(file.file, file.filename, folder_name)
 
             data = Data(
+                detail_id=detail.detail_id,
                 name=file.filename,
                 type=True,
-                storage_url=url,
-                detail_id=detail.detail_id
+                storage_url=url
             )
             db.add(data)
 
-            data_items.append(BotDataItemResponse(
-                data_id=str(uuid4()),
-                filename=file.filename,
-                type=1,
-                storage_url=url
-            ))
+            data_items.append(
+                BotDataItemResponse(
+                    data_id=str(uuid4()),
+                    filename=file.filename,
+                    type=1,
+                    storage_url=url
+                )
+            )
 
         await db.commit()
 

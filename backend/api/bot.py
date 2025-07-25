@@ -43,6 +43,7 @@ async def create_bot(
     return await service_create_bot(
         db=db,
         bot_id=bot_id,
+        user_id=user_id,
         company=company,
         bot_name=bot_name,
         email=email,
