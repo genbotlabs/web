@@ -55,7 +55,7 @@ async def create_bot(
 # 봇 목록 조회
 @router.get("/bots/{bot_id}", response_model=BotListResponse)
 async def get_bot_list(
-    user_id: int = Query(..., description="조회할 사용자의 ID"),
+    user_id: int,
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -67,22 +67,20 @@ async def get_bot_list(
 # 봇 삭제
 @router.delete("/bots/{bot_id}", response_model=BotDeleteResponse)
 async def delete_user_bot(
-    bot_id: str = Path(..., description="삭제할 봇 ID"),
-    user_id: int = Query(..., description="사용자 ID"),
+    bot_id: str,
     db: AsyncSession = Depends(get_db)
 ):
     """
     user_id가 소유한 봇 중에서 특정 봇 ID를 삭제합니다.
     """
-    await delete_bot(bot_id=bot_id, user_id=user_id, db=db)
+    await delete_bot(bot_id=bot_id, db=db)
     return {"message": f"봇 {bot_id} 삭제 완료"}
 
 # 봇 수정
 @router.patch("/bots/{bot_id}", response_model=BotDeleteResponse)
 async def patch_bot_info(
-    bot_id: str = Path(..., description="수정할 봇 ID"),
-    user_id: int = Query(..., description="수정 요청한 사용자 ID"),
+    bot_id: str,
     update_data: BotUpdateRequest = Depends(),
     db: AsyncSession = Depends(get_db)
 ):
-    return await update_bot(bot_id, user_id, update_data, db)
+    return await update_bot(bot_id, update_data, db)
