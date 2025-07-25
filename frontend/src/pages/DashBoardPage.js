@@ -247,6 +247,7 @@ export default function DashBoardPage({ user }) {
                   <th>상태</th>
                   <th>대표 이메일</th>
                   <th>고객센터</th>
+                  <th>생성일</th>
                   <th style={{ width: "80px" }}>삭제</th>
                 </tr>
               </thead>
@@ -271,6 +272,13 @@ export default function DashBoardPage({ user }) {
                     <td style={{ fontSize: "20px" }}>{getStatusBadge(bot.status || "비활성화")}</td>
                     <td>{bot.email}</td>
                     <td>{bot.cs_number}</td>
+                    <td>
+                      {new Date(bot.created_at).toLocaleDateString("ko-KR", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric"
+                      })}
+                    </td>
                     <td>
                       <Popconfirm
                         title="정말 삭제하시겠습니까?"
