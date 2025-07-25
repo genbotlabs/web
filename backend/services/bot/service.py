@@ -53,6 +53,8 @@ async def service_create_bot(
         await db.commit()
         await db.refresh(csbot)
 
+        print("✅ csbot 테이블 저장 완료")
+
         detail = Detail(
             bot_id=bot_id,
             company_name=company_name,
@@ -65,9 +67,13 @@ async def service_create_bot(
         await db.commit()
         await db.refresh(detail)
 
+        print("✅ detail 테이블 저장 완료")
+
         csbot.detail_id = detail.detail_id
         await db.commit()
         await db.refresh(csbot)
+
+        print("✅ csbot 테이블 detail_id 업데이트 완료")
 
         data_items = []
         folder_name = f"bot_{detail.company_name}_{detail.detail_id}"
@@ -94,7 +100,10 @@ async def service_create_bot(
 
         await db.commit()
 
-        # ✅ S3 파서 (동기 함수여도 상관없음)
+        print("✅ data 테이블 저장 완료")
+        print('✅ pdf 파싱 시작')
+
+        # s3에서 pdf 파싱
         bucket_name = os.getenv("AWS_S3_BUCKET_NAME")
         parse_message = parse_pdfs_from_s3(bucket_name, folder_name)
         print(">>>",parse_message)
