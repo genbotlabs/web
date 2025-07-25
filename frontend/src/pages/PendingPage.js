@@ -34,7 +34,7 @@ export default function PendingPage({user}) {
                 </thead>
                 <tbody>
                     <tr>
-                        <td>{botInfo.type.join(', ')}</td>
+                        <td>{Array.isArray(botInfo.type) ? botInfo.type.join(', ') : '-'}</td>
                         <td>{botInfo.company}</td>
                         <td>{botInfo.purpose}</td>
                         <td>{botInfo.description || '-'}</td>

@@ -6,12 +6,14 @@ import shutil
 import logging
 from pathlib import Path
 from dotenv import load_dotenv
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from teddynote_parser_client.client import TeddyNoteParserClient
+from langchain_core.documents import Document
 
 load_dotenv()
 
+# S3 클라이언트 설정
 s3 = boto3.client(
     's3',
     region_name=os.getenv("AWS_S3_REGION"),
@@ -19,8 +21,25 @@ s3 = boto3.client(
     aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
 )
 
+def load_documents_from_pkl(pkl_path: str):
+    """Pickle 파일에서 Langchain Document 리스트를 불러오는 함수"""
+    abs_path = os.path.abspath(pkl_path)
+    with open(abs_path, "rb") as f:
+        raw = pickle.load(f)
+
+    documents = []
+    for doc in raw:
+        if isinstance(doc, Document):
+            documents.append(doc)
+        elif isinstance(doc, dict) and "page_content" in doc:
+            documents.append(Document(**doc))
+        else:
+            print(f"[경고] 예상치 못한 형식: {type(doc)} in {pkl_path}")
+    return documents
+
 def parse_pdfs_from_s3(bucket_name: str, base_folder: str):
     logger = logging.getLogger("teddynote_parser_client")
+    logging.basicConfig(level=logging.INFO)
 
     API_URL = os.getenv("PARSER_API_URL")
     UPSTAGE_API_KEY = os.getenv("UPSTAGE_API_KEY")
@@ -52,9 +71,9 @@ def parse_pdfs_from_s3(bucket_name: str, base_folder: str):
     input_dir = temp_dir / "input"
     output_dir = temp_dir / "output"
     vectordb_dir = temp_dir / "vectordb"
+    input_dir.mkdir(parents=True, exist_ok=True)
     output_dir.mkdir(parents=True, exist_ok=True)
     vectordb_dir.mkdir(parents=True, exist_ok=True)
-    input_dir.mkdir(parents=True, exist_ok=True)
 
     # S3에서 input PDF 다운로드
     response = s3.list_objects_v2(Bucket=bucket_name, Prefix=input_prefix)
@@ -67,11 +86,8 @@ def parse_pdfs_from_s3(bucket_name: str, base_folder: str):
 
         parse_result = client.parse_pdf(pdf_path=str(local_pdf_path), batch_size=50, language="Korean")
         job_id = parse_result["job_id"]
-        final_status = client.wait_for_job_completion(
-            job_id, 
-            check_interval=5,  # 5초마다 체크
-            max_attempts=60    # 최대 60회 (총 300초, 5분 대기)
-        )
+        final_status = client.wait_for_job_completion(job_id, check_interval=5, max_attempts=60)
+
         if final_status["status"] == "completed":
             zip_path, extract_path = client.download_result(
                 job_id=job_id,
@@ -90,29 +106,35 @@ def parse_pdfs_from_s3(bucket_name: str, base_folder: str):
             s3_result_key = os.path.join(output_prefix, file)
             s3.upload_file(str(local_result_path), bucket_name, s3_result_key)
 
-    # .pkl 파일에서 Document 로드
-    pkl_files = glob.glob(str(output_dir / "*" / "*.pkl"))
+    # load_documents_from_pkl 함수 사용하여 .pkl 로드
+    pkl_files = glob.glob(str(output_dir / "**" / "*.pkl"),recursive=True)
+    print("[DEBUG] pkl_files:", pkl_files)
     all_documents = []
     for pkl_file in pkl_files:
-        with open(pkl_file, "rb") as f:
-            documents = pickle.load(f)
-            all_documents.extend(documents)
+        docs = load_documents_from_pkl(pkl_file)
+        print(f"[INFO] {pkl_file} → {len(docs)}개 문서 로드됨")
+        all_documents.extend(docs)
 
-    # embeddings = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-large-instruct")
-    # vectorstore = FAISS.from_documents(all_documents, embeddings)
+    if not all_documents:
+        raise ValueError("Document 리스트가 비어 있습니다. pkl 파일 확인 필요")
 
-    # # FAISS 벡터DB를 임시폴더에 저장
-    # vectorstore.save_local(str(vectordb_dir))
+    # 임베딩, 벡터DB 생성
+    embeddings = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-large-instruct")
+    vectorstore = FAISS.from_documents(all_documents, embeddings)
 
-    # # 벡터DB 파일을 S3에 업로드
-    # for root, _, files in os.walk(vectordb_dir):
-    #     for file in files:
-    #         local_vector_path = Path(root) / file
-    #         relative_path = local_vector_path.relative_to(vectordb_dir)
-    #         s3_vector_key = os.path.join(vectordb_prefix, str(relative_path))
-    #         s3.upload_file(str(local_vector_path), bucket_name, s3_vector_key)
+    # FAISS 벡터DB 저장
+    vectorstore.save_local(str(vectordb_dir))
 
-    # 임시파일 정리
+    # 벡터DB S3에 업로드
+    for root, _, files in os.walk(vectordb_dir):
+        for file in files:
+            local_vector_path = Path(root) / file
+            relative_path = local_vector_path.relative_to(vectordb_dir)
+            s3_vector_key = os.path.join(vectordb_prefix, str(relative_path))
+            s3.upload_file(str(local_vector_path), bucket_name, s3_vector_key)
+
+    # 임시파일 삭제
     shutil.rmtree(temp_dir)
+    print("임시파일 정리 완료!")
 
-    return "✅ PDF 파싱 및 벡터DB 생성, 결과가 S3에 저장 완료"
+    return "✅ PDF 파싱 및 벡터DB 생성, 결과 S3에 저장 완료"
