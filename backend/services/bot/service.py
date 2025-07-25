@@ -35,12 +35,14 @@ async def service_create_bot(
     '''
         1. user_id로 csbot 생성
         2. detail 생성
-        3. data 생성
+        3. csbot의 detail_id를 detail_id로 업데이트
+        4. data 생성
     '''
 
     try:
         csbot = CSbot(
             bot_id=bot_id,
+            detail_id=None,
             user_id=user_id,
             bot_url=f'http://localhost:3000/?bot_id={bot_id}',
             status=0,
@@ -62,6 +64,10 @@ async def service_create_bot(
         db.add(detail)
         await db.commit()
         await db.refresh(detail)
+
+        csbot.detail_id = detail.detail_id
+        await db.commit()
+        await db.refresh(csbot)
 
         data_items = []
         folder_name = f"bot_{detail.company_name}_{detail.detail_id}"
