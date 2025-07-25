@@ -6,7 +6,7 @@ class CSbot(Base):
     __tablename__ = "csbot"
 
     bot_id = Column(String(255), primary_key=True)
-    detail_id = Column(Integer, ForeignKey("detail.detail_id", ondelete="CASCADE"), nullable=False)
+    detail_id = Column(Integer, ForeignKey("detail.detail_id", ondelete="CASCADE"), nullable=True)
     user_id = Column(Integer, ForeignKey("user.user_id", ondelete="CASCADE"), nullable=False)
     bot_url = Column(String(255), nullable=False, default="https://localhost:3000")
     status = Column(Integer, nullable=False, default=3, comment="0: pending, 1: active, 2: inactive, 3: deleted")
