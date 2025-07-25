@@ -22,7 +22,6 @@ from models.csbot import CSbot
 # 봇 생성
 async def service_create_bot(
     db: AsyncSession,
-    user_id: int,
     bot_id: str,
     company: str,
     bot_name: str,
@@ -33,7 +32,6 @@ async def service_create_bot(
 ):
     try:
         detail = Detail(
-            user_id=user_id,
             bot_id=bot_id,
             company=company,
             bot_name=bot_name,

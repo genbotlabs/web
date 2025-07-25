@@ -9,8 +9,6 @@ from schemas.response.bot import (
     UploadedDataListResponse,
     BotDetailItem
 )
-from datetime import datetime
-from uuid import uuid4
 from fastapi import Form, File, UploadFile
 from typing import List
 from fastapi import Depends, Query
@@ -18,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.get_db import get_db  
 from schemas.response.bot import BotDeleteResponse
 from services.bot.service import service_create_bot,bot_list,delete_bot , update_bot
-from services.bot.utils import generate_unique_id
+from services.bot.utils import generate_unique_bot_id
 
 router = APIRouter()
 
@@ -33,17 +31,18 @@ async def create_bot(
     consultant_number: str = Form(...),
     greeting: str = Form(...),
     files: List[UploadFile] = File(...),
-    # db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
-    global uuid
-    while True:
-        uuid = generate_unique_id()
-        if not (uuid):
-            break
-    
+    print("user_id",user_id,"company",company,"bot_name",bot_name,"email",email,"consultant_number",consultant_number,"greeting",greeting,"files",files)
+    print("db",db)
+
+    bot_id = await generate_unique_bot_id(db)
+
+    print('bot_id',bot_id)
+
     return await service_create_bot(
-        user_id=user_id,
-        bot_id=uuid,
+        db=db,
+        bot_id=bot_id,
         company=company,
         bot_name=bot_name,
         email=email,
