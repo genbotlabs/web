@@ -72,10 +72,11 @@ export default function DashBoardPage({ user }) {
       bot.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       bot.email.toLowerCase().includes(searchQuery.toLowerCase())
     
+    const [startDate, endDate] = dateRange || [];
     const matchesDate =
-      !dateRange[0] || !dateRange[1] || // 날짜 선택 안 했으면 통과
-      (dayjs(bot.created_at).isAfter(dateRange[0], "day") &&
-       dayjs(bot.created_at).isBefore(dateRange[1], "day"));
+      !startDate || !endDate ||
+      (dayjs(bot.created_at).isAfter(startDate, "day") &&
+       dayjs(bot.created_at).isBefore(endDate, "day"));
 
     return matchesTab && matchesSearch && matchesDate
   })
