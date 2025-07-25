@@ -116,6 +116,10 @@ export default function DashBoardPage({ user }) {
     }
   }
 
+  const handleClickBotName = (botId) => {
+    window.location.href = `http://localhost:3001/?bot_id=${botId}`
+  }
+
   return (
     <div className="dashboard-main">
       <div className="dashboard-container">
@@ -193,9 +197,8 @@ export default function DashBoardPage({ user }) {
                       onChange={(e) => handleSelectAll(e.target.checked)}
                     />
                   </th>
-                  <th>ID</th>
+                  <th>챗봇 바로가기</th>
                   <th>회사명</th>
-                  <th>봇 이름</th>
                   <th>대표 이메일</th>
                   <th>고객센터</th>
                   <th>상태</th>
@@ -213,9 +216,13 @@ export default function DashBoardPage({ user }) {
                         onChange={(e) => handleRowSelect(bot.bot_id, e.target.checked)}
                       />
                     </td>
-                    <td style={{ fontWeight: "500" }}>{bot.bot_id}</td>
+                    <td 
+                      style={{ fontWeight: "500", color: "#1890ff", cursor: "pointer", textDecoration: "underline" }}
+                      onClick={() => handleClickBotName(bot.bot_id)}
+                    >
+                      {bot.bot_name}
+                    </td>
                     <td>{bot.company_name}</td>
-                    <td>{bot.bot_name}</td>
                     <td>{bot.email}</td>
                     <td>{bot.cs_number}</td>
                     <td style={{ fontSize: "20px" }}>{getStatusBadge(bot.status || "비활성화")}</td>
@@ -264,7 +271,7 @@ export default function DashBoardPage({ user }) {
         {selectedBot && (
           <div style={{ lineHeight: "1.8" }}>
             <p>
-              <b>Bot ID:</b> {selectedBot.bot_id}
+              <b>챗봇 바로가기:</b> {selectedBot.bot_url}
             </p>
             <p>
               <b>회사명:</b> {selectedBot.company_name}
