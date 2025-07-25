@@ -6,8 +6,9 @@ import {
   CalendarOutlined,
   FilterOutlined,
   MoreOutlined,
+  DeleteOutlined 
 } from "@ant-design/icons"
-import { Drawer, Tag, Modal } from "antd"
+import { Drawer, Tag, Modal, Popconfirm, message } from "antd"
 import "../styles/DashBoardPage.css"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
@@ -120,6 +121,17 @@ export default function DashBoardPage({ user }) {
     window.location.href = `${chatbotUrl}/?bot_id=${botId}`
   }
 
+  const handleDeleteBot = async (botId) => {
+    try {
+      await axios.delete(`http://localhost:8000/bots/${botId}`)
+      message.success("봇이 삭제되었습니다.")
+      setBots(prev => prev.filter(bot => bot.bot_id !== botId))
+    } catch (error) {
+      console.error("삭제 실패:", error)
+      message.error("삭제에 실패했습니다.")
+    }
+  }
+
   return (
     <div className="dashboard-main">
       <div className="dashboard-container">
@@ -197,12 +209,12 @@ export default function DashBoardPage({ user }) {
                       onChange={(e) => handleSelectAll(e.target.checked)}
                     />
                   </th>
-                  <th>챗봇 바로가기</th>
+                  <th>상담봇 명</th>
                   <th>회사명</th>
+                  <th>상태</th>
                   <th>대표 이메일</th>
                   <th>고객센터</th>
-                  <th>상태</th>
-                  <th></th>
+                  <th style={{ width: "80px" }}>삭제</th>
                 </tr>
               </thead>
               <tbody className="table-body">
@@ -223,13 +235,18 @@ export default function DashBoardPage({ user }) {
                       {bot.bot_name}
                     </td>
                     <td>{bot.company_name}</td>
+                    <td style={{ fontSize: "20px" }}>{getStatusBadge(bot.status || "비활성화")}</td>
                     <td>{bot.email}</td>
                     <td>{bot.cs_number}</td>
-                    <td style={{ fontSize: "20px" }}>{getStatusBadge(bot.status || "비활성화")}</td>
                     <td>
-                      <button className="action-button">
-                        <MoreOutlined />
-                      </button>
+                      <Popconfirm
+                        title="정말 삭제하시겠습니까?"
+                        onConfirm={() => handleDeleteBot(bot.bot_id)}
+                        okText="삭제"
+                        cancelText="취소"
+                      >
+                        <DeleteOutlined style={{ color: "red", cursor: "pointer" }} />
+                      </Popconfirm>
                     </td>
                   </tr>
                 ))}

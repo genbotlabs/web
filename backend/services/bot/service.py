@@ -15,6 +15,7 @@ import os
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from schemas.request.bot import BotUpdateRequest  # BotUpdateRequest 클래스
+from schemas.response.bot import BotDeleteResponse
 from models.csbot import CSbot
 
 # from models.lang_graph.lang_graph import run_langgraph  # langgraph model_bot
@@ -205,11 +206,17 @@ async def delete_bot(
     # if not csbot:
     #     raise HTTPException(status_code=404, detail="봇이 존재하지 않거나 삭제 권한이 없습니다.")
 
+    print('///// 삭제 시작')
+    print(f"///// bot_id(raw): {bot_id} | type: {type(bot_id)} | repr: {repr(bot_id)}")
+
     # detail 조회
     result = await db.execute(
         select(Detail).where(Detail.bot_id == bot_id)
     )
     detail = result.scalar_one_or_none()
+
+    print('///// detail', detail)
+
     if not detail:
         raise HTTPException(status_code=404, detail="봇이 존재하지 않거나 삭제 권한이 없습니다.")
 
@@ -223,7 +230,10 @@ async def delete_bot(
     await db.delete(detail)
     await db.commit()
 
-    return {"success": True, "message": "봇이 성공적으로 삭제되었습니다."}
+    return BotDeleteResponse(
+        success=True,
+        message="봇이 성공적으로 삭제되었습니다."
+    )
 
 
 # 봇 수정

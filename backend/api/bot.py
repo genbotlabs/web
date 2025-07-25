@@ -73,8 +73,7 @@ async def delete_user_bot(
     """
     user_id가 소유한 봇 중에서 특정 봇 ID를 삭제합니다.
     """
-    await delete_bot(bot_id=bot_id, db=db)
-    return {"message": f"봇 {bot_id} 삭제 완료"}
+    return await delete_bot(bot_id=bot_id, db=db)
 
 # 봇 수정
 @router.patch("/{bot_id}", response_model=BotDeleteResponse)
