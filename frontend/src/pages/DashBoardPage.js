@@ -103,9 +103,17 @@ export default function DashBoardPage({ user }) {
     navigate("/generate")
   }
 
-  const handleClickFile = (url) => {
-    setPreviewUrl(url)
-    setPreviewVisible(true)
+  const handleClickFile = async (url) => {
+    const s3Key = url.split(".com/")[1]
+    try {
+      const response = await axios.get(`http://localhost:8000/s3?s3_key=${s3Key}`)
+      
+      setPreviewUrl(response.data.url)
+      setPreviewVisible(true)
+    } catch (err) {
+      alert("파일을 미리보기할 수 없습니다.")
+      console.error(err)
+    }
   }
 
   return (
@@ -315,7 +323,8 @@ export default function DashBoardPage({ user }) {
           title="파일 미리보기"
           style={{ top: 20 }}
         >
-          {previewUrl.endsWith(".pdf") ? (
+          <h1>hi</h1>
+          {previewUrl.includes(".pdf") ? (
             <iframe
               src={previewUrl}
               width="100%"
