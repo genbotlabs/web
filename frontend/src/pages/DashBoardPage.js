@@ -23,6 +23,8 @@ export default function DashBoardPage({ user }) {
   const [selectedBot, setSelectedBot] = useState(null)
   const [previewVisible, setPreviewVisible] = useState(false)
   const [previewUrl, setPreviewUrl] = useState("")
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 4;
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -147,6 +149,12 @@ export default function DashBoardPage({ user }) {
     }
   }, [deletedBotId]);
 
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
   return (
     <div className="dashboard-main">
       <div className="dashboard-container">
@@ -233,7 +241,7 @@ export default function DashBoardPage({ user }) {
                 </tr>
               </thead>
               <tbody className="table-body">
-                {filteredData.map((bot) => (
+                {paginatedData.map((bot) => (
                   <tr key={bot.bot_id}>
                     <td>
                       <input
@@ -271,19 +279,36 @@ export default function DashBoardPage({ user }) {
 
           {/* Pagination */}
           <div className="pagination">
-            <button className="pagination-button" disabled>
+            <button
+              className="pagination-button"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            >
               ← Previous
             </button>
+
             <div className="pagination-numbers">
-              <button className="page-number active">1</button>
-              <button className="page-number">2</button>
-              <button className="page-number">3</button>
-              <span className="page-ellipsis">...</span>
-              <button className="page-number">8</button>
-              <button className="page-number">9</button>
-              <button className="page-number">10</button>
+              {[...Array(totalPages)].map((_, i) => {
+                const page = i + 1;
+                return (
+                  <button
+                    key={page}
+                    className={`page-number ${currentPage === page ? "active" : ""}`}
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </button>
+                );
+              })}
             </div>
-            <button className="pagination-button">Next →</button>
+
+            <button
+              className="pagination-button"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            >
+              Next →
+            </button>
           </div>
         </div>
       </div>
