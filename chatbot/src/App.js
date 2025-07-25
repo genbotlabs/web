@@ -4,6 +4,7 @@ import 'antd/dist/reset.css';
 import './App.css';
 import ChatbotPage from './pages/ChatbotPage';
 import MainPage from './pages/MainPage';
+import Header from './components/Header/Header';
 
 export default function App() {
   return (
