@@ -1,46 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
 
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 32px;
-  background: #fff;
-  min-height: 48px;
-  font-family: 'Alexandria', 'Noto Sans KR', sans-serif;
-}
-
-.header__logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.header__logo-img {
-  width: 32px;
-  height: 32px;
-}
-
-.header__logo-text {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #111;
-  letter-spacing: -1px;
-}
-
 .chatbot-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
   font-family: 'Alexandria', 'Noto Sans KR', sans-serif;
-}
-
-.chat-header {
-  padding: 1rem;
-  font-weight: bold;
-  font-size: 1.5rem;
-  background-color: white;
-  border-bottom: 1px solid #ddd;
 }
 
 .chat-window {
@@ -50,6 +14,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 80px !important;
 }
 
 .message {
@@ -62,14 +27,13 @@
 
 .message.bot {
   align-self: flex-start;
-  background: #f2f8ff;
-  color: #222;
-  border: 1px solid #cce4ff;
+  background: #1F5FF8;
+  color: white;
 }
 
 .message.user {
   align-self: flex-end;
-  background: #007bff;
+  background: #F97874;
   color: white;
 }
 
@@ -77,6 +41,8 @@
   display: flex;
   padding: 3rem;
   background: white;
+  margin: 0 auto;
+  width: 70%;
 }
 
 .chat-input input {
@@ -87,8 +53,8 @@
   outline: none;
 }
 
-.chat-input button {
-  background: #007bff;
+.send-button {
+  background: #F97874;
   border: none;
   border-radius: 50%;
   width: 44px;
@@ -97,7 +63,22 @@
   cursor: pointer;
 }
 
-.chat-input img {
+.send-button img {
+  width: 20px;
+  height: 20px;
+}
+
+.voice-button {
+  background: #1F5FF8;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.voice-button img {
   width: 20px;
   height: 20px;
 }
