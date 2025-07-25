@@ -1,0 +1,72 @@
+/* 카드 전체 */
+.custom-card-container {
+  background-color: #ffffff;
+  border-radius: 1.25rem;
+  padding: 2rem;
+  max-width: 360px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+  transition: transform 0.3s ease;
+}
+
+.custom-card-container:hover {
+  transform: translateY(-4px);
+}
+
+/* 상단 영역 */
+.custom-card-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  margin-bottom: 1.2rem;
+  color: #4b5563;
+}
+
+.company-name {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.timestamp {
+  font-weight: 500;
+}
+
+/* 카드 본문 */
+.custom-card-content p {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.custom-card-content .highlight {
+  color: #ef4444;
+  font-weight: bold;
+}
+
+.custom-card-content .subtext {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.custom-card-content .question {
+  font-weight: 600;
+  margin: 1.2rem 0 0.5rem;
+  font-size: 1rem;
+}
+
+/* 옵션 박스 */
+.option-box {
+  background-color: #f3f4f6;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: #111827;
+  transition: background-color 0.3s;
+}
+
+.option-box:hover {
+  background-color: #e5e7eb;
+  cursor: pointer;
+}

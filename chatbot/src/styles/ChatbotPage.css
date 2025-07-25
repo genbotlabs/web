@@ -1,28 +1,48 @@
 @import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
 
+body {
+  background: linear-gradient(135deg, #f0f4ff, #e0f2fe);
+  margin: 0;
+  font-family: 'Alexandria', 'Noto Sans KR', sans-serif;
+}
+
 .chatbot-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  font-family: 'Alexandria', 'Noto Sans KR', sans-serif;
+  justify-content: space-between;
+  padding: 7rem 1rem 1rem; /* ✅ 상단 패딩을 늘려 헤더 높이만큼 띄움 */
+  box-sizing: border-box;
 }
 
 .chat-window {
   flex: 1;
-  padding: 3rem;
   overflow-y: auto;
+  padding: 1.5rem 1rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 80px !important;
+  gap: 12px;
+  background-color: #fff;
+  border-radius: 1rem;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1rem;
+  scroll-behavior: smooth;
 }
 
 .message {
-  max-width: 60%;
-  padding: 10px 14px;
-  border-radius: 16px;
-  font-size: 14px;
+  max-width: 75%;
+  padding: 10px 16px;
+  border-radius: 18px;
+  font-size: 15px;
+  line-height: 1.5;
+  animation: fadeIn 0.4s ease-in-out;
   word-break: break-word;
+}
+
+.message.user {
+  align-self: flex-end;
+  background: #f97874;
+  color: white;
 }
 
 .message.bot {
@@ -31,54 +51,141 @@
   color: white;
 }
 
-.message.user {
-  align-self: flex-end;
-  background: #F97874;
-  color: white;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .chat-input {
   display: flex;
-  padding: 3rem;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
   background: white;
-  margin: 0 auto;
-  width: 70%;
+  border-radius: 2rem;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+  margin: 0 auto 1rem;
+  width: 90%;
+  max-width: 720px;
+  position: relative;
+  z-index: 1;
 }
 
 .chat-input input {
   flex: 1;
-  padding: 10px 14px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+  border: none;
   outline: none;
+  font-size: 1rem;
+  padding: 0.75rem 3rem 0.75rem 1rem;
+  border-radius: 9999px;
+  background-color: #f8fafc;
+  border: 1px solid #cbd5e1;
+  width: 100%;
+}
+
+.voice-button, .send-button {
+  position: absolute;
+  right: 1.5rem;
+  background-color: #2563eb;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.voice-button.recording {
+  background-color: #ef4444;
+  transform: scale(1.1);
 }
 
 .send-button {
-  background: #F97874;
-  border: none;
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  margin-left: 10px;
-  cursor: pointer;
+  background-color: #f97316;
+  right: 1.5rem;
 }
 
-.send-button img {
-  width: 20px;
-  height: 20px;
-}
-
-.voice-button {
-  background: #1F5FF8;
-  border: none;
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  margin-left: 10px;
-  cursor: pointer;
-}
-
+.send-button img,
 .voice-button img {
   width: 20px;
   height: 20px;
+}
+
+.clova-voice-ui {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+  animation: pulseUp 0.5s ease-in-out;
+}
+
+.clova-voice-text {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e3a8a;
+  margin-bottom: 1rem;
+  animation: typingText 2s steps(20) infinite, blinkCursor 1s step-end infinite;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 2px solid #1e3a8a;
+}
+
+@keyframes typingText {
+  0% { width: 0; }
+  50% { width: 10em; }
+  100% { width: 0; }
+}
+
+@keyframes blinkCursor {
+  0%, 100% { border-color: transparent; }
+  50% { border-color: #1e3a8a; }
+}
+
+.clova-voice-panel {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.clova-wave {
+  width: 8px;
+  height: 24px;
+  background-color: #60a5fa;
+  border-radius: 4px;
+  animation: waveAnim 1s infinite ease-in-out;
+}
+
+.wave2 {
+  animation-delay: 0.3s;
+}
+
+@keyframes waveAnim {
+  0%, 100% { height: 8px; }
+  50% { height: 24px; }
+}
+
+.clova-mic-icon {
+  font-size: 1.5rem;
+  color: #2563eb;
+  animation: micPulse 1s infinite;
+}
+
+@keyframes micPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+@media (max-width: 768px) {
+  .chat-input {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .chat-window {
+    padding: 1rem 0.5rem;
+  }
 }
