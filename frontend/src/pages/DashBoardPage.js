@@ -21,6 +21,7 @@ export default function DashBoardPage({ user }) {
   const [selectedBot, setSelectedBot] = useState(null)
   const [previewVisible, setPreviewVisible] = useState(false)
   const [previewUrl, setPreviewUrl] = useState("")
+  const navigate = useNavigate()
 
   useEffect(() => {
     console.log("DashBoard useEffect 실행됨. user:", user)
@@ -115,7 +116,8 @@ export default function DashBoardPage({ user }) {
   }
 
   const handleClickBotName = (botId) => {
-    window.location.href = `http://localhost:3001/?bot_id=${botId}`
+    const chatbotUrl = process.env.REACT_APP_CHATBOT_URL
+    window.location.href = `${chatbotUrl}/?bot_id=${botId}`
   }
 
   return (
