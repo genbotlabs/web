@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams, useNavigate  } from 'react-router-dom';
 
 import Header from '../components/Header/Header';
 import '../styles/ChatbotPage.css';
@@ -7,8 +7,11 @@ import send from '../icons/send.png'
 import voice from '../icons/voice.png'
 
 export default function ChatbotPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const botId = searchParams.get('bot_id') || 'a1';
+  const sessionId = location.state?.session_id;
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -27,6 +30,13 @@ export default function ChatbotPage() {
       });
   }, [botId]);
 
+  useEffect(() => {
+  if (!sessionId) {
+    alert('세션 정보가 없습니다. 메인 화면으로 이동합니다.');
+    navigate('/');
+  }
+}, [sessionId, navigate]);
+
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
 
@@ -37,7 +47,7 @@ export default function ChatbotPage() {
 
     try {
       const turn = messages.filter(msg => msg.from === 'user').length + 1;
-      const response = await fetch(`http://localhost:8000/bots/${botId}/sllm`, {
+      const response = await fetch(`http://localhost:8000/chatbot/${sessionId}/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
