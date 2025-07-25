@@ -7,7 +7,7 @@ from datetime import datetime
 from uuid import uuid4
 from fastapi import Form, UploadFile, File, HTTPException
 from services.s3 import upload_pdf_to_s3
-# from services.pdf_parser import parse_pdfs_from_s3
+from services.pdf_parser import parse_pdfs_from_s3
 from models.data import Data
 from typing import List
 import traceback  # 추가
@@ -24,11 +24,11 @@ async def service_create_bot(
     db: AsyncSession,
     bot_id: str,
     user_id: int,
-    company: str,
+    company_name: str,
     bot_name: str,
     email: str,
-    consultant_number: str,
-    greeting: str,
+    cs_number: str,
+    first_text: str,
     files: List[UploadFile],
 ):
 
@@ -55,11 +55,11 @@ async def service_create_bot(
 
         detail = Detail(
             bot_id=bot_id,
-            company=company,
+            company_name=company_name,
             bot_name=bot_name,
-            greeting=greeting,
+            first_text=first_text,
             email=email,
-            consultant_number=consultant_number
+            cs_number=cs_number
         )
         db.add(detail)
         await db.commit()
@@ -97,7 +97,7 @@ async def service_create_bot(
         # ✅ S3 파서 (동기 함수여도 상관없음)
         bucket_name = os.getenv("AWS_S3_BUCKET_NAME")
         parse_message = parse_pdfs_from_s3(bucket_name, folder_name)
-        print(parse_message)
+        print(">>>",parse_message)
 
         return {
             "bot": BotDetailItem(

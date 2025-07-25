@@ -25,15 +25,15 @@ router = APIRouter()
 @router.post("/", response_model=BotDetailResponse)
 async def create_bot(
     user_id: int = Form(...),
-    company: str = Form(...),
+    company_name: str = Form(...),
     bot_name: str = Form(...),
     email: str = Form(...),
-    consultant_number: str = Form(...),
-    greeting: str = Form(...),
+    cs_number: str = Form(...),
+    first_text: str = Form(...),
     files: List[UploadFile] = File(...),
     db: AsyncSession = Depends(get_db)
 ):
-    print("user_id",user_id,"company",company,"bot_name",bot_name,"email",email,"consultant_number",consultant_number,"greeting",greeting,"files",files)
+    print("user_id",user_id,"company_name",company_name,"bot_name",bot_name,"email",email,"cs_number",cs_number,"first_text",first_text,"files",files)
     print("db",db)
 
     bot_id = await generate_unique_bot_id(db)
@@ -44,11 +44,11 @@ async def create_bot(
         db=db,
         bot_id=bot_id,
         user_id=user_id,
-        company=company,
+        company_name=company_name,
         bot_name=bot_name,
         email=email,
-        consultant_number=consultant_number,
-        greeting=greeting,
+        cs_number=cs_number,
+        first_text=first_text,
         files=files
     )
 

@@ -38,7 +38,8 @@ def parse_pdfs_from_s3(bucket_name: str, base_folder: str):
 
     health_status = client.health_check()
     if health_status["status"] != "ok":
-        raise Exception("Parser API 사용 불가")
+        print("Parser API 사용 불가1")
+        raise Exception("Parser API 사용 불가2")
 
     input_prefix = f"{base_folder}/input/"
     output_prefix = f"{base_folder}/output/"

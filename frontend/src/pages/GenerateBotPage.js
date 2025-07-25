@@ -76,11 +76,11 @@ export default function GenerateBotPage({ user }) {
         const formData = new FormData();
         const user_id = user?.user_id || "test_user";
         formData.append("user_id", user_id);
-        formData.append("company", form.getFieldsValue().company);
+        formData.append("company_name", form.getFieldsValue().company);
         formData.append("bot_name", form.getFieldsValue().botName);
         formData.append("email", form.getFieldsValue().email);
-        formData.append("consultant_number", form.getFieldsValue().consultantNumber || "");
-        formData.append("greeting", form.getFieldsValue().greeting || `안녕하세요 ${form.getFieldsValue().botName}입니다. 무엇을 도와드릴까요?`);
+        formData.append("cs_number", form.getFieldsValue().consultantNumber || "");
+        formData.append("first_text", form.getFieldsValue().greeting || `안녕하세요 ${form.getFieldsValue().botName}입니다. 무엇을 도와드릴까요?`);
 
         uploadedFiles.forEach((fileObj) => {
             console.log(fileObj.file)
