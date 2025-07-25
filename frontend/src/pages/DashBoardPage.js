@@ -271,7 +271,7 @@ export default function DashBoardPage({ user }) {
         {selectedBot && (
           <div style={{ lineHeight: "1.8" }}>
             <p>
-              <b>챗봇 바로가기:</b> {selectedBot.bot_url}
+              <b>챗봇 바로가기:</b>
             </p>
             <p>
               <b>회사명:</b> {selectedBot.company_name}
