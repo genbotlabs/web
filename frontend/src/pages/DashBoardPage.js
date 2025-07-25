@@ -15,6 +15,7 @@ import axios from "axios"
 
 export default function DashBoardPage({ user }) {
   const [bots, setBots] = useState([])
+  const [deletedBotId, setDeletedBotId] = useState(null);
   const [selectedRows, setSelectedRows] = useState([])
   const [activeTab, setActiveTab] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
@@ -124,13 +125,27 @@ export default function DashBoardPage({ user }) {
   const handleDeleteBot = async (botId) => {
     try {
       await axios.delete(`http://localhost:8000/bots/${botId}`)
+      setDeletedBotId(botId);
       message.success("봇이 삭제되었습니다.")
       setBots(prev => prev.filter(bot => bot.bot_id !== botId))
+
+      if (selectedBot?.bot_id === botId) {
+        setDrawerVisible(false);
+        setSelectedBot(null);
+        setSelectedRows([]);
+      }
     } catch (error) {
       console.error("삭제 실패:", error)
       message.error("삭제에 실패했습니다.")
     }
   }
+  
+  useEffect(() => {
+    if (deletedBotId) {
+      setBots((prevBots) => prevBots.filter(bot => bot.bot_id !== deletedBotId));
+      setDeletedBotId(null);
+    }
+  }, [deletedBotId]);
 
   return (
     <div className="dashboard-main">
