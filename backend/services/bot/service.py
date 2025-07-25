@@ -70,7 +70,7 @@ async def service_create_bot(
         await db.refresh(csbot)
 
         data_items = []
-        folder_name = f"bot_{detail.company_name}_{detail.detail_id}"
+        folder_name = f"bot_{detail.email}_{detail.detail_id}"
 
         for file in files:
             url = upload_pdf_to_s3(file.file, file.filename, folder_name)
