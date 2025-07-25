@@ -14,5 +14,9 @@ class CSbot(Base):
     updated_at = Column(DateTime, nullable=False, server_default=func.now())
 
     user = relationship("User", back_populates="csbots")
-    detail = relationship("Detail", back_populates="csbot")
+    detail = relationship(
+        "Detail",
+        back_populates="csbots",
+        foreign_keys=[detail_id]
+    )
     sessions = relationship("Session", back_populates="csbot", cascade="all, delete-orphan")

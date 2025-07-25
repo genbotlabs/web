@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from database import Base
+from models.csbot import CSbot
 
 class Detail(Base):
     __tablename__ = "detail"
@@ -13,5 +14,11 @@ class Detail(Base):
     email = Column(String(255), nullable=False)
     cs_number = Column(String(255), nullable=False)
 
-    csbot = relationship("CSbot", back_populates="detail", cascade="all, delete-orphan")
+    csbots = relationship(
+        "CSbot",
+        back_populates="detail",
+        foreign_keys=[CSbot.detail_id],
+        cascade="all, delete-orphan",
+        single_parent=True,
+    )
     datas = relationship("Data", back_populates="detail", cascade="all, delete-orphan")
