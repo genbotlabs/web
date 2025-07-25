@@ -22,8 +22,6 @@ export default function DashBoardPage({ user }) {
   const [previewVisible, setPreviewVisible] = useState(false)
   const [previewUrl, setPreviewUrl] = useState("")
 
-  const navigate = useNavigate()
-
   useEffect(() => {
     console.log("DashBoard useEffect 실행됨. user:", user)
     if (!user?.user_id) return;
