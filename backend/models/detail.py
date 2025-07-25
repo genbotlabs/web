@@ -6,7 +6,7 @@ class Detail(Base):
     __tablename__ = "detail"
 
     detail_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("user.user_id"))
+    user_id = Column(Integer, ForeignKey("user.user_id", ondelete="CASCADE"), nullable=False)
     company_name = Column(String(255), nullable=False)
     bot_name = Column(String(255), nullable=False)
     first_text = Column(String(255), nullable=True)

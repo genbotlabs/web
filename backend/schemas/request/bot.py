@@ -4,19 +4,20 @@ from typing import List, Optional
 
 # 데이터 목록
 class BotDataItemRequest(BaseModel):
-    data_id: str = Field(..., example="data_001")
+    data_id: int = Field(..., example="1")
     filename: str = Field(..., example="faq.pdf")
-    type: int = Field(..., example=0, description="파일 타입 (예: 0: json, 1: pdf)")
+    # type: int = Field(..., example=0, description="파일 타입 (예: 0: json, 1: pdf)")
     storage_url: str = Field(..., example="https://storage.example.com/faq.pdf")
 
 # 봇 생성 요청
 class BotCreateRequest(BaseModel):
-    company_name: str = Field(..., example="GenBot")
-    usage: str = Field(..., example="문의")
-    first_text: str = Field(..., example="안녕하세요! GenBot의 문의봇입니다.")
-    email: EmailStr = Field(..., example="user@example.com")
-    cs_number: str = Field(..., example="1522-0000")
-    data: List[BotDataItemRequest]
+    user_id: int = Field(..., example="1"),
+    company: str = Field(..., example="GenBot"),
+    bot_name: str = Field(..., example="문의"),
+    email: str = Field(..., example="user@example.com"),
+    consultant_number: str = Field(..., example="1522-0000"),
+    greeting: str = Field(..., example="안녕하세요! GenBot의 문의봇입니다."),
+    files: List[BotDataItemRequest]
 
 # 봇 수정 요청
 class BotUpdateRequest(BaseModel):
