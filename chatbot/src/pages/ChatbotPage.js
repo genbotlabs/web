@@ -27,10 +27,12 @@ export default function ChatbotPage() {
       });
   }, [botId]);
 
-  const sendMessage = async () => {
-    if (!input.trim() || loading) return;
+  // 메시지 전송(텍스트 입력, 음성 인식 공통)
+  const sendMessage = async (userInput) => {
+    const textToSend = userInput !== undefined ? userInput : input;
+    if (!textToSend.trim() || loading) return;
 
-    const userMessage = { from: 'user', text: input };
+    const userMessage = { from: 'user', text: textToSend };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setLoading(true);
@@ -43,16 +45,15 @@ export default function ChatbotPage() {
         body: JSON.stringify({ 
           turn: turn, 
           role: 'user', 
-          content: input 
+          content: textToSend
         })
       });
 
       if (!response.body) throw new Error('스트림 body 없음 오류');
-
       const reader = response.body.getReader();
       const decoder = new TextDecoder('utf-8');
-
       let botResponse = '';
+
       const appendPartial = (text) => {
         setMessages(prev => {
           const last = prev[prev.length - 1];
@@ -70,8 +71,6 @@ export default function ChatbotPage() {
         botResponse += decoder.decode(value);
         appendPartial(botResponse);
       }
-
-      // 스트리밍 완료되면 partial flag 제거
       setMessages(prev => {
         const last = prev[prev.length - 1];
         if (last && last.partial) {
@@ -79,98 +78,78 @@ export default function ChatbotPage() {
         }
         return prev;
       });
-
     } catch (err) {
-      console.error('chat error:', err);
       setMessages(prev => [...prev, { from: 'bot', text: '답변 중 오류가 발생했습니다.' }]);
     } finally {
       setLoading(false);
     }
   };
 
+  // 엔터키로 메시지 전송
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') sendMessage();
   };
 
+  // 음성 인식 및 전송
   const sendVoice = async () => {
-    const botId = searchParams.get('bot_id') || 'a1';
-  
+    const sessionId = searchParams.get('session_id') || 'test-session';
     try {
+      // 1. 녹음 (WAV, PCM 등 Whisper 최적화)
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      const audioChunks = [];
-  
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const sourceNode = audioContext.createMediaStreamSource(stream);
-      const analyser = audioContext.createAnalyser();
-      sourceNode.connect(analyser);
-      analyser.fftSize = 2048;
-      const bufferLength = analyser.fftSize;
-      const dataArray = new Uint8Array(bufferLength);
-  
-      let silenceStart = null;
-      const maxSilence = 5000;  // 최대 침묵 시간
-  
-      const detectSilence = () => {
-        analyser.getByteTimeDomainData(dataArray);
-        let sum = 0;
-        for (let i = 0; i < bufferLength; i++) {
-          const normalized = dataArray[i] / 128 - 1;
-          sum += normalized * normalized;
-        }
-        const volume = Math.sqrt(sum / bufferLength);
-  
-        if (volume < 0.01) {
-          if (!silenceStart) silenceStart = Date.now();
-          else if (Date.now() - silenceStart > maxSilence) {
-            console.log('자동 종료: 음성 없음 감지');
-            mediaRecorder.stop();
-            stream.getTracks().forEach(track => track.stop());
-            return;
-          }
-        } else {
-          silenceStart = null; // 다시 말 시작하면 시간 초기화
-        }
-  
-        requestAnimationFrame(detectSilence);
-      };
-  
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' }); // 백엔드에서 webm 지원시 그대로, 아니면 WAV로 변환 필요
+      let audioChunks = [];
+
       mediaRecorder.ondataavailable = (event) => {
         audioChunks.push(event.data);
       };
-  
+
       mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        // (선택) webm → wav 변환 필요시 ffmpeg.wasm 등 사용 (백엔드가 webm 바로 받을 수 있으면 생략)
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' }); 
         const formData = new FormData();
         formData.append('audio', audioBlob, 'voice.webm');
-  
+
+        setLoading(true);
         try {
-          const res = await fetch(`http://localhost:8000/bots/${botId}/stt`, {
+          // 2. Whisper Streaming API로 전송
+          const res = await fetch(`http://localhost:8000/api/voicebot/${sessionId}/voice`, {
             method: 'POST',
             body: formData,
           });
-  
-          const data = await res.json();
-          if (data.text) {
-            setInput(data.text);
-            sendMessage(data.text);
-          } else {
-            alert('음성 인식에 실패했습니다.');
+
+          // 3. 응답: 음성 텍스트가 여러 문장일 수 있음
+          let text = '';
+          try {
+            // Whisper 스트리밍 응답이 텍스트라면
+            text = await res.text();
+            if (!text) throw new Error('음성 인식 결과 없음');
+          } catch (e) {
+            alert('STT 응답 파싱 실패');
           }
+
+          // 4. 입력창에 자동 입력 & 메시지에 바로 추가
+          setInput(text);
+          setMessages(prev => [...prev, { from: 'user', text }]);
+          // 5. 바로 SLLM으로 텍스트 전송
+          await sendMessage(text);
+
         } catch (err) {
-          console.error('STT 전송 실패:', err);
-          alert('음성 전송 중 오류가 발생했습니다.');
+          console.error('음성 전송 실패:', err);
+          alert('음성 인식 중 오류가 발생했습니다.');
+        } finally {
+          setLoading(false);
         }
       };
-  
+
       mediaRecorder.start();
-      detectSilence();
-  
+      setTimeout(() => {
+        mediaRecorder.stop();
+        stream.getTracks().forEach(track => track.stop());
+      }, 6000); // 최대 6초(실사용에 맞게 조정)
     } catch (err) {
-      console.error('마이크 권한 오류:', err);
       alert('마이크 권한이 필요합니다.');
     }
-  }
+  };
 
   return (
     <div className="chatbot-container">

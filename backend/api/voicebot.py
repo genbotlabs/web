@@ -19,12 +19,3 @@ async def voicebot_api(
     db: AsyncSession = Depends(get_db)
 ):
     return await voicebot_service(session_id, audio, db)
-
-# # 2. TTS: 텍스트 → 음성
-# @router.get("/{session_id}/tts")
-# async def trans_tts_api(
-#     session_id: str,
-#     content: str = Query(...),
-#     db: AsyncSession = Depends(get_db)
-# ):
-#     return StreamingResponse(audio_stream, media_type="audio/mpeg")
