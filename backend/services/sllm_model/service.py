@@ -10,12 +10,12 @@ async def run_sllm_answer(session_id: str, question: str, turn: int, session: As
     LangGraph 실행 + DB 저장
     - mode: "chat"이면 ChatLog에 저장, "voice"면 VoiceLog에 저장
     """
-    try:
+    try: # langgraph 답변 answer 
         result = app_graph.invoke({
             "question": question,
             "answer": ""
         })
-        answer = result.get("answer", "")
+        content = result.get("answer", "")
 
         # 로그 모델 선택
         LogModel = ChatLog if mode == "chat" else VoiceLog
@@ -24,14 +24,14 @@ async def run_sllm_answer(session_id: str, question: str, turn: int, session: As
             session_id=session_id,
             turn=turn,
             role="bot",
-            content=answer,
+            content=content,
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow()
         )
         session.add(log_entry)
         await session.commit()
 
-        return answer
+        return content
 
     except Exception as e:
         print(f"❌ SLLM 처리 중 오류: {e}")

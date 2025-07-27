@@ -8,15 +8,18 @@ import torch
 import os
 from dotenv import load_dotenv
 
+# 1. vectordb 자동으로 불러오도록 하는 코드 작성
+
 # ─── 환경 변수 로딩 ───────────────────────
 load_dotenv()
 
 # ─── FAISS DB + 임베딩 로딩 ──────────────
 embedding_model = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-large-instruct")
-vectorstore = FAISS.load_local("card_QA_faiss_db", embedding_model, allow_dangerous_deserialization=True)
+vectorstore = FAISS.load_local("abab", embedding_model, allow_dangerous_deserialization=True)
 
 # ─── EFS 모델 경로 설정 ───────────────────
 efs_model_path = "/mnt/efs/kanana_model"
+midm_model_path = "sllm_model/Midm" # 튜닝된 기본 모델
 
 # ─── 모델 로딩 함수 정의 (1회 로딩 후 캐시) ─────────────
 _tokenizer = None
