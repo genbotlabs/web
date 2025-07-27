@@ -1,99 +1,116 @@
 import os
-import boto3
+import numpy as np
+import soundfile as sf
+import torch
+from concurrent.futures import ProcessPoolExecutor
+import asyncio
+from faster_whisper import WhisperModel
+import webrtcvad
 import openai
 import io
-import torch
-# from transformers import pipeline
-from faster_whisper import WhisperModel
-import librosa
-import soundfile as sf
-import numpy as np
 from dotenv import load_dotenv
-import re
+import httpx
 
 load_dotenv()
 
-model_path = os.getenv("MODEL_PATH")
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+# 환경 변수 및 모델 설정
+# MODEL_PATH = os.getenv("MODEL_PATH", "/tmp/whisper-small")
+# runpod_url = os.getenv("RUNPOD_URL")
+# DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
-def prepare_whisper_model():
-    return WhisperModel(
-        model_path,
-        device=DEVICE,
-        compute_type="float16" if DEVICE == "cuda" else "int8"
-    )
+session_turns = {}
 
-whisper_pipe = prepare_whisper_model()
+# # Whisper 모델은 프로세스별로 로딩 필요 (멀티프로세스 환경)
+# def prepare_whisper_model():
+#     return WhisperModel(
+#         MODEL_PATH,
+#         device=DEVICE,
+#         compute_type="float16" if DEVICE == "cuda" else "int8"
+#     )
 
-# 문장 종결 체크 함수 (한국어 포함)
-def contains_sentence_end(text):
-    return bool(re.search(r"[.?!…。?!]|[.?!…。?!]", text.strip()))
+def get_next_turn(session_id, sender):
+    if sender == "user":
+        session_turns[session_id] = session_turns.get(session_id, 0) + 1
+    return session_turns.get(session_id, 1)
 
-# Local Agreement(n=2)
-def local_agreement(current_tokens, prev_tokens, n=2):
-    agreed = []
-    for i in range(min(len(current_tokens), len(prev_tokens))):
-        if current_tokens[i] == prev_tokens[i]:
-            agreed.append(current_tokens[i])
-        else:
-            break
-    return agreed if len(agreed) >= n else []
+# # RunPod 호출 함수
+# async def stt_by_runpod(audio_path: str):
+#     with open(audio_path, "rb") as f:
+#         audio_bytes = f.read()
 
-# Whisper Streaming-style transcribe
-def whisper_streaming_transcribe(audio_path, language="ko", min_chunk_sec=1):
-    # 오디오 로드
-    y, sr = sf.read(audio_path)
-    if len(y.shape) > 1:
-        y = y.mean(axis=1)  # mono 변환
-
-    total_samples = y.shape[0]
-    chunk_samples = int(min_chunk_sec * sr)
-    pointer = 0
-
-    buffer = []
-    prev_tokens = []
-    final_sentences = []
-    current_text = ""
+#     async with httpx.AsyncClient() as client:
+#         response = await client.post(
+#             runpod_url,
+#             files={"audio": ("audio.webm", audio_bytes, "audio/webm")},
+#             timeout=60
+#         )
+#         response.raise_for_status()
+#         return response.json().get("text", "")
     
-    # chunk별 반복
-    while pointer < total_samples:
-        # chunk 누적
-        end = min(pointer + chunk_samples, total_samples)
-        buffer.append(y[pointer:end])
-        pointer = end
+# # ---- VAD로 chunk 생성 ----
+# def vad_split(audio, sample_rate=16000, aggressiveness=3, chunk_ms=30):
+#     vad = webrtcvad.Vad(aggressiveness)
+#     frame_len = int(sample_rate * chunk_ms / 1000)
+#     num_frames = int(len(audio) / frame_len)
+#     voiced_chunks = []
+#     cur_chunk = []
+#     for i in range(num_frames):
+#         start = i * frame_len
+#         end = start + frame_len
+#         frame = audio[start:end]
+#         if len(frame) < frame_len:
+#             break
+#         is_voiced = vad.is_speech(frame.tobytes(), sample_rate)
+#         if is_voiced:
+#             cur_chunk.extend(frame)
+#         elif cur_chunk:
+#             # 음성 구간 끝, chunk 분리
+#             voiced_chunks.append(np.array(cur_chunk, dtype=np.float32))
+#             cur_chunk = []
+#     if cur_chunk:
+#         voiced_chunks.append(np.array(cur_chunk, dtype=np.float32))
+#     return voiced_chunks
 
-        # 누적된 buffer 전체로 Whisper inference
-        cur_audio = np.concatenate(buffer, axis=0)
-        segments, _ = whisper_pipe.transcribe(cur_audio, language=language, beam_size=5)
-        text = "".join([seg.text for seg in segments]).strip()
-        tokens = text.split()
+# # ---- 멀티프로세스 Whisper STT ----
+# def stt_chunk(chunk, sample_rate=16000):
+#     # 프로세스별 Whisper 모델 로딩 (필수!)
+#     model = prepare_whisper_model()
+#     segments, _ = model.transcribe(
+#         chunk,
+#         language="ko",
+#         beam_size=1
+#     )
+#     return "".join([seg.text for seg in segments]).strip()
 
-        # Local Agreement(n=2)
-        agreed = local_agreement(tokens, prev_tokens, n=2)
-        if agreed:
-            new_text = " ".join(agreed)
-            if new_text not in current_text:
-                current_text += new_text[len(current_text):]
-        
-        # 문장 종결
-        if contains_sentence_end(text):
-            sentence = current_text.strip()
-            if sentence:
-                final_sentences.append(sentence)
-            buffer = []
-            prev_tokens = []
-            current_text = ""
-        else:
-            prev_tokens = tokens
+# # ---- 전체 STT 비동기 파이프라인 ----
+# async def whisper_vad_stt_async(audio_path, sample_rate=16000):
+#     y, sr = sf.read(audio_path)
+#     if len(y.shape) > 1:
+#         y = y.mean(axis=1).astype(np.float32)
+#     if sr != sample_rate:
+#         import librosa
+#         y = librosa.resample(y, orig_sr=sr, target_sr=sample_rate)
+#         sr = sample_rate
 
-    # 마지막 남은 텍스트
-    if current_text.strip():
-        final_sentences.append(current_text.strip())
+#     chunks = vad_split(y, sample_rate=sr)
+#     print(f"[VAD] 추출된 음성 chunk 개수: {len(chunks)}")
 
-    return final_sentences
+#     loop = asyncio.get_event_loop()
+#     results = []
+
+#     with ProcessPoolExecutor(max_workers=4) as executor:  # 서버 코어수에 맞게 조정
+#         tasks = [
+#             loop.run_in_executor(executor, stt_chunk, chunk, sr)
+#             for chunk in chunks
+#         ]
+#         stt_texts = await asyncio.gather(*tasks)
+#         results.extend(stt_texts)
+
+#     return " ".join(filter(None, results))
+
+# ---- TTS 예시 (OpenAI) ----
 
 
-# --- OpenAI TTS 함수 ---
 def text_to_speech(content, voice="alloy"):
     response = openai.audio.speech.create(
         model="tts-1",

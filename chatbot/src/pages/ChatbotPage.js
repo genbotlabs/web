@@ -1,76 +1,73 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-
 import Header from '../components/Header/Header';
 import '../styles/ChatbotPage.css';
-import send from '../icons/send.png'
-import voice from '../icons/voice.png'
+import sendIcon from '../icons/send.png';
+import voiceIcon from '../icons/voice.png';
 
 export default function ChatbotPage() {
   const [searchParams] = useSearchParams();
   const botId = searchParams.get('bot_id') || 'a1';
+  const sessionId = searchParams.get('session_id') || 'test-session';
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // 첫멘트(first_text) 불러오기
+  // 초기 인삿말 불러오기
   useEffect(() => {
-    fetch(`http://localhost:8000/bots/${botId}`)
-      .then(res => res.json())
-      .then(data => {
-        const first_text = data.first_text || '안녕하세요! 무엇을 도와드릴까요?';
-        setMessages([{ from: 'bot', text: first_text }]);
-      })
-      .catch(err => {
-        console.error('greeting load error:', err);
-      });
+    const fetchGreeting = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/bots/${botId}`);
+        const data = await res.json();
+        const firstText = data.first_text || '안녕하세요! 무엇을 도와드릴까요?';
+        setMessages([{ from: 'bot', text: firstText }]);
+      } catch (err) {
+        console.error('초기 인삿말 로딩 실패:', err);
+      }
+    };
+    fetchGreeting();
   }, [botId]);
 
-  // 메시지 전송(텍스트 입력, 음성 인식 공통)
-  const sendMessage = async (userInput) => {
-    const textToSend = userInput !== undefined ? userInput : input;
-    if (!textToSend.trim() || loading) return;
+  // 메시지 추가 유틸
+  const addMessage = (from, text, partial = false) => {
+    setMessages(prev => {
+      const last = prev[prev.length - 1];
+      if (partial && last && last.from === from && last.partial) {
+        return [...prev.slice(0, -1), { from, text, partial }];
+      } else {
+        return [...prev, { from, text, partial }];
+      }
+    });
+  };
 
-    const userMessage = { from: 'user', text: textToSend };
-    setMessages(prev => [...prev, userMessage]);
+  // 텍스트 메시지 전송 (키보드 입력 시 사용)
+  const sendMessage = async (textToSend = input) => {
+    if (!textToSend.trim() || loading) return;
+    addMessage('user', textToSend);
     setInput('');
     setLoading(true);
 
     try {
       const turn = messages.filter(msg => msg.from === 'user').length + 1;
-      const response = await fetch(`http://localhost:8000/bots/${botId}/sllm`, {
+      const res = await fetch(`http://localhost:8000/bots/${botId}/sllm`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          turn: turn, 
-          role: 'user', 
-          content: textToSend
-        })
+        body: JSON.stringify({ turn, role: 'user', content: textToSend })
       });
 
-      if (!response.body) throw new Error('스트림 body 없음 오류');
-      const reader = response.body.getReader();
+      if (!res.body) throw new Error('스트리밍 응답 없음');
+      const reader = res.body.getReader();
       const decoder = new TextDecoder('utf-8');
       let botResponse = '';
-
-      const appendPartial = (text) => {
-        setMessages(prev => {
-          const last = prev[prev.length - 1];
-          if (last && last.from === 'bot' && last.partial) {
-            return [...prev.slice(0, -1), { from: 'bot', text, partial: true }];
-          } else {
-            return [...prev, { from: 'bot', text, partial: true }];
-          }
-        });
-      };
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         botResponse += decoder.decode(value);
-        appendPartial(botResponse);
+        addMessage('bot', botResponse, true);
       }
+
       setMessages(prev => {
         const last = prev[prev.length - 1];
         if (last && last.partial) {
@@ -78,103 +75,92 @@ export default function ChatbotPage() {
         }
         return prev;
       });
+
     } catch (err) {
-      setMessages(prev => [...prev, { from: 'bot', text: '답변 중 오류가 발생했습니다.' }]);
+      console.error('LLM 응답 오류:', err);
+      addMessage('bot', '답변 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
   };
 
-  // 엔터키로 메시지 전송
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') sendMessage();
   };
 
-  // 음성 인식 및 전송
-  const sendVoice = async () => {
-    const sessionId = searchParams.get('session_id') || 'test-session';
+  // ✅ 실시간 WebSocket 기반 음성 입력 → 음성 응답
+  const sendVoiceStream = async () => {
     try {
-      // 1. 녹음 (WAV, PCM 등 Whisper 최적화)
+      const ws = new WebSocket(`ws://localhost:8000/voicebot/ws/voice/${sessionId}`);
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' }); // 백엔드에서 webm 지원시 그대로, 아니면 WAV로 변환 필요
-      let audioChunks = [];
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
 
-      mediaRecorder.ondataavailable = (event) => {
-        audioChunks.push(event.data);
-      };
+      ws.binaryType = 'arraybuffer';  // 중요: 음성 응답 받을 때 바이너리로 처리
 
-      mediaRecorder.onstop = async () => {
-        // (선택) webm → wav 변환 필요시 ffmpeg.wasm 등 사용 (백엔드가 webm 바로 받을 수 있으면 생략)
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' }); 
-        const formData = new FormData();
-        formData.append('audio', audioBlob, 'voice.webm');
+      ws.onopen = () => {
+        mediaRecorder.start(250);
+        console.log('🎤 음성 스트리밍 시작');
 
-        setLoading(true);
-        try {
-          // 2. Whisper Streaming API로 전송
-          const res = await fetch(`http://localhost:8000/api/voicebot/${sessionId}/voice`, {
-            method: 'POST',
-            body: formData,
-          });
-
-          // 3. 응답: 음성 텍스트가 여러 문장일 수 있음
-          let text = '';
-          try {
-            // Whisper 스트리밍 응답이 텍스트라면
-            text = await res.text();
-            if (!text) throw new Error('음성 인식 결과 없음');
-          } catch (e) {
-            alert('STT 응답 파싱 실패');
+        mediaRecorder.ondataavailable = async (e) => {
+          if (e.data.size > 0 && ws.readyState === WebSocket.OPEN) {
+            const chunk = await e.data.arrayBuffer();
+            ws.send(chunk);
           }
-
-          // 4. 입력창에 자동 입력 & 메시지에 바로 추가
-          setInput(text);
-          setMessages(prev => [...prev, { from: 'user', text }]);
-          // 5. 바로 SLLM으로 텍스트 전송
-          await sendMessage(text);
-
-        } catch (err) {
-          console.error('음성 전송 실패:', err);
-          alert('음성 인식 중 오류가 발생했습니다.');
-        } finally {
-          setLoading(false);
-        }
+        };
       };
 
-      mediaRecorder.start();
+      ws.onmessage = (event) => {
+        const blob = new Blob([event.data], { type: 'audio/mpeg' });  // 또는 'audio/wav'
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audio.play();
+      };
+
+      ws.onerror = (e) => {
+        console.error('WebSocket 에러:', e);
+        alert('음성 응답 중 오류 발생');
+      };
+
+      ws.onclose = () => {
+        console.log('WebSocket 연결 종료');
+        stream.getTracks().forEach(track => track.stop());
+      };
+
       setTimeout(() => {
         mediaRecorder.stop();
-        stream.getTracks().forEach(track => track.stop());
-      }, 6000); // 최대 6초(실사용에 맞게 조정)
+        ws.close();
+      }, 8000); // 최대 8초 녹음
+
     } catch (err) {
-      alert('마이크 권한이 필요합니다.');
+      alert('🎙️ 마이크 권한이 필요합니다.');
     }
   };
 
   return (
     <div className="chatbot-container">
       <div className="chat-window">
-          {messages.map((msg, idx) => (
-            <div key={idx} className={`message ${msg.from}`}>
-              {msg.text}
-            </div>
-          ))}
-        </div>
-        <div className="chat-input">
-          <input
-            type="text"
-            placeholder="질문을 입력해 주세요."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-          <button onClick={sendMessage} className='send-button'>
-            <img src={send} alt="send-message" />
-          </button>
-          <button onClick={sendVoice} className='voice-button'>
-            <img src={voice} alt="send-voice" />
-          </button>
-        </div>
+        {messages.map((msg, idx) => (
+          <div key={idx} className={`message ${msg.from}`}>
+            {msg.text}
+          </div>
+        ))}
+      </div>
+      <div className="chat-input">
+        <input
+          type="text"
+          placeholder="질문을 입력해 주세요."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          disabled={loading}
+        />
+        <button onClick={() => sendMessage()} className="send-button" disabled={loading}>
+          <img src={sendIcon} alt="보내기" />
+        </button>
+        <button onClick={sendVoiceStream} className="voice-button" disabled={loading}>
+          <img src={voiceIcon} alt="음성 보내기" />
+        </button>
+      </div>
     </div>
   );
 }
