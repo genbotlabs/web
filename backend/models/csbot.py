@@ -9,7 +9,7 @@ class CSbot(Base):
     detail_id = Column(Integer, ForeignKey("detail.detail_id", ondelete="CASCADE"), nullable=True)
     user_id = Column(Integer, ForeignKey("user.user_id", ondelete="CASCADE"), nullable=False)
     bot_url = Column(String(255), nullable=False, default="https://localhost:3000")
-    status = Column(Integer, nullable=False, default=3, comment="0: pending, 1: active, 2: inactive, 3: deleted")
+    status = Column(Integer, nullable=False, default=3, comment="0: pending, 1: active, 2: inactive, 3: error")
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     updated_at = Column(DateTime, nullable=False, server_default=func.now())
 

@@ -75,10 +75,10 @@ export default function DashBoardPage({ user }) {
   const filteredData = bots.filter((bot) => {
     const matchesTab =
       activeTab === "all" ||
-      (activeTab === "pending" && bot.status === "0") ||
-      (activeTab === "inactive" && bot.status === "1") ||
-      (activeTab === "active" && bot.status === "2") ||
-      (activeTab === "error" && bot.status === "3")
+      (activeTab === "pending" && bot.status === 0) ||
+      (activeTab === "inactive" && bot.status === 1) ||
+      (activeTab === "active" && bot.status === 2) ||
+      (activeTab === "error" && bot.status === 3)
       
 
     const matchesSearch =
@@ -97,10 +97,10 @@ export default function DashBoardPage({ user }) {
 
   const getTabCount = (tabKey) => {
     if (tabKey === "all") return bots.length
-    if (tabKey === "pending") return bots.filter((bot) => bot.status === "0").length
-    if (tabKey === "active") return bots.filter((bot) => bot.status === "1").length
-    if (tabKey === "inactive") return bots.filter((bot) => bot.status === "2").length
-    if (tabKey === "error") return bots.filter((bot) => bot.status === "3").length
+    if (tabKey === "pending") return bots.filter((bot) => bot.status === 0).length
+    if (tabKey === "active") return bots.filter((bot) => bot.status === 1).length
+    if (tabKey === "inactive") return bots.filter((bot) => bot.status === 2).length
+    if (tabKey === "error") return bots.filter((bot) => bot.status === 3).length
     return 0
   }
 
@@ -351,7 +351,7 @@ export default function DashBoardPage({ user }) {
           setSelectedBot(null)
         }}
         open={drawerVisible}
-        width={400}
+        width={700}
         bodyStyle={{ padding: "24px" }}
       >
         {selectedBot && (
