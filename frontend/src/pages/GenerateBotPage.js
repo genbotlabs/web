@@ -267,25 +267,23 @@ export default function GenerateBotPage({ user }) {
 
                         <div className="upload-area">
 
-                        <input
-                            type="file"
-                            multiple
-                            accept=".pdf,.json"
-                            onChange={handleFileUpload}
-                            className="hidden-file-input"
-                            id="file-upload"
-                        />
-
-                        {/* <FileUploadBox
-                            onFileChange={setUploadedFiles}
-                            validationResult={validationResult}
-                            setValidationResult={setValidationResult}
-                        /> */}
-
-                        <label htmlFor="file-upload" className="upload-button">
-                            <PlusOutlined style={{ margin: "8px" }} />
-                            파일 업로드
-                        </label>
+                            <input
+                                type="file"
+                                multiple
+                                accept=".pdf,.json"
+                                onChange={handleFileUpload}
+                                className="hidden-file-input"
+                                id="file-upload"
+                            />
+                            {/* <FileUploadBox
+                                onFileChange={setUploadedFiles}
+                                validationResult={validationResult}
+                                setValidationResult={setValidationResult}
+                            /> */}
+                            <label htmlFor="file-upload" className="upload-button">
+                                <PlusOutlined style={{ margin: "8px" }} />
+                                파일 업로드
+                            </label>
                         </div>
 
                         {uploadedFiles.length > 0 && (
@@ -293,10 +291,11 @@ export default function GenerateBotPage({ user }) {
                             {uploadedFiles.map((fileObj) => (
                             <div key={fileObj.id} className="file-item">
                                 <div className="file-info">
-                                <div className="file-icon">
-                                    <FileTextOutlined />
-                                </div>
-                                <span className="file-name">{fileObj.name}</span>
+                                    <div className="file-icon">
+                                        <FileTextOutlined />
+                                    </div>
+                                    <span className="file-name">{fileObj.name}</span>
+                                    <span className="file-size">({(fileObj.file.size / 1024 / 1024).toFixed(2)} MB)</span>
                                 </div>
                                 <div className="file-actions">
                                 {/* <button
@@ -309,9 +308,9 @@ export default function GenerateBotPage({ user }) {
                                 >
                                     {fileObj.selected ? "선택됨" : "선택"}
                                 </button> */}
-                                <button type="button" className="remove-button" onClick={() => handleFileRemove(fileObj.id)}>
-                                    <DeleteOutlined />
-                                </button>
+                                    <button type="button" className="remove-button" onClick={() => handleFileRemove(fileObj.id)}>
+                                        <DeleteOutlined />
+                                    </button>
                                 </div>
                             </div>
                             ))}
