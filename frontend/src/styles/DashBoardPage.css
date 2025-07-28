@@ -303,6 +303,21 @@ body {
   text-align: center;
 }
 
+.detail-button {
+    padding: 6px 12px;
+    background-color: #1F5FF8;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+  
+.detail-button:hover {
+    background-color: #4096ff;
+}
+
 /* Enhanced checkbox */
 .checkbox {
   width: 18px;

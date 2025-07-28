@@ -234,34 +234,20 @@ export default function DashBoardPage({ user }) {
             <table className="custom-table">
               <thead className="table-header">
                 <tr>
-                  <th>
-                    <input
-                      type="checkbox"
-                      className="checkbox"
-                      checked={selectedRows.length === filteredData.length && filteredData.length > 0}
-                      onChange={(e) => handleSelectAll(e.target.checked)}
-                    />
-                  </th>
+                  
                   <th>상담봇 명</th>
                   <th>회사명</th>
                   <th>상태</th>
                   <th>대표 이메일</th>
                   <th>고객센터</th>
                   <th>생성일</th>
+                  <th style={{ width: "80px" }}>상세</th>
                   <th style={{ width: "80px" }}>삭제</th>
                 </tr>
               </thead>
               <tbody className="table-body">
                 {paginatedData.map((bot) => (
                   <tr key={bot.bot_id}>
-                    <td>
-                      <input
-                        type="checkbox"
-                        className="checkbox"
-                        checked={selectedRows.includes(bot.bot_id)}
-                        onChange={(e) => handleRowSelect(bot.bot_id, e.target.checked)}
-                      />
-                    </td>
                     <td 
                       style={{ fontWeight: "500", color: "#1890ff", cursor: "pointer", textDecoration: "underline" }}
                       onClick={() => handleClickBotName(bot.bot_id)}
@@ -278,6 +264,15 @@ export default function DashBoardPage({ user }) {
                         month: "long",
                         day: "numeric"
                       })}
+                    </td>
+                    <td>
+                      <button
+                        className="detail-button"
+                        onClick={() => handleRowSelect(bot.bot_id, true)}
+                        style={{ width: "60px" }}
+                      >
+                        보기
+                      </button>
                     </td>
                     <td>
                       <Popconfirm
