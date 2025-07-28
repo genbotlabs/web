@@ -363,7 +363,7 @@ body {
     color: #313131;
 }
 
-.status-deleted {
+.status-error {
     background: #ffd2d2;
     color: rgb(228, 0, 0);
 }

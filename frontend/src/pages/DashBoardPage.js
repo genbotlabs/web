@@ -54,7 +54,7 @@ export default function DashBoardPage({ user }) {
       "0": "제작중",
       "1": "활성화",
       "2": "비활성화",
-      "3": "삭제"
+      "3": "오류"
     };
   
     const label = statusMap[statusCode] || "미정";
@@ -62,7 +62,7 @@ export default function DashBoardPage({ user }) {
       "제작중": "status-badge status-pending",
       "활성화": "status-badge status-active",
       "비활성화": "status-badge status-inactive",
-      "삭제": "status-badge status-deleted",
+      "오류": "status-badge status-error",
     };
   
     return (
