@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import auth, chatbot, bot, model_bot
-from web.backend.api import voicebot
+from api import auth, chatbot, bot, model_bot, voicebot
 app = FastAPI()
 
 app.add_middleware(

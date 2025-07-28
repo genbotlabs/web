@@ -5,12 +5,13 @@ from models.session import Session as SessionModel
 from datetime import datetime
 from services.session.utils import text_to_speech, get_next_turn
 from dotenv import load_dotenv
+from sqlalchemy.ext.asyncio import AsyncSession
 
 load_dotenv()
 
 RUNPOD_STREAMING_STT_URL = os.getenv("RUNPOD_STREAMING_STT_URL")
 
-async def handle_streaming_voice(session_id: str, websocket: WebSocket):
+async def handle_streaming_voice(session_id: str, websocket: WebSocket, db: AsyncSession):
     async with httpx.AsyncClient(timeout=30) as client:
         async for chunk in websocket.iter_bytes():
             try:
@@ -23,10 +24,21 @@ async def handle_streaming_voice(session_id: str, websocket: WebSocket):
                 text = resp.json().get("text", "").strip()
 
                 # 2. sLLM에 텍스트 전달
-                turn = get_next_turn(session_id)
+                turn = get_next_turn(session_id, sender="user")
+                user_voice = VoiceLog(
+                    session_id=session_id,
+                    turn=turn,
+                    role="user",
+                    content=text,
+                    created_at=datetime.utcnow(),
+                    updated_at=datetime.utcnow()
+                )
+                db.add(user_voice)
+                await db.commit()
+
                 sllm_resp = await client.post(
                     f"http://localhost:3000/{session_id}/sllm",
-                    json={"session_id": session_id, "turn": turn, "content": text}
+                    json={"session_id": session_id, "turn": turn, "role" : "user", "content": text}
                 )
                 sllm_resp.raise_for_status()
                 answer = sllm_resp.json().get("content", "").strip()

@@ -1,9 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select
 from fastapi import HTTPException
 from uuid import uuid4
 from datetime import datetime
-import httpx, os
+import httpx
 from models.session import Session as SessionModel
 from models.chatlog import ChatLog
 from schemas.request.session import CreateSessionRequest, SendMessageRequest
@@ -11,6 +11,7 @@ from schemas.response.session import (
     CreateSessionResponse, SendMessageResponse,
     MessageItemResponse, MessageListResponse, EndSessionResponse
 )
+from services.session.utils import get_next_turn
 
 client = httpx.AsyncClient()
 
@@ -25,8 +26,7 @@ async def create_session_service(request: CreateSessionRequest, db: AsyncSession
 
     session = SessionModel(
         session_id=session_id,
-        bot_id=request.bot_id,
-        # created_at=datetime
+        bot_id=request.bot_id
     )
     db.add(session)
     await db.commit()
@@ -40,17 +40,15 @@ async def send_message_service(session_id: str, request: SendMessageRequest, db:
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
-    turn_result = await db.execute(
-        select(func.max(ChatLog.turn)).where(ChatLog.session_id == session_id)
-    )
-    turn_count = turn_result.scalar_one() or 0
-    next_turn = turn_count + 1
+    next_turn = get_next_turn(session_id, sender="user")
 
     user_msg = ChatLog(
         session_id=session_id,
         turn=next_turn,
         role="user",
-        content=request.message
+        content=request.message,
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow()
     )
     db.add(user_msg)
     await db.commit()
