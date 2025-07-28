@@ -47,7 +47,7 @@ body {
   font-weight: 700;
   color: #1a202c;
   margin: 0 0 8px 0;
-  background: linear-gradient(135deg, #484848 0%, #484848 100%);
+  background: #484848;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -284,7 +284,7 @@ body {
 }
 
 .table-body tr:hover {
-  background: linear-gradient(135deg, #f8fafc 0%, #e6fffa 100%);
+  background: #e2ebff;
   transform: scale(1.001);
 }
 
@@ -316,26 +316,6 @@ body {
   
 .detail-button:hover {
     background-color: #4096ff;
-}
-
-/* Enhanced checkbox */
-.checkbox {
-  width: 18px;
-  height: 18px;
-  border: 2px solid #cbd5e0;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.checkbox:checked {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-color: #667eea;
-}
-
-.checkbox:hover {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 /* Enhanced status badges */
@@ -503,7 +483,7 @@ body {
   }
   
   .ant-drawer .ant-drawer-header {
-    background: linear-gradient(135deg, #1f5ff8 0%, #4096ff 100%);
+    background: #1f5ff8;
     border-bottom: none;
     padding: 20px 24px;
     box-shadow: 0 2px 8px rgba(31, 95, 248, 0.2);
@@ -572,7 +552,7 @@ body {
     content: "";
     width: 4px;
     height: 16px;
-    background: linear-gradient(135deg, #1f5ff8 0%, #4096ff 100%);
+    background: #1f5ff8;
     border-radius: 2px;
   }
   
@@ -660,7 +640,7 @@ body {
   .chatbot-button {
     width: 100%;
     padding: 16px;
-    background: linear-gradient(135deg, #1f5ff8 0%, #4096ff 100%);
+    background: #1f5ff8;
     color: white;
     border: none;
     border-radius: 12px;

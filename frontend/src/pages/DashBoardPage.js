@@ -374,7 +374,7 @@ export default function DashBoardPage({ user }) {
                   {selectedBot.files.map((item) => (
                     <li key={item.data_id} className="file-item">
                       <div className="file-title">
-                        📄 {item.name} ({item.data_id})
+                        {item.name} ({item.data_id})
                       </div>
                       <div
                         className="file-link"
