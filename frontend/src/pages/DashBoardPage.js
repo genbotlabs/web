@@ -250,7 +250,7 @@ export default function DashBoardPage({ user }) {
               <thead className="table-header">
                 <tr>
                   
-                  <th>상담봇 명</th>
+                  <th style={{ width: "120px" }}>상담봇 명</th>
                   <th>회사명</th>
                   <th>상태</th>
                   <th>대표 이메일</th>
