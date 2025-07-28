@@ -697,7 +697,7 @@ body {
   }
   
   .ant-modal .ant-modal-header {
-    background: linear-gradient(135deg, #1f5ff8 0%, #4096ff 100%);
+    background: #1f5ff8;
     border-bottom: none;
     padding: 20px 24px;
   }
@@ -709,7 +709,11 @@ body {
   }
   
   .ant-modal .ant-modal-close {
+    position: absolute;
+    top: 35px;
+    right: 35px;
     color: white;
+    font-weight: bolder;
     font-size: 16px;
     width: 32px;
     height: 32px;

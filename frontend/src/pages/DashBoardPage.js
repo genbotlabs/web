@@ -343,7 +343,7 @@ export default function DashBoardPage({ user }) {
 
       {/* Drawer */}
       <Drawer
-        title={selectedBot ? `${selectedBot.bot_name} 상세정보` : ""}
+        title={selectedBot ? `${selectedBot.bot_name}` : ""}
         placement="right"
         onClose={() => {
           setDrawerVisible(false)
@@ -411,7 +411,7 @@ export default function DashBoardPage({ user }) {
             <iframe
               src={previewUrl}
               width="100%"
-              height="600px"
+              height="700px"
               style={{ border: "none" }}
             />
           ) : (
