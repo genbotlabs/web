@@ -10,8 +10,11 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from teddynote_parser_client.client import TeddyNoteParserClient
 from langchain_core.documents import Document
+import smtplib
+from email.mime.text import MIMEText
 
 load_dotenv()
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 # S3 클라이언트 설정
 s3 = boto3.client(
@@ -138,3 +141,15 @@ def parse_pdfs_from_s3(bucket_name: str, base_folder: str):
     print("임시파일 정리 완료!")
 
     return "✅ PDF 파싱 및 벡터DB 생성, 결과 S3에 저장 완료"
+
+def send_email_notification(to_email, bot_name):
+    EMAIL = os.getenv("GMAIL")
+    PASSWORD = os.getenv("GMAIL_PASSWORD")
+    msg = MIMEText(f"'{bot_name}' 봇이 생성되었습니다.")
+    msg['Subject'] = f"[GenBot] '{bot_name}' 생성 완료 안내"
+    msg['From'] = EMAIL
+    msg['To'] = to_email
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login(EMAIL, PASSWORD)
+        server.send_message(msg)
