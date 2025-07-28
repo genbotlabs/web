@@ -7,6 +7,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
 import torch
 import os
 from dotenv import load_dotenv
+from peft import PeftModel
 
 # 1. vectordb 자동으로 불러오도록 하는 코드 작성
 
@@ -18,31 +19,43 @@ embedding_model = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-lar
 vectorstore = FAISS.load_local("abab", embedding_model, allow_dangerous_deserialization=True)
 
 # ─── EFS 모델 경로 설정 ───────────────────
-efs_model_path = "/mnt/efs/kanana_model"
-midm_model_path = "sllm_model/Midm" # 튜닝된 기본 모델
-
+efs_model_path = "/mnt/efs/Midm"
+# midm_model_path = "sllm_model/Midm" # 튜닝된 기본 모델
+base_model_id = "K-intelligence/Midm-2.0-Base-Instruct"
 # ─── 모델 로딩 함수 정의 (1회 로딩 후 캐시) ─────────────
 _tokenizer = None
 _model = None
 _generation_config = None
+
+print("✅ 모델 및 토크나이저 로딩 완료")
 
 def get_midm_model():
     global _tokenizer, _model, _generation_config
 
     if _tokenizer is None or _model is None or _generation_config is None:
         print("🔄 EFS에서 모델 로딩 중...")
-        _tokenizer = AutoTokenizer.from_pretrained(efs_model_path)
-        _model = AutoModelForCausalLM.from_pretrained(
-            efs_model_path,
+
+        # ✅ Tokenizer는 adapter 경로에서 로딩 가능
+        _tokenizer = AutoTokenizer.from_pretrained(efs_model_path, trust_remote_code=True)
+
+        # ✅ Base + LoRA adapter 결합
+        base_model = AutoModelForCausalLM.from_pretrained(
+            base_model_id,
             device_map="auto",
             torch_dtype=torch.bfloat16,
             trust_remote_code=True
         )
-        _generation_config = GenerationConfig.from_pretrained(efs_model_path)
-        print("✅ 모델 로딩 완료")
-    
-    return _tokenizer, _model, _generation_config
+        _model = PeftModel.from_pretrained(base_model, efs_model_path)
 
+        # ✅ Generation config 예외 처리
+        try:
+            _generation_config = GenerationConfig.from_pretrained(efs_model_path)
+        except:
+            _generation_config = GenerationConfig.from_pretrained(base_model_id)
+
+        print("✅ 모델 로딩 완료")
+
+    return _tokenizer, _model, _generation_config
 # ─── LangGraph용 상태 정의 ────────────────
 class GraphState(TypedDict):
     question: Annotated[str, "질문"]

@@ -13,10 +13,10 @@ load_dotenv()
 
 # ─── FAISS DB + 임베딩 로딩 ──────────────
 embedding_model = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-large-instruct")
-vectorstore = FAISS.load_local("card_QA_faiss_db", embedding_model, allow_dangerous_deserialization=True)
+vectorstore = FAISS.load_local("abab", embedding_model, allow_dangerous_deserialization=True)
 
 # ─── Midm 모델 로딩 ──────────────────────
-midm_model_name = "kakaocorp/kanana-1.5-8b-instruct-2505"
+midm_model_name = "sllm_model/Midm"
 midm_tokenizer = AutoTokenizer.from_pretrained(midm_model_name)
 midm_model = AutoModelForCausalLM.from_pretrained(
     midm_model_name,
