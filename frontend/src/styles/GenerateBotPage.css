@@ -92,6 +92,13 @@
   padding: 10px 30px;
 }
 
+.upload-rule-button {
+  margin-bottom: 24px;
+  position: absolute;
+  top: 140px;
+  right: 160px;
+}
+
 .upload-area {
   margin-bottom: 24px;
 }

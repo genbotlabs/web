@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { Form, Input, Button, message } from "antd"
+import { Form, Input, Button, message, Modal } from "antd"
 import { PlusOutlined, FileTextOutlined, DeleteOutlined } from "@ant-design/icons"
 import "../styles/GenerateBotPage.css"
 
@@ -12,6 +12,7 @@ export default function GenerateBotPage({ user }) {
     const [loading, setLoading] = useState(false)
     const [formValues, setFormValues] = useState({})
     const [uploadedFiles, setUploadedFiles] = useState([])
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleFileUpload = (e) => {
         const files = Array.from(e.target.files)
@@ -131,6 +132,18 @@ export default function GenerateBotPage({ user }) {
         )
     }
 
+    const handleUploadRule = () => {
+        setIsModalOpen(true);
+    }
+
+    const handleOk = () => {
+        setIsModalOpen(false);  
+      };
+    
+      const handleCancel = () => {
+        setIsModalOpen(false); 
+      };
+
     return (
         <div className="generate-bot-page">
             <div className="generate-bot-container">
@@ -210,7 +223,14 @@ export default function GenerateBotPage({ user }) {
                                 <Input placeholder="예시: contact@genbot.com" className="form-input" size="large" />
                             </Form.Item>
 
-                            <Form.Item label={<span className="form-label">상담원 번호</span>} name="consultantNumber">
+                            <Form.Item 
+                                label={
+                                    <span className="form-label">
+                                        상담원 번호<span className="required">*</span>
+                                    </span>
+                                } 
+                                name="consultantNumber"
+                            >
                                 <Input placeholder="예시: 1588-0000" className="form-input" size="large" />
                             </Form.Item>
 
@@ -226,20 +246,26 @@ export default function GenerateBotPage({ user }) {
                     </div>
 
                     {/* Right Section - Data Upload */}
-                    <div className="data-section">
+                    <div className="data-section" >
                         <h2 className="section-title">사용할 데이터</h2>
                         <p className="section-subtitle">봇 학습에 사용할 데이터를 업로드하고 선택해주세요.</p>
+                        <Button className="upload-rule-button" type="primary" onClick={handleUploadRule}>
+                            업로드 규칙
+                        </Button>
+
+                        <Modal
+                            title="업로드 규칙 안내"
+                            open={isModalOpen}
+                            onOk={handleOk}
+                            onCancel={handleCancel}
+                        >
+                            <span style={{ fontSize: "18px" }}>1. PDF 파일을 업로드할 수 있습니다.</span>
+                            <br />
+                            <span style={{ fontSize: "18px" }}>2. 파일 크기는 모두 합쳐서 10MB 이하로 제한됩니다.</span>
+                            <br />
+                        </Modal>
 
                         <div className="upload-area">
-                        <div className="upload-instructions">
-                            1. JSON, PDF 파일을 업로드할 수 있습니다.
-                            <br />
-                            2. 파일 개수는 최대 10개까지 가능합니다.
-                            <br />
-                            3. 각 파일의 크기는 최대 30MB입니다.
-                            <br />
-                            4. 데이터 형식 확인 후 사용할 파일을 선택해주세요.
-                        </div>
 
                         <input
                             type="file"
