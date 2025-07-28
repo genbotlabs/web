@@ -49,23 +49,37 @@ export default function DashBoardPage({ user }) {
     fetchBots()
   }, [user])
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (statusCode) => {
+    const statusMap = {
+      "0": "제작중",
+      "1": "활성화",
+      "2": "비활성화",
+      "3": "오류"
+    };
+  
+    const label = statusMap[statusCode] || "미정";
     const statusClasses = {
-      활성화: "status-badge status-active",
-      비활성화: "status-badge status-inactive",
-      삭제: "status-badge status-deleted",
-      제작중: "status-badge status-pending",
-    }
-
-    return <span className={statusClasses[status] || "status-badge status-inactive"}>{status}</span>
-  }
+      "제작중": "status-badge status-pending",
+      "활성화": "status-badge status-active",
+      "비활성화": "status-badge status-inactive",
+      "오류": "status-badge status-deleted", // 오류 전용 클래스를 따로 만들 수도 있음
+    };
+  
+    return (
+      <span className={statusClasses[label] || "status-badge status-inactive"}>
+        {label}
+      </span>
+    );
+  };
 
   const filteredData = bots.filter((bot) => {
     const matchesTab =
       activeTab === "all" ||
-      (activeTab === "active" && bot.status === "활성화") ||
-      (activeTab === "inactive" && bot.status === "비활성화") ||
-      (activeTab === "error" && bot.status === "오류")
+      (activeTab === "pending" && bot.status === "0") ||
+      (activeTab === "inactive" && bot.status === "1") ||
+      (activeTab === "active" && bot.status === "2") ||
+      (activeTab === "error" && bot.status === "3")
+      
 
     const matchesSearch =
       bot.bot_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -83,9 +97,10 @@ export default function DashBoardPage({ user }) {
 
   const getTabCount = (tabKey) => {
     if (tabKey === "all") return bots.length
-    if (tabKey === "active") return bots.filter((bot) => bot.status === "활성화").length
-    if (tabKey === "inactive") return bots.filter((bot) => bot.status === "비활성화").length
-    if (tabKey === "error") return bots.filter((bot) => bot.status === "오류").length
+    if (tabKey === "pending") return bots.filter((bot) => bot.status === "0").length
+    if (tabKey === "active") return bots.filter((bot) => bot.status === "1").length
+    if (tabKey === "inactive") return bots.filter((bot) => bot.status === "2").length
+    if (tabKey === "error") return bots.filter((bot) => bot.status === "3").length
     return 0
   }
 
@@ -190,9 +205,9 @@ export default function DashBoardPage({ user }) {
           <div className="tabs-list">
             {[
               { key: "all", label: "전체 봇" },
+              { key: "pending", label: "제작중" },
               { key: "active", label: "활성화" },
-              { key: "inactive", label: "비활성화" },
-              { key: "error", label: "생성 중 오류" },
+              { key: "inactive", label: "비활성화" }
             ].map((tab) => (
               <button
                 key={tab.key}
@@ -255,7 +270,7 @@ export default function DashBoardPage({ user }) {
                       {bot.bot_name}
                     </td>
                     <td>{bot.company_name}</td>
-                    <td style={{ fontSize: "20px" }}>{getStatusBadge(bot.status || "비활성화")}</td>
+                    <td style={{ fontSize: "20px" }}>{getStatusBadge(bot.status)}</td>
                     <td>{bot.email}</td>
                     <td>{bot.cs_number}</td>
                     <td>
