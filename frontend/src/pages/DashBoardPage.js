@@ -357,18 +357,19 @@ export default function DashBoardPage({ user }) {
         {selectedBot && (
           <div className="drawer-content">
             <div className="drawer-section">
-              <h3>기본 정보</h3>
-              <p><b>회사명:</b> {selectedBot.company_name}</p>
-              <p><b>상태:</b> {getStatusBadge(selectedBot.status)}</p>
-              <p><b>대표 이메일:</b> {selectedBot.email}</p>
-              <p><b>고객센터:</b> {selectedBot.cs_number}</p>
-              <p><b>생성일:</b> {new Date(selectedBot.created_at).toLocaleString()}</p>
-              <p><b>수정일:</b> {new Date(selectedBot.updated_at).toLocaleString()}</p>
+              <h3 style={{ fontSize: "20px", fontWeight: "600", color: "#1f5ff8" }}>기본 정보</h3>
+              <p style={{ fontSize: "18px" }}><b>봇 이름:</b> {selectedBot.bot_name}</p>
+              <p style={{ fontSize: "18px" }}><b>회사명:</b> {selectedBot.company_name}</p>
+              <p style={{ fontSize: "18px" }}><b>상태:</b> {getStatusBadge(selectedBot.status)}</p>
+              <p style={{ fontSize: "18px" }}><b>대표 이메일:</b> {selectedBot.email}</p>
+              <p style={{ fontSize: "18px" }}><b>고객센터:</b> {selectedBot.cs_number}</p>
+              <p style={{ fontSize: "18px" }}><b>생성일:</b> {new Date(selectedBot.created_at).toLocaleString()}</p>
+              <p style={{ fontSize: "18px" }}><b>수정일:</b> {new Date(selectedBot.updated_at).toLocaleString()}</p>
             </div>
 
             {selectedBot.files?.length > 0 && (
               <div className="drawer-section">
-                <h3>연결된 데이터</h3>
+                <h3 style={{ fontSize: "20px", fontWeight: "600", color: "#1f5ff8" }}>연결된 데이터</h3>
                 <ul className="file-list">
                   {selectedBot.files.map((item) => (
                     <li key={item.data_id} className="file-item">
