@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from 'antd';
-import { useSearchParams } from 'react-router-dom'; 
+import { useSearchParams, useNavigate } from 'react-router-dom'; 
 
 import '../styles/MainPage.css';
 import logo from '../icons/logo.png'
@@ -9,6 +9,9 @@ export default function MainPage() {
     const [companyName, setCompanyName] = useState('GenBot');
     const [botName, setBotName] = useState('문의');
     const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+    // const sessionId = searchParams.get('session_id') || "";
+    // console.log(sessionId)
 
     useEffect(() => {
         const botId = searchParams.get('bot_id');
@@ -31,8 +34,20 @@ export default function MainPage() {
         }
     }, []);
 
-    const handleClick = () => {
-        window.location.href = `/chatbot?bot_id=${searchParams.get('bot_id') || 'a1'}`;
+    const handleClick = async () => {
+        const botId = searchParams.get("bot_id") || "a1";
+        const response = await fetch(`http://localhost:8000/chatbot/${botId}`, {
+            method: "POST",
+            body: JSON.stringify({ bot_id: botId })
+        });
+        const data = await response.json()
+        const sessionId = data.session_id
+        console.log('sessionId', sessionId)
+        // navigate(`/chatbot?bot_id=${botId}`, {
+        //   state: { session_id: sessionId }
+        // });
+        // navigate(`/chatbot?bot_id=${botId}`, { state: { session_id: sessionId } });
+        navigate(`/chatbot?bot_id=${botId}&session_id=${sessionId}`)
     }
 
     return (

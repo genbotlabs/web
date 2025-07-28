@@ -16,21 +16,26 @@ from services.session.utils import get_next_turn
 client = httpx.AsyncClient()
 
 # 1. 세션 생성
-async def create_session_service(request: CreateSessionRequest, db: AsyncSession) -> CreateSessionResponse:
+async def create_session_service(bot_id: str, db: AsyncSession) -> CreateSessionResponse:
+    print('>>>> 세션 생성 함수 진입 ')
     while True:
         session_id = f"session_{uuid4().hex[:8]}"
         result = await db.execute(select(SessionModel).where(SessionModel.session_id == session_id))
         existing = result.scalar_one_or_none()
         if not existing:
             break
+    
+    print(session_id)
+    print('>>>> SessionModel 저장 시작 ')
 
     session = SessionModel(
         session_id=session_id,
-        bot_id=request.bot_id
+        bot_id=bot_id
     )
     db.add(session)
     await db.commit()
 
+    print('>>>> SessionModel 저장 완료 ')
     return CreateSessionResponse(session_id=session_id)
 
 # 2. 메시지 전송 (텍스트)

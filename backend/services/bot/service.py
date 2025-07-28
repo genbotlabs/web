@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal
 from models.detail import Detail
 from schemas.request.bot import BotCreateRequest
-from schemas.response.bot import BotDetailItem, BotDataItemResponse
+from schemas.response.bot import BotDetailItem, BotDataItemResponse, BotFirstTextResponse
 from datetime import datetime
 from uuid import uuid4
 from fastapi import Form, UploadFile, File, HTTPException
@@ -131,6 +131,14 @@ async def service_create_bot(
         print("[ERROR]", traceback.format_exc())
         raise HTTPException(status_code=500, detail="서버 내부 오류가 발생했습니다.")
 
+async def get_bot_id(bot_id: str, db: AsyncSession):
+    result = await db.execute(
+        select(Detail).where(Detail.bot_id == bot_id)
+    )
+    detail = result.scalar_one_or_none()
+    if not detail:
+        raise HTTPException(status_code=404, detail="해당 봇이 존재하지 않거나 권한이 없습니다.")
+    return BotFirstTextResponse(first_text=detail.first_text)
 
 # 봇 목록 조회
 async def bot_list(user_id: int, db: AsyncSession) -> List[BotDetailItem]:

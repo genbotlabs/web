@@ -8,7 +8,7 @@ import voiceIcon from '../icons/voice.png';
 export default function ChatbotPage() {
   const [searchParams] = useSearchParams();
   const botId = searchParams.get('bot_id') || 'a1';
-  const sessionId = searchParams.get('session_id') || 'test-session';
+  const sessionId = searchParams.get('session_id');
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -18,8 +18,11 @@ export default function ChatbotPage() {
   useEffect(() => {
     const fetchGreeting = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/bots/${botId}`);
+        const res = await fetch(`http://localhost:8000/bots/bot_id/${botId}`, {
+          method: 'GET'
+        });
         const data = await res.json();
+        console.log('first_text', data.first_text)
         const firstText = data.first_text || '안녕하세요! 무엇을 도와드릴까요?';
         setMessages([{ from: 'bot', text: firstText }]);
       } catch (err) {

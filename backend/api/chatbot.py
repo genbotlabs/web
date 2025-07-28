@@ -24,12 +24,13 @@ load_dotenv()
 router = APIRouter()
 
 # 1. 세션 생성
-@router.post("/", response_model=CreateSessionResponse)
+@router.post("/{bot_id}", response_model=CreateSessionResponse)
 async def create_session(
-    request: CreateSessionRequest,
+    bot_id: str,
     db: AsyncSession = Depends(get_db)
 ):
-    return await create_session_service(request, db)
+    print('>>>>>>', '세션 생성')
+    return await create_session_service(bot_id, db)
 
 # 2. 메시지 전송 (텍스트)
 @router.post("/{session_id}/messages", response_model=SendMessageResponse)

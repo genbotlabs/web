@@ -9,6 +9,6 @@ router = APIRouter()
 async def voice_stream(session_id: str, websocket: WebSocket, db: AsyncSession = Depends(get_db)):
     await websocket.accept()
     try:
-        await handle_streaming_voice(session_id, websocket)
+        await handle_streaming_voice(session_id, websocket, db)
     except WebSocketDisconnect:
         print(f"[Disconnected] session_id={session_id}")

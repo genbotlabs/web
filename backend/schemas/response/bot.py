@@ -32,6 +32,10 @@ class BotDetailResponse(BaseModel):
 class BotListResponse(BaseModel):
     bots: List[BotDetailItem]
 
+# 봇 아이디로 첫 인사 조회
+class BotFirstTextResponse(BaseModel):
+    first_text: str = Field(..., example="안녕하세요! GenBot의 문의봇입니다.")
+
 # 데이터 상세 조회
 class UploadedDataDetailResponse(BaseModel):
     file: BotDataItemResponse

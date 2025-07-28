@@ -7,7 +7,7 @@ from services.session.utils import text_to_speech, get_next_turn
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 
-# load_dotenv()
+load_dotenv()
 
 RUNPOD_STREAMING_STT_URL = os.getenv("RUNPOD_STREAMING_STT_URL")
 
@@ -22,8 +22,10 @@ async def handle_streaming_voice(session_id: str, websocket: WebSocket, db: Asyn
                 )
                 resp.raise_for_status()
                 text = resp.json().get("text", "").strip()
+                print('>>>>>> 사용자 음성',text)
 
-                # 2. sLLM에 텍스트 전달
+                # 2. sLLM에 텍스트 전달 및 응답 받기
+                print('>>>>>> sLLM 응답 전 ')
                 turn = get_next_turn(session_id, sender="user")
                 user_voice = VoiceLog(
                     session_id=session_id,
@@ -42,6 +44,7 @@ async def handle_streaming_voice(session_id: str, websocket: WebSocket, db: Asyn
                 )
                 sllm_resp.raise_for_status()
                 answer = sllm_resp.json().get("content", "").strip()
+                print('>>>>>> sLLM 응답',answer)
 
                 # 3. TTS 변환
                 tts_audio = text_to_speech(answer)

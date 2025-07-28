@@ -7,7 +7,8 @@ from schemas.response.bot import (
     BotListResponse,
     BotDeleteResponse,
     UploadedDataListResponse,
-    BotDetailItem
+    BotDetailItem,
+    BotFirstTextResponse
 )
 from fastapi import Form, File, UploadFile
 from typing import List
@@ -15,7 +16,7 @@ from fastapi import Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from services.get_db import get_db  
 from schemas.response.bot import BotDeleteResponse
-from services.bot.service import service_create_bot,bot_list,delete_bot , update_bot
+from services.bot.service import service_create_bot,bot_list,delete_bot , update_bot, get_bot_id   
 from services.bot.utils import generate_unique_bot_id
 
 router = APIRouter()
@@ -49,6 +50,13 @@ async def create_bot(
         first_text=first_text,
         files=files
     )
+
+@router.get("/bot_id/{bot_id}", response_model=BotFirstTextResponse)
+async def get_bot_detail(
+    bot_id: str,
+    db: AsyncSession = Depends(get_db)
+):
+    return await get_bot_id(bot_id=bot_id, db=db)
 
 # 봇 목록 조회
 @router.get("/{user_id}", response_model=BotListResponse)
