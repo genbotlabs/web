@@ -94,46 +94,25 @@ export default function GenerateBotPage({ user }) {
 
         // 3. API 호출
         try {
+            // 1. 백엔드 API 호출 (응답 기다리지 않음)
             fetch("http://localhost:8000/bots", {
                 method: "POST",
                 body: formData,
-              }).then((response) => {
+            }).then((response) => {
                 if (!response.ok) {
-                  console.error("봇 생성 실패");
+                console.error("❌ 봇 생성 실패");
                 }
-              }).catch((err) => {
-                console.error("요청 중 오류:", err);
-              });
-            
-              // ✅ 4. 즉시 이동
-              localStorage.setItem("lastBotRequest", JSON.stringify({
+            }).catch((err) => {
+                console.error("❌ 요청 중 오류:", err);
+            });
+
+            // 2. 페이지 전환 or 저장 (즉시 실행)
+            localStorage.setItem("lastBotRequest", JSON.stringify({
                 ...form.getFieldsValue(),
                 files: uploadedFiles.map((file) => ({ name: file.name })),
-              }));
-            
-              message.success("봇 생성 요청이 전송되었습니다!");
-              navigate("/generate/pending");
-              setLoading(false);
-            // const response = await fetch("http://localhost:8000/bots", {
-            //     method: "POST",
-            //     body: formData,
-            // });
-            // console.log(response.ok,'if밖')
-            // if (response.ok) {
-            //     console.log(response.ok,'뜸')
-            //     const result = await response.json();
-            //         localStorage.setItem(
-            //             "lastBotRequest",
-            //             JSON.stringify({
-            //             ...form.getFieldsValue(),
-            //             files: uploadedFiles.map((file) => ({ name: file.name })),
-            //         }),
-            //     );
-            //     message.success("봇이 성공적으로 생성되었습니다!");
-            //     navigate("/generate/pending");
-            // } else {
-            //     message.error("서버 오류가 발생했습니다.");
-            // }
+            }));
+
+            navigate("/generate/pending"); 
         } catch (error) {
             console.error("전송 실패:", error);
             message.error("요청 중 오류가 발생했습니다.");
