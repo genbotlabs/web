@@ -38,6 +38,8 @@ async def create_bot(
     bot_id = await generate_unique_bot_id(db)
     bot_id = str(bot_id)
 
+    print('bot_id', bot_id)
+
     return await service_create_bot(
         db=db,
         bot_id=bot_id,

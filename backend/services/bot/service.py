@@ -28,6 +28,7 @@ async def service_create_bot(
     company_name: str,
     bot_name: str,
     email: str,
+    status: int,
     cs_number: str,
     first_text: str,
     files: List[UploadFile],
@@ -46,7 +47,7 @@ async def service_create_bot(
             detail_id=None,
             user_id=user_id,
             bot_url=f'http://localhost:3000/?bot_id={bot_id}',
-            status=0,
+            status=status,
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow()
         )
