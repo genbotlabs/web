@@ -1,4 +1,8 @@
 from pydantic import BaseModel
 
 class ChatRequest(BaseModel):
-    question: str
+    session_id: str
+    turn: int
+    content: str
+    bot_id : str
+    

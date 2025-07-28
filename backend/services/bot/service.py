@@ -11,6 +11,7 @@ from services.pdf_parser import parse_pdfs_from_s3
 from models.data import Data
 from typing import List
 import traceback  # 추가
+
 import os
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
