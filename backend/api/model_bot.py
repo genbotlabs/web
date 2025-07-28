@@ -1,74 +1,19 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+# backend/api/model_bot.py
+
+from fastapi import APIRouter
 from schemas.request.model_bot import ChatRequest
 from schemas.response.model_bot import ChatResponse
-from services.sllm_model.service import run_sllm_answer
-from services.get_db import get_db
+# from services.bot.service import run_langgraph_answer
 
 router = APIRouter()
 
-# ✅ 공통 unified endpoint (선택 사항)
-@router.post("/{session_id}/sllm", response_model=ChatResponse)
-async def return_answer(
-    session_id: str,
-    req: ChatRequest,
-    session: AsyncSession = Depends(get_db)  # ✅ 세션 주입
-):
+@router.get("/{session_id}/sllm", response_model=ChatResponse)
+async def return_answer(req: ChatRequest):
     """
-    사용자 질문을 받아 LangGraph 모델로부터 응답을 생성하는 기본 API
+    사용자 질문을 받아 langgraph 모델로부터 응답을 생성하는 API
     """
-    answer = await run_sllm_answer(
-        session_id=session_id,
-        question=req.content,  # ✅ content → question 파라미터명 일치
-        turn=req.turn,
-        session=session,
-        mode="chat"  # 기본은 챗봇 응답으로 처리
-    )
-    return ChatResponse(
-        session_id=session_id,
-        turn=req.turn,
-        role="bot",
-        content=answer
-    )
+    # answer = run_langgraph_answer(req.question)
+    return ChatResponse(answer=answer)
 
-# ✅ 명시적으로 챗봇 요청 처리
-@router.post("/chat/{session_id}/sllm", response_model=ChatResponse)
-async def chat_handler(
-    session_id: str,
-    req: ChatRequest,
-    session: AsyncSession = Depends(get_db)
-):
-    answer = await run_sllm_answer(
-        session_id=session_id,
-        content=req.content,
-        turn=req.turn,
-        session=session,
-        mode="chat"
-    )
-    return ChatResponse(
-        session_id=session_id,
-        turn=req.turn,
-        role="bot",
-        content=answer
-    )
-
-# ✅ 명시적으로 음성 요청 처리
-@router.post("/voice/{session_id}/sllm", response_model=ChatResponse)
-async def voice_handler(
-    session_id: str,
-    req: ChatRequest,
-    session: AsyncSession = Depends(get_db)
-):
-    answer = await run_sllm_answer(
-        session_id=session_id,
-        content=req.content,
-        turn=req.turn,
-        session=session,
-        mode="voice"
-    )
-    return ChatResponse(
-        session_id=session_id,
-        turn=req.turn,
-        role="bot",
-        content=answer
-    )
+# 1. 챗봇으로 사용자 질문이 들어오면 질문에 대한 답변 반환
+# 2. 보이스봇으로 사용자 질문이 들어왔을 때 정원이가 만든 stt load 함수에서 텍스트를 받아서 sllm에 넣어주기
