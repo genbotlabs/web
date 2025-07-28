@@ -28,17 +28,14 @@ async def create_bot(
     company_name: str = Form(...),
     bot_name: str = Form(...),
     email: str = Form(...),
+    status: int = Form(...),
     cs_number: str = Form(...),
     first_text: str = Form(...),
     files: List[UploadFile] = File(...),
     db: AsyncSession = Depends(get_db)
 ):
-    print("user_id",user_id,"company_name",company_name,"bot_name",bot_name,"email",email,"cs_number",cs_number,"first_text",first_text,"files",files)
-    print("db",db)
-
     bot_id = await generate_unique_bot_id(db)
-    # bot_id = str(bot_id)
-    print('bot_id',bot_id)
+    bot_id = str(bot_id)
 
     return await service_create_bot(
         db=db,
@@ -47,6 +44,7 @@ async def create_bot(
         company_name=company_name,
         bot_name=bot_name,
         email=email,
+        status=status,
         cs_number=cs_number,
         first_text=first_text,
         files=files

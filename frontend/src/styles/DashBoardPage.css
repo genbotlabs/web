@@ -491,6 +491,361 @@ body {
   color: #a0aec0;
 }
 
+/* Drawer */
+/* Drawer 커스텀 스타일 */
+.ant-drawer .ant-drawer-content-wrapper {
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .ant-drawer .ant-drawer-content {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  }
+  
+  .ant-drawer .ant-drawer-header {
+    background: linear-gradient(135deg, #1f5ff8 0%, #4096ff 100%);
+    border-bottom: none;
+    padding: 20px 24px;
+    box-shadow: 0 2px 8px rgba(31, 95, 248, 0.2);
+  }
+  
+  .ant-drawer .ant-drawer-header .ant-drawer-title {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  .ant-drawer .ant-drawer-close {
+    color: white;
+    font-size: 16px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+  
+  .ant-drawer .ant-drawer-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+  
+  .ant-drawer .ant-drawer-body {
+    padding: 0;
+    background: transparent;
+  }
+  
+  /* Drawer 내용 스타일 개선 */
+  .drawer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    height: 100%;
+  }
+  
+  .drawer-section {
+    padding: 24px;
+    border-bottom: 1px solid #f0f0f0;
+    background: white;
+    margin-bottom: 1px;
+  }
+  
+  .drawer-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+  
+  .drawer-section h3 {
+    font-size: 16px;
+    margin: 0 0 16px 0;
+    font-weight: 600;
+    color: #1f5ff8;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .drawer-section h3::before {
+    content: "";
+    width: 4px;
+    height: 16px;
+    background: linear-gradient(135deg, #1f5ff8 0%, #4096ff 100%);
+    border-radius: 2px;
+  }
+  
+  .drawer-section p {
+    margin: 12px 0;
+    font-size: 14px;
+    color: #2d3748;
+    line-height: 1.5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .drawer-section p b {
+    color: #4a5568;
+    font-weight: 500;
+    min-width: 80px;
+  }
+  
+  /* 상태 배지 drawer 내에서 스타일 */
+  .drawer-section .status-badge {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 12px;
+  }
+  
+  /* 파일 리스트 스타일 개선 */
+  .file-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .file-item {
+    padding: 16px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border: 1px solid #e2e8f0;
+    /* transition: all 0.2s ease; */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  }
+  
+  .file-item:hover {
+    /* transform: translateY(-2px); */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #1f5ff8;
+  }
+  
+  .file-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #2d3748;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .file-title::before {
+    content: "📄";
+    font-size: 16px;
+  }
+  
+  .file-link {
+    font-size: 13px;
+    color: #1f5ff8;
+    cursor: pointer;
+    padding: 6px 12px;
+    background: rgba(31, 95, 248, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+    /* transition: all 0.2s ease; */
+    font-weight: 500;
+  }
+  
+  .file-link:hover {
+    background: #1f5ff8;
+    color: white;
+    /* transform: translateY(-1px); */
+  }
+  
+  /* 챗봇 버튼 스타일 개선 */
+  .chatbot-button {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #1f5ff8 0%, #4096ff 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    /* transition: all 0.2s ease; */
+    box-shadow: 0 4px 12px rgba(31, 95, 248, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .chatbot-button::before {
+    content: "🤖";
+    font-size: 18px;
+  }
+  
+  .chatbot-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(31, 95, 248, 0.4);
+  }
+  
+  .chatbot-button:active {
+    transform: translateY(0);
+  }
+  
+  /* Modal 커스텀 스타일 */
+  .ant-modal .ant-modal-content {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  }
+  
+  .ant-modal .ant-modal-header {
+    background: linear-gradient(135deg, #1f5ff8 0%, #4096ff 100%);
+    border-bottom: none;
+    padding: 20px 24px;
+  }
+  
+  .ant-modal .ant-modal-title {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  .ant-modal .ant-modal-close {
+    color: white;
+    font-size: 16px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+  
+  .ant-modal .ant-modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+  
+  .ant-modal .ant-modal-body {
+    padding: 24px;
+    background: #fafbfc;
+  }
+  
+  /* Modal 내 iframe 스타일 */
+  .ant-modal .ant-modal-body iframe {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Modal 내 메시지 스타일 */
+  .ant-modal .ant-modal-body p {
+    text-align: center;
+    color: #718096;
+    font-size: 16px;
+    margin: 40px 0;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    border: 2px dashed #e2e8f0;
+  }
+  
+  /* 애니메이션 효과 */
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  .ant-drawer.ant-drawer-open .ant-drawer-content-wrapper {
+    animation: slideInRight 0.3s ease-out;
+  }
+  
+  @keyframes fadeInScale {
+    from {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  .ant-modal.ant-modal-open .ant-modal-content {
+    animation: fadeInScale 0.3s ease-out;
+  }
+  
+  /* 반응형 디자인 */
+  @media (max-width: 768px) {
+    .ant-drawer .ant-drawer-content-wrapper {
+      width: 100% !important;
+    }
+  
+    .drawer-section {
+      padding: 16px;
+    }
+  
+    .drawer-section p {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+  
+    .drawer-section p b {
+      min-width: auto;
+    }
+  
+    .ant-modal .ant-modal-content {
+      margin: 16px;
+      width: calc(100% - 32px) !important;
+    }
+  }
+  
+  /* 스크롤바 커스터마이징 */
+  .ant-drawer .ant-drawer-body::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .ant-drawer .ant-drawer-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  .ant-drawer .ant-drawer-body::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+  
+  .ant-drawer .ant-drawer-body::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+  
+  /* 로딩 상태 */
+  .drawer-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    color: #718096;
+  }
+  
+  /* 빈 상태 */
+  .drawer-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #718096;
+  }
+  
+  .drawer-empty::before {
+    content: "📭";
+    font-size: 48px;
+    display: block;
+    margin-bottom: 16px;
+  }
+  
+
 /* Responsive design */
 @media (max-width: 1200px) {
   .dashboard-container {

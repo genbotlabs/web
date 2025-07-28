@@ -39,7 +39,7 @@ export default function DashBoardPage({ user }) {
       try {
         console.log("user.user_id", user.user_id)
         const response = await axios.get(`http://localhost:8000/bots/${user.user_id}`)
-        console.log("response", response)
+        console.log("response", response.data)
         setBots(response.data.bots)
       } catch (error) {
         console.error("봇 목록 가져오기 실패:", error)
@@ -336,62 +336,53 @@ export default function DashBoardPage({ user }) {
           setSelectedBot(null)
         }}
         open={drawerVisible}
-        width={380}
+        width={400}
+        bodyStyle={{ padding: "24px" }}
       >
         {selectedBot && (
-          <div style={{ lineHeight: "1.8" }}>
-            <p>
-              <b>챗봇 바로가기:</b>
-            </p>
-            <p>
-              <b>회사명:</b> {selectedBot.company_name}
-            </p>
-            <p>
-              <b>봇 이름:</b> {selectedBot.bot_name}
-            </p>
-            <p>
-              <b>상태:</b> {getStatusBadge(selectedBot.status)}
-            </p>
-            <p>
-              <b>대표 이메일:</b> {selectedBot.email}
-            </p>
-            <p>
-              <b>고객센터:</b> {selectedBot.cs_number}
-            </p>
-            <p>
-              <b>생성일:</b> {new Date(selectedBot.created_at).toLocaleString()}
-            </p>
-            <p>
-              <b>수정일:</b> {new Date(selectedBot.updated_at).toLocaleString()}
-            </p>
-            {selectedBot.files && (
-              <div style={{ marginTop: "24px" }}>
-                <b>연결 데이터 목록</b>
-                <ul style={{ marginTop: "12px", paddingLeft: "0" }}>
+          <div className="drawer-content">
+            <div className="drawer-section">
+              <h3>기본 정보</h3>
+              <p><b>회사명:</b> {selectedBot.company_name}</p>
+              <p><b>상태:</b> {getStatusBadge(selectedBot.status)}</p>
+              <p><b>대표 이메일:</b> {selectedBot.email}</p>
+              <p><b>고객센터:</b> {selectedBot.cs_number}</p>
+              <p><b>생성일:</b> {new Date(selectedBot.created_at).toLocaleString()}</p>
+              <p><b>수정일:</b> {new Date(selectedBot.updated_at).toLocaleString()}</p>
+            </div>
+
+            {selectedBot.files?.length > 0 && (
+              <div className="drawer-section">
+                <h3>연결된 데이터</h3>
+                <ul className="file-list">
                   {selectedBot.files.map((item) => (
-                    <li
-                      key={item.data_id}
-                      style={{
-                        listStyle: "none",
-                        marginBottom: "16px",
-                        padding: "12px",
-                        background: "#f9f9f9",
-                        borderRadius: "6px",
-                      }}
-                    >
-                      <div style={{ fontWeight: "bold", marginBottom: "4px" }}>
-                        • {item.name} ({item.data_id})
+                    <li key={item.data_id} className="file-item">
+                      <div className="file-title">
+                        📄 {item.name} ({item.data_id})
                       </div>
-                      <div style={{ fontSize: "0.9em", color: "#666", marginBottom: "4px", wordBreak: "break-all" }} onClick={() => handleClickFile(item.storage_url)}>
-                        {item.storage_url}
+                      <div
+                        className="file-link"
+                        onClick={() => handleClickFile(item.storage_url)}
+                      >
+                        미리보기
                       </div>
                     </li>
                   ))}
                 </ul>
               </div>
             )}
+
+            <div className="drawer-section">
+              <button
+                className="chatbot-button"
+                onClick={() => handleClickBotName(selectedBot.bot_id)}
+              >
+                챗봇 열기
+              </button>
+            </div>
           </div>
         )}
+
         <Modal
           open={previewVisible}
           onCancel={() => setPreviewVisible(false)}
@@ -400,7 +391,6 @@ export default function DashBoardPage({ user }) {
           title="파일 미리보기"
           style={{ top: 20 }}
         >
-          <h1>hi</h1>
           {previewUrl.includes(".pdf") ? (
             <iframe
               src={previewUrl}

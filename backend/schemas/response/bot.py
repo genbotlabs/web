@@ -17,6 +17,7 @@ class BotDetailItem(BaseModel):
     company_name: str = Field(..., example="GenBot"),
     bot_name: str = Field(..., example="문의"),
     email: str = Field(..., example="user@example.com"),
+    status: int = Field(..., example=0),
     cs_number: str = Field(..., example="1522-0000"),
     first_text: str = Field(..., example="안녕하세요! GenBot의 문의봇입니다."),
     files: List[BotDataItemResponse]

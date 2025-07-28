@@ -79,6 +79,7 @@ export default function GenerateBotPage({ user }) {
         formData.append("company_name", form.getFieldsValue().company);
         formData.append("bot_name", form.getFieldsValue().botName);
         formData.append("email", form.getFieldsValue().email);
+        formData.append("status", 0);
         formData.append("cs_number", form.getFieldsValue().consultantNumber || "");
         formData.append("first_text", form.getFieldsValue().greeting || `안녕하세요 ${form.getFieldsValue().botName}입니다. 무엇을 도와드릴까요?`);
 
