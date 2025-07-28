@@ -6,7 +6,7 @@ from datetime import datetime
 # 데이터 메타 정보
 class BotDataItemResponse(BaseModel):
     data_id: int = Field(..., example="1")
-    name: str = Field(..., example="faq.pdf")
+    filename: str = Field(..., example="faq.pdf")
     # type: int = Field(..., example=0, description="파일 타입 (예: 0: json, 1: pdf)")
     storage_url: str = Field(..., example="https://storage.example.com/faq.pdf")
 
