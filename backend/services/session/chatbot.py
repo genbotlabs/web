@@ -106,7 +106,7 @@ async def end_session_service(session_id: str, db: AsyncSession) -> EndSessionRe
 # 5. SLLM 요청
 async def req_sllm_service(session_id: str, message: str, turn: int):
     resp = await client.post(
-        "http://localhost:3000/{session_id}/sllm",
+        f"http://localhost:3000/{session_id}/sllm",
         json={
             "session_id": session_id,
             "content": message,
