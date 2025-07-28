@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import { Result, Button, Card, Descriptions, Modal, List, Tag, Space, Typography } from "antd"
 import { CheckCircleOutlined, FileTextOutlined, EyeOutlined, HomeOutlined } from "@ant-design/icons"
@@ -18,7 +16,7 @@ export default function PendingPage({ user }) {
   }, [])
 
   const handleGoToDashboard = () => {
-    window.location.href = "/dashboard"
+    window.location.href = "/"
   }
 
   const handleCreateAnother = () => {
@@ -46,10 +44,10 @@ export default function PendingPage({ user }) {
     <div
       style={{
         minHeight: "100vh",
-        padding: "40px 20px",
+        padding: "100px 20px",
       }}
     >
-      <div style={{ maxWidth: "800px", margin: "0 auto", marginTop: "80px !important" }}>
+      <div style={{ maxWidth: "800px", margin: "0 auto", marginTop: "100px !important" }}>
         <Result
           icon={<CheckCircleOutlined style={{ color: "#52c41a", fontSize: "72px" }} />}
           title={
@@ -59,7 +57,7 @@ export default function PendingPage({ user }) {
           }
           subTitle={
             <div style={{ color: "#8c8c8c", fontSize: "16px", lineHeight: "1.6" }}>
-              <Text>PDF 또는 JSON을 분석 중입니다.</Text>
+              <Text>PDF를 분석 중입니다.</Text>
               <br />
               <Text>생성이 완료되면 이메일로 결과를 안내드릴게요.</Text>
             </div>
@@ -100,7 +98,7 @@ export default function PendingPage({ user }) {
           title={
             <Space>
               <FileTextOutlined style={{ color: "#1890ff" }} />
-              <span>생성 요청 정보</span>
+              <span style={{ fontSize: "20px", fontWeight: "bold" }}>생성 요청 정보</span>
             </Space>
           }
           style={{
@@ -113,47 +111,26 @@ export default function PendingPage({ user }) {
           }}
         >
           <Descriptions
-            column={{ xs: 1, sm: 1, md: 2 }}
-            labelStyle={{
-              fontWeight: "600",
-              color: "#262626",
-              width: "120px",
-            }}
-            contentStyle={{
-              color: "#595959",
-            }}
+            bordered
+            column={1}
+            labelStyle={{ fontWeight: "bold", width: "200px" }}
           >
-            <Descriptions.Item label="봇 이름">
-              <Text strong style={{ color: "#1890ff" }}>
-                {Array.isArray(botInfo.type) ? botInfo.type.join(", ") : botInfo.type || "-"}
-              </Text>
-            </Descriptions.Item>
-
-            <Descriptions.Item label="회사명">
-              <Text>{botInfo.company || "-"}</Text>
-            </Descriptions.Item>
-
-            <Descriptions.Item label="봇 용도">
-              <Tag color="blue">{botInfo.purpose || "-"}</Tag>
-            </Descriptions.Item>
-
-            <Descriptions.Item label="진행 상황">
-              <Tag color="processing">처리 중...</Tag>
-            </Descriptions.Item>
-
-            <Descriptions.Item label="봇 설명" span={2}>
-              <Text>{botInfo.description || "설명이 제공되지 않았습니다."}</Text>
-            </Descriptions.Item>
-
-            <Descriptions.Item label="사용한 데이터" span={2}>
-              <Button
-                type="link"
-                icon={<EyeOutlined />}
-                onClick={() => setShowDataModal(true)}
-                style={{ padding: "0", height: "auto" }}
-              >
-                데이터 목록 보기 ({Array.isArray(botInfo.files) ? botInfo.files.length : 0}개)
-              </Button>
+            <Descriptions.Item label="회사명">{botInfo.company}</Descriptions.Item>
+            <Descriptions.Item label="봇 이름">{botInfo.botName}</Descriptions.Item>
+            <Descriptions.Item label="이메일">{botInfo.email}</Descriptions.Item>
+            <Descriptions.Item label="상태">{botInfo.status}</Descriptions.Item>
+            <Descriptions.Item label="고객센터 번호">{botInfo.cs_number}</Descriptions.Item>
+            <Descriptions.Item label="인사말">{botInfo.first_text}</Descriptions.Item>
+            <Descriptions.Item label="업로드한 파일 목록">
+              <List
+                dataSource={botInfo.files || []}
+                renderItem={(file, index) => (
+                  <List.Item key={index}>
+                    <Text>{file.name}</Text>
+                  </List.Item>
+                )}
+                locale={{ emptyText: "파일 없음" }}
+              />
             </Descriptions.Item>
           </Descriptions>
         </Card>
