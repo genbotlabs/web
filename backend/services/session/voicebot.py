@@ -1,5 +1,5 @@
 import httpx, os, io
-from fastapi import WebSocket
+from fastapi import WebSocket, WebSocketDisconnect
 from models.voicelog import VoiceLog
 from models.session import Session as SessionModel
 from datetime import datetime
@@ -12,10 +12,19 @@ load_dotenv()
 RUNPOD_STREAMING_STT_URL = os.getenv("RUNPOD_STREAMING_STT_URL")
 
 async def handle_streaming_voice(session_id: str, websocket: WebSocket, db: AsyncSession):
-    async with httpx.AsyncClient(timeout=30) as client:
-        async for chunk in websocket.iter_bytes():
+    async with httpx.AsyncClient(timeout=300) as client:
+        while True:
+            try:
+                # 1) 클라이언트가 보낸 오디오 청크 수신
+                chunk = await websocket.receive_bytes()
+                print(f"▶▶▶ 서버가 받은 chunk 크기: {len(chunk)}")
+            except WebSocketDisconnect:
+                print(f"[Disconnected] session_id={session_id}")
+                break
+
             try:
                 # 1. RunPod STT 요청 (chunk 전송)
+                print("▶▶▶ STT 요청 시작")
                 resp = await client.post(
                     RUNPOD_STREAMING_STT_URL,
                     files={"audio": ("stream_chunk.webm", chunk, "audio/webm")}
@@ -27,6 +36,7 @@ async def handle_streaming_voice(session_id: str, websocket: WebSocket, db: Asyn
                 # 2. sLLM에 텍스트 전달 및 응답 받기
                 print('>>>>>> sLLM 응답 전 ')
                 turn = get_next_turn(session_id, sender="user")
+
                 user_voice = VoiceLog(
                     session_id=session_id,
                     turn=turn,

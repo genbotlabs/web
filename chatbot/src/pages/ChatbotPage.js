@@ -112,12 +112,25 @@ export default function ChatbotPage() {
         };
       };
 
+      // ws.onmessage = (event) => {
+      //   const blob = new Blob([event.data], { type: 'audio/webm' });  // 또는 'audio/wav'
+      //   const url = URL.createObjectURL(blob);
+      //   const audio = new Audio(url);
+      //   audio.play();
+      // };
+
       ws.onmessage = (event) => {
-        const blob = new Blob([event.data], { type: 'audio/mpeg' });  // 또는 'audio/wav'
+        console.log("📦 받은 데이터 타입:", typeof event.data);
+        console.log("📦 받은 데이터:", event.data);
+  
+        const blob = new Blob([event.data], { type: 'audio/webm' });
+        console.log("🎧 Blob 타입:", blob.type, "크기:", blob.size);
+        
         const url = URL.createObjectURL(blob);
         const audio = new Audio(url);
-        audio.play();
+        audio.play().catch(err => console.error("❌ 오디오 재생 실패:", err));
       };
+
 
       ws.onerror = (e) => {
         console.error('WebSocket 에러:', e);
@@ -138,6 +151,56 @@ export default function ChatbotPage() {
       alert('🎙️ 마이크 권한이 필요합니다.');
     }
   };
+
+  // const sendVoiceStream = async () => {
+  //   let stream;
+  //   try {
+  //     // 1) 마이크 권한 & 스트림 얻기
+  //     stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  //   } catch (err) {
+  //     return alert("🎙️ 마이크 권한이 필요합니다.");
+  //   }
+
+  //   // 2) MediaRecorder 준비 (코덱 명시)
+  //   const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm; codecs=opus' });
+
+  //   // 3) WebSocket 연결 & 핸들러 등록
+  //   const ws = new WebSocket(`ws://localhost:8000/voicebot/ws/voice/${sessionId}`);
+  //   ws.binaryType = 'arraybuffer';
+
+  //   ws.onopen = () => {
+  //     console.log("✅ WS 연결 열림 – 녹음 시작");
+  //     mediaRecorder.start(250);
+  //   };
+  //   ws.onerror = e => console.error("❌ WS 에러:", e);
+  //   ws.onclose = () => {
+  //     console.log("🔒 WS 연결 닫힘");
+  //     // 스트림 정리
+  //     stream.getTracks().forEach(track => track.stop());
+  //   };
+  //   ws.onmessage = event => {
+  //     console.log("📥 onmessage 호출, data 타입:", typeof event.data, event.data);
+  //     const blob = new Blob([event.data], { type: 'audio/webm' });
+  //     console.log("🎧 Blob 타입:", blob.type, "크기:", blob.size);
+  //     const url = URL.createObjectURL(blob);
+  //     new Audio(url).play().catch(err => console.error("❌ 오디오 재생 실패:", err));
+  //   };
+
+  //   // 4) 녹음 데이터를 WebSocket으로 전송
+  //   mediaRecorder.ondataavailable = e => {
+  //     console.log("🎤 ondataavailable, size=", e.data.size);
+  //     if (e.data.size > 0 && ws.readyState === WebSocket.OPEN) {
+  //       ws.send(e.data);
+  //       console.log("📤 청크 전송 완료");
+  //     }
+  //   };
+
+  //   // 5) 8초 뒤 녹음/WS 종료
+  //   setTimeout(() => {
+  //     mediaRecorder.stop();
+  //     ws.close();
+  //   }, 8000);
+  // };
 
   return (
     <div className="chatbot-container">
