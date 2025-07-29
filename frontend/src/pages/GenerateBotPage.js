@@ -61,6 +61,10 @@ export default function GenerateBotPage({ user }) {
             message.error("이메일을 입력해주세요.");
             return;
         }
+        if (!form.getFieldsValue().consultantNumber?.trim()) {
+            message.error("상담사 번호를 입력해주세요.");
+            return;
+        }
         if (uploadedFiles.length === 0) {
             message.error("최소 1개의 파일을 업로드해주세요.");
             return;
@@ -72,6 +76,14 @@ export default function GenerateBotPage({ user }) {
         // }
 
         setLoading(true)
+
+        const totalSize = uploadedFiles.reduce((sum, fileObj) => sum + fileObj.file.size, 0);
+        if (totalSize > 10 * 1024 * 1024) {
+            alert("업로드된 파일의 총 크기가 10MB를 초과했습니다. 다시 확인해주세요.");
+            return;
+        }
+
+        setLoading(true);
 
         // 2. FormData 구성
         const formData = new FormData();
