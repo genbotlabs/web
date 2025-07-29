@@ -17,6 +17,7 @@ from sqlalchemy.future import select
 from schemas.request.bot import BotUpdateRequest  # BotUpdateRequest 클래스
 from schemas.response.bot import BotDeleteResponse
 from models.csbot import CSbot
+from services.utils import run_in_threadpool
 
 # from models.lang_graph.lang_graph import run_langgraph  # langgraph model_bot
 
@@ -81,7 +82,7 @@ async def service_create_bot(
         folder_name = f"bot_{detail.email}_{detail.detail_id}"
 
         for file in files:
-            url = upload_pdf_to_s3(file.file, file.filename, folder_name)
+            url = await upload_pdf_to_s3(file.file, file.filename, folder_name)
 
             data = Data(
                 detail_id=detail.detail_id,
@@ -108,11 +109,11 @@ async def service_create_bot(
 
         # s3에서 pdf 파싱
         bucket_name = os.getenv("AWS_S3_BUCKET_NAME")
-        parse_message = parse_pdfs_from_s3(bucket_name, folder_name)
+        parse_message = await parse_pdfs_from_s3(bucket_name, folder_name)
         print(">>>",parse_message)
 
         # 이메일 보내기 
-        send_email_notification(email, detail)
+        await run_in_threadpool(send_email_notification, email, detail)
 
         csbot.status = 1
         csbot.updated_at = datetime.utcnow()
