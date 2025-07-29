@@ -18,6 +18,9 @@ from fastapi import Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from services.get_db import get_db  
 from schemas.response.bot import BotDeleteResponse
+from schemas.response.bot import BotContactResponse
+from models.detail import Detail
+from sqlalchemy import select
 from services.bot.service import service_create_bot, initialize_bot_record, bot_list, delete_bot , update_bot, get_bot_id_detail   
 # from services.bot.utils import generate_unique_bot_id
 from io import BytesIO
@@ -124,3 +127,21 @@ async def patch_bot_info(
     db: AsyncSession = Depends(get_db)
 ):
     return await update_bot(bot_id, update_data, db)
+
+# 런팟 넘길 때 필요한 정보들
+@router.get("/contact/{bot_id}", response_model=BotContactResponse)
+async def get_bot_contact(
+    bot_id: str,
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+        select(Detail).where(Detail.bot_id == bot_id)
+    )
+    detail_obj = result.scalar_one_or_none()
+    if detail_obj is None:
+        raise HTTPException(status_code=404, detail="Bot not found")
+    return BotContactResponse(
+        cs_number=detail_obj.cs_number,
+        email=detail_obj.email,
+        detail_id=detail_obj.detail_id
+    )

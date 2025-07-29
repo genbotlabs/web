@@ -48,3 +48,9 @@ class UploadedDataListResponse(BaseModel):
 class BotDeleteResponse(BaseModel):
     success: bool = Field(..., example=True)
     message: str = Field(..., example="상담봇이 성공적으로 삭제되었습니다.")
+
+
+class BotContactResponse(BaseModel):
+    cs_number: str
+    email: str
+    detail_id : int
