@@ -3,22 +3,21 @@ import {
   SearchOutlined,
   PlusOutlined,
   ExportOutlined,
-  CalendarOutlined,
-  FilterOutlined,
-  MoreOutlined,
-  DeleteOutlined 
+  DeleteOutlined,
+  CaretUpOutlined,
+  CaretDownOutlined,
 } from "@ant-design/icons"
-import { Drawer, Tag, Modal, Popconfirm, message, DatePicker } from "antd"
+import { Drawer, Modal, Popconfirm, message, DatePicker } from "antd"
 import "../styles/DashBoardPage.css"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
-import dayjs from "dayjs";
+import dayjs from "dayjs"
 
-const { RangePicker } = DatePicker;
+const { RangePicker } = DatePicker
 
 export default function DashBoardPage({ user }) {
   const [bots, setBots] = useState([])
-  const [deletedBotId, setDeletedBotId] = useState(null);
+  const [deletedBotId, setDeletedBotId] = useState(null)
   const [selectedRows, setSelectedRows] = useState([])
   const [activeTab, setActiveTab] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
@@ -26,15 +25,17 @@ export default function DashBoardPage({ user }) {
   const [selectedBot, setSelectedBot] = useState(null)
   const [previewVisible, setPreviewVisible] = useState(false)
   const [previewUrl, setPreviewUrl] = useState("")
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4;
-  const [dateRange, setDateRange] = useState([null, null]);
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 4
+  const [dateRange, setDateRange] = useState([null, null])
   const navigate = useNavigate()
+  const [sortField, setSortField] = useState(null)
+  const [sortOrder, setSortOrder] = useState("asc")
 
   useEffect(() => {
     console.log("DashBoard useEffect 실행됨. user:", user)
-    if (!user?.user_id) return;
-  
+    if (!user?.user_id) return
+
     const fetchBots = async () => {
       try {
         console.log("user.user_id", user.user_id)
@@ -45,54 +46,64 @@ export default function DashBoardPage({ user }) {
         console.error("봇 목록 가져오기 실패:", error)
       }
     }
-  
+
     fetchBots()
   }, [user])
 
   const getStatusBadge = (statusCode) => {
     const statusMap = {
-      "0": "제작중",
-      "1": "활성화",
-      "2": "비활성화",
-      "3": "오류"
-    };
-  
-    const label = statusMap[statusCode] || "미정";
+      0: "제작중",
+      1: "활성화",
+      2: "비활성화",
+      3: "오류",
+    }
+
+    const label = statusMap[statusCode] || "미정"
     const statusClasses = {
-      "제작중": "status-badge status-pending",
-      "활성화": "status-badge status-active",
-      "비활성화": "status-badge status-inactive",
-      "오류": "status-badge status-error",
-    };
-  
-    return (
-      <span className={statusClasses[label] || "status-badge status-inactive"}>
-        {label}
-      </span>
-    );
-  };
+      제작중: "status-badge status-pending",
+      활성화: "status-badge status-active",
+      비활성화: "status-badge status-inactive",
+      오류: "status-badge status-error",
+    }
+
+    return <span className={statusClasses[label] || "status-badge status-inactive"}>{label}</span>
+  }
 
   const filteredData = bots.filter((bot) => {
     const matchesTab =
       activeTab === "all" ||
       (activeTab === "pending" && bot.status === 0) ||
-      (activeTab === "inactive" && bot.status === 1) ||
-      (activeTab === "active" && bot.status === 2) ||
+      (activeTab === "active" && bot.status === 1) ||
+      (activeTab === "inactive" && bot.status === 2) ||
       (activeTab === "error" && bot.status === 3)
-      
 
     const matchesSearch =
       bot.bot_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       bot.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       bot.email.toLowerCase().includes(searchQuery.toLowerCase())
-    
-    const [startDate, endDate] = dateRange || [];
+
+    const [startDate, endDate] = dateRange || []
     const matchesDate =
-      !startDate || !endDate ||
-      (dayjs(bot.created_at).isAfter(startDate, "day") &&
-       dayjs(bot.created_at).isBefore(endDate, "day"));
+      !startDate ||
+      !endDate ||
+      (dayjs(bot.created_at).isAfter(startDate, "day") && dayjs(bot.created_at).isBefore(endDate, "day"))
 
     return matchesTab && matchesSearch && matchesDate
+  })
+
+  const sortedData = [...filteredData].sort((a, b) => {
+    if (!sortField) return 0
+
+    const valA = a[sortField]
+    const valB = b[sortField]
+
+    if (sortField === "created_at") {
+      const timeA = new Date(valA).getTime()
+      const timeB = new Date(valB).getTime()
+      return sortOrder === "asc" ? timeA - timeB : timeB - timeA
+    }
+
+    return sortOrder === "asc" ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA))
   })
 
   const getTabCount = (tabKey) => {
@@ -107,7 +118,7 @@ export default function DashBoardPage({ user }) {
   const handleRowSelect = (botId, checked) => {
     if (checked) {
       const bot = bots.find((b) => b.bot_id === botId)
-      setSelectedRows([botId]) // 단일 선택
+      setSelectedRows([botId])
       setSelectedBot(bot)
       setDrawerVisible(true)
     } else {
@@ -135,7 +146,7 @@ export default function DashBoardPage({ user }) {
     const s3Key = url.split(".com/")[1]
     try {
       const response = await axios.get(`http://localhost:8000/s3?s3_key=${s3Key}`)
-      
+
       setPreviewUrl(response.data.url)
       setPreviewVisible(true)
     } catch (err) {
@@ -152,33 +163,57 @@ export default function DashBoardPage({ user }) {
   const handleDeleteBot = async (botId) => {
     try {
       await axios.delete(`http://localhost:8000/bots/${botId}`)
-      setDeletedBotId(botId);
+      setDeletedBotId(botId)
       message.success("봇이 삭제되었습니다.")
-      setBots(prev => prev.filter(bot => bot.bot_id !== botId))
+      setBots((prev) => prev.filter((bot) => bot.bot_id !== botId))
 
       if (selectedBot?.bot_id === botId) {
-        setDrawerVisible(false);
-        setSelectedBot(null);
-        setSelectedRows([]);
+        setDrawerVisible(false)
+        setSelectedBot(null)
+        setSelectedRows([])
       }
     } catch (error) {
       console.error("삭제 실패:", error)
       message.error("삭제에 실패했습니다.")
     }
   }
-  
+
   useEffect(() => {
     if (deletedBotId) {
-      setBots((prevBots) => prevBots.filter(bot => bot.bot_id !== deletedBotId));
-      setDeletedBotId(null);
+      setBots((prevBots) => prevBots.filter((bot) => bot.bot_id !== deletedBotId))
+      setDeletedBotId(null)
     }
-  }, [deletedBotId]);
+  }, [deletedBotId])
 
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const paginatedData = sortedData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage)
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
+    } else {
+      setSortField(field)
+      setSortOrder("asc")
+    }
+    setCurrentPage(1)
+  }
+
+  // 정렬 가능한 헤더 컴포넌트
+  const SortableHeader = ({ field, children }) => {
+    const isActive = sortField === field
+    const isAsc = sortOrder === "asc"
+
+    return (
+      <div className={`sortable-header ${isActive ? "active" : ""}`} onClick={() => handleSort(field)}>
+        <span className="header-text">{children}</span>
+        <div className="sort-icons">
+          <CaretUpOutlined className={`sort-icon up ${isActive && isAsc ? "active" : ""}`} />
+          <CaretDownOutlined className={`sort-icon down ${isActive && !isAsc ? "active" : ""}`} />
+        </div>
+        {isActive && <div className="sort-indicator" />}
+      </div>
+    )
+  }
 
   return (
     <div className="dashboard-main">
@@ -207,7 +242,7 @@ export default function DashBoardPage({ user }) {
               { key: "all", label: "전체 봇" },
               { key: "pending", label: "제작중" },
               { key: "active", label: "활성화" },
-              { key: "inactive", label: "비활성화" }
+              { key: "error", label: "오류" },
             ].map((tab) => (
               <button
                 key={tab.key}
@@ -233,14 +268,7 @@ export default function DashBoardPage({ user }) {
               />
             </div>
             <div className="filter-buttons">
-              <RangePicker
-                onChange={(dates) => setDateRange(dates)}
-                style={{ marginRight: "12px" }}
-              />
-              {/* <button className="filter-button">
-                <FilterOutlined />
-                Filters
-              </button> */}
+              <RangePicker onChange={(dates) => setDateRange(dates)} style={{ marginRight: "12px" }} />
             </div>
           </div>
 
@@ -249,21 +277,36 @@ export default function DashBoardPage({ user }) {
             <table className="custom-table">
               <thead className="table-header">
                 <tr>
-                  
-                  <th style={{ width: "120px" }}>상담봇 명</th>
-                  <th>회사명</th>
-                  <th>상태</th>
-                  <th>대표 이메일</th>
-                  <th>고객센터</th>
-                  <th>생성일</th>
-                  <th style={{ width: "80px" }}>상세</th>
-                  <th style={{ width: "80px" }}>삭제</th>
+                  <th style={{ width: "150px" }}>
+                    <SortableHeader field="bot_name">상담봇 명</SortableHeader>
+                  </th>
+                  <th style={{ width: "150px" }}>
+                    <SortableHeader field="company_name">회사명</SortableHeader>
+                  </th>
+                  <th>
+                    <SortableHeader field="status">상태</SortableHeader>
+                  </th>
+                  <th>
+                    <SortableHeader field="email">대표 이메일</SortableHeader>
+                  </th>
+                  <th>
+                    <SortableHeader field="cs_number">고객센터</SortableHeader>
+                  </th>
+                  <th>
+                    <SortableHeader field="created_at">생성일</SortableHeader>
+                  </th>
+                  <th style={{ width: "80px" }}>
+                    <div className="non-sortable-header">상세</div>
+                  </th>
+                  <th style={{ width: "100px" }}>
+                    <div className="non-sortable-header">삭제</div>
+                  </th>
                 </tr>
               </thead>
               <tbody className="table-body">
                 {paginatedData.map((bot) => (
                   <tr key={bot.bot_id}>
-                    <td 
+                    <td
                       style={{ fontWeight: "500", color: "#1890ff", cursor: "pointer", textDecoration: "underline" }}
                       onClick={() => handleClickBotName(bot.bot_id)}
                     >
@@ -277,7 +320,7 @@ export default function DashBoardPage({ user }) {
                       {new Date(bot.created_at).toLocaleDateString("ko-KR", {
                         year: "numeric",
                         month: "long",
-                        day: "numeric"
+                        day: "numeric",
                       })}
                     </td>
                     <td>
@@ -310,14 +353,14 @@ export default function DashBoardPage({ user }) {
             <button
               className="pagination-button"
               disabled={currentPage === 1}
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             >
               ← Previous
             </button>
 
             <div className="pagination-numbers">
               {[...Array(totalPages)].map((_, i) => {
-                const page = i + 1;
+                const page = i + 1
                 return (
                   <button
                     key={page}
@@ -326,14 +369,14 @@ export default function DashBoardPage({ user }) {
                   >
                     {page}
                   </button>
-                );
+                )
               })}
             </div>
 
             <button
               className="pagination-button"
               disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
             >
               Next →
             </button>
@@ -358,13 +401,27 @@ export default function DashBoardPage({ user }) {
           <div className="drawer-content">
             <div className="drawer-section">
               <h3 style={{ fontSize: "20px", fontWeight: "600", color: "#1f5ff8" }}>기본 정보</h3>
-              <p style={{ fontSize: "18px" }}><b>봇 이름:</b> {selectedBot.bot_name}</p>
-              <p style={{ fontSize: "18px" }}><b>회사명:</b> {selectedBot.company_name}</p>
-              <p style={{ fontSize: "18px" }}><b>상태:</b> {getStatusBadge(selectedBot.status)}</p>
-              <p style={{ fontSize: "18px" }}><b>대표 이메일:</b> {selectedBot.email}</p>
-              <p style={{ fontSize: "18px" }}><b>고객센터:</b> {selectedBot.cs_number}</p>
-              <p style={{ fontSize: "18px" }}><b>생성일:</b> {new Date(selectedBot.created_at).toLocaleString()}</p>
-              <p style={{ fontSize: "18px" }}><b>수정일:</b> {new Date(selectedBot.updated_at).toLocaleString()}</p>
+              <p style={{ fontSize: "18px" }}>
+                <b>봇 이름:</b> {selectedBot.bot_name}
+              </p>
+              <p style={{ fontSize: "18px" }}>
+                <b>회사명:</b> {selectedBot.company_name}
+              </p>
+              <p style={{ fontSize: "18px" }}>
+                <b>상태:</b> {getStatusBadge(selectedBot.status)}
+              </p>
+              <p style={{ fontSize: "18px" }}>
+                <b>대표 이메일:</b> {selectedBot.email}
+              </p>
+              <p style={{ fontSize: "18px" }}>
+                <b>고객센터:</b> {selectedBot.cs_number}
+              </p>
+              <p style={{ fontSize: "18px" }}>
+                <b>생성일:</b> {new Date(selectedBot.created_at).toLocaleString()}
+              </p>
+              <p style={{ fontSize: "18px" }}>
+                <b>수정일:</b> {new Date(selectedBot.updated_at).toLocaleString()}
+              </p>
             </div>
 
             {selectedBot.files?.length > 0 && (
@@ -376,10 +433,7 @@ export default function DashBoardPage({ user }) {
                       <div className="file-title">
                         {item.name} ({item.data_id})
                       </div>
-                      <div
-                        className="file-link"
-                        onClick={() => handleClickFile(item.storage_url)}
-                      >
+                      <div className="file-link" onClick={() => handleClickFile(item.storage_url)}>
                         미리보기
                       </div>
                     </li>
@@ -389,10 +443,7 @@ export default function DashBoardPage({ user }) {
             )}
 
             <div className="drawer-section">
-              <button
-                className="chatbot-button"
-                onClick={() => handleClickBotName(selectedBot.bot_id)}
-              >
+              <button className="chatbot-button" onClick={() => handleClickBotName(selectedBot.bot_id)}>
                 챗봇 열기
               </button>
             </div>
@@ -408,12 +459,7 @@ export default function DashBoardPage({ user }) {
           style={{ top: 20 }}
         >
           {previewUrl.includes(".pdf") ? (
-            <iframe
-              src={previewUrl}
-              width="100%"
-              height="700px"
-              style={{ border: "none" }}
-            />
+            <iframe src={previewUrl} width="100%" height="700px" style={{ border: "none" }} />
           ) : (
             <p>미리보기를 지원하지 않는 파일 형식입니다.</p>
           )}

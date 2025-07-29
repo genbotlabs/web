@@ -28,10 +28,8 @@ export default function Header({ user, setUser }) {
 
     const userMenu = (
         <div className="user-menu">
-            {/* <p>{user.name}</p> */}
-            <p>사용중인 plan</p>
-            <p onClick={handleLogout}>로그아웃</p>
-            <p onClick={handleDeleteAccount} className="danger">회원 탈퇴</p>
+            <p onClick={handleLogout} className='normal'>로그아웃</p>
+            <p onClick={handleDeleteAccount} className='danger'>회원 탈퇴</p>
         </div>
     );
 

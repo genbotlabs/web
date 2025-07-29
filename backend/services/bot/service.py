@@ -17,8 +17,17 @@ from sqlalchemy.future import select
 from schemas.request.bot import BotUpdateRequest  # BotUpdateRequest 클래스
 from schemas.response.bot import BotDeleteResponse
 from models.csbot import CSbot
+from services.utils import run_in_threadpool
+from services.get_db import async_session_maker
+from dotenv import load_dotenv
+from services.bot.utils import generate_unique_bot_id
+
 
 # from models.lang_graph.lang_graph import run_langgraph  # langgraph model_bot
+
+load_dotenv()
+
+URL = os.getenv("URL")
 
 # 봇 생성
 async def service_create_bot(
@@ -41,99 +50,128 @@ async def service_create_bot(
         4. data 생성
     '''
 
-    try:
-        csbot = CSbot(
-            bot_id=bot_id,
-            detail_id=None,
-            user_id=user_id,
-            bot_url=f'http://localhost:3000/?bot_id={bot_id}',
-            status=status,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
-        )
-        db.add(csbot)
-        await db.commit()
-        await db.refresh(csbot)
+    async with async_session_maker() as db:
+        try:
+            csbot = await db.get(CSbot, bot_id)
+            if csbot is None:
+                raise ValueError(f"CSbot with bot_id {bot_id} not found")
 
-        print("✅ csbot 테이블 저장 완료")
+            print("✅ csbot 테이블 저장 완료")
 
-        detail = Detail(
-            bot_id=bot_id,
-            company_name=company_name,
-            bot_name=bot_name,
-            first_text=first_text,
-            email=email,
-            cs_number=cs_number
-        )
-        db.add(detail)
-        await db.commit()
-        await db.refresh(detail)
-
-        print("✅ detail 테이블 저장 완료")
-
-        csbot.detail_id = detail.detail_id
-        await db.commit()
-        await db.refresh(csbot)
-
-        print("✅ csbot 테이블 detail_id 업데이트 완료")
-
-        data_items = []
-        folder_name = f"bot_{detail.email}_{detail.detail_id}"
-
-        for file in files:
-            url = upload_pdf_to_s3(file.file, file.filename, folder_name)
-
-            data = Data(
-                detail_id=detail.detail_id,
-                name=file.filename,
-                # type=True,
-                storage_url=url
-            )
-            db.add(data)
-            await db.commit()
-            await db.refresh(data)
-
-            data_items.append(
-                BotDataItemResponse(
-                    data_id=data.data_id,
-                    name=file.filename,
-                    storage_url=url
-                )
-            )
-
-        # await db.commit()
-
-        print("✅ data 테이블 저장 완료")
-        print('✅ pdf 파싱 시작')
-
-        # s3에서 pdf 파싱
-        bucket_name = os.getenv("AWS_S3_BUCKET_NAME")
-        parse_message = parse_pdfs_from_s3(bucket_name, folder_name)
-        print(">>>",parse_message)
-
-        # 이메일 보내기 
-        send_email_notification(email, detail)
-
-        return {
-            "bot": BotDetailItem(
-                user_id=user_id,
+            detail = Detail(
                 bot_id=bot_id,
                 company_name=company_name,
                 bot_name=bot_name,
-                email=email,
-                status=0,
-                cs_number=cs_number,
                 first_text=first_text,
-                files=data_items,
-                created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
+                email=email,
+                cs_number=cs_number
             )
-        }
+            db.add(detail)
+            await db.commit()
+            await db.refresh(detail)
 
-    except Exception as e:
-        await db.rollback()
-        print("[ERROR]", traceback.format_exc())
-        raise HTTPException(status_code=500, detail="서버 내부 오류가 발생했습니다.")
+            print("✅ detail 테이블 저장 완료")
+
+            csbot.detail_id = detail.detail_id
+            await db.commit()
+            await db.refresh(csbot)
+
+            print("✅ csbot 테이블 detail_id 업데이트 완료")
+
+            data_items = []
+            folder_name = f"bot_{detail.email}_{detail.detail_id}"
+
+            for file in files:
+                url = await run_in_threadpool(upload_pdf_to_s3, file["file"], file["filename"], folder_name)
+
+                data = Data(
+                    detail_id=detail.detail_id,
+                    name=file["filename"],
+                    # type=True,
+                    storage_url=url
+                )
+                db.add(data)
+                await db.commit()
+                await db.refresh(data)
+
+                data_items.append(
+                    BotDataItemResponse(
+                        data_id=data.data_id,
+                        name=file["filename"],
+                        storage_url=url
+                    )
+                )
+
+            # await db.commit()
+
+            print("✅ data 테이블 저장 완료")
+            print('✅ pdf 파싱 시작')
+
+            # s3에서 pdf 파싱
+            bucket_name = os.getenv("AWS_S3_BUCKET_NAME")
+            parse_message = await parse_pdfs_from_s3(bucket_name, folder_name)
+            print(">>>",parse_message)
+
+            # 이메일 보내기 
+            # await run_in_threadpool(send_email_notification, email, detail)
+            await send_email_notification(email, detail)
+
+            csbot.status = 1
+            csbot.updated_at = datetime.utcnow()
+            await db.commit()
+            await db.refresh(csbot)
+            print("✅ 최종 상태(status=1)로 업데이트 완료")
+
+            return {
+                "bot": BotDetailItem(
+                    user_id=user_id,
+                    bot_id=bot_id,
+                    company_name=company_name,
+                    bot_name=bot_name,
+                    email=email,
+                    status=1,
+                    cs_number=cs_number,
+                    first_text=first_text,
+                    files=data_items,
+                    created_at=datetime.utcnow(),
+                    updated_at=datetime.utcnow()
+                )
+            }
+
+        except Exception as e:
+            print(f"❌ 오류 발생: {e}")
+
+            try:
+                csbot.status = 3
+                csbot.updated_at = datetime.utcnow()
+                await db.commit()
+                await db.refresh(csbot)
+                print("⚠️ 오류로 인해 상태(status=3)로 업데이트")
+            except Exception as rollback_error:
+                print(f"❌ 상태 업데이트 실패: {rollback_error}")
+
+            raise e
+
+async def initialize_bot_record(
+    db: AsyncSession,
+    # bot_id: str,
+    user_id: int,
+) -> CSbot:
+
+    bot_id = str(await generate_unique_bot_id(db))
+    csbot = CSbot(
+        bot_id=bot_id,
+        user_id=user_id,
+        detail_id=None,
+        bot_url=URL+bot_id,
+        status=0,
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow()
+    )
+    db.add(csbot)
+    await db.commit()
+    await db.refresh(csbot)
+    return csbot
 
 async def get_bot_id(bot_id: str, db: AsyncSession):
     result = await db.execute(

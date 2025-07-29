@@ -900,3 +900,137 @@ body {
   outline: 2px solid #667eea;
   outline-offset: 2px;
 }
+
+/* 정렬 가능한 테이블 헤더 스타일 */
+.sortable-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  padding: 4px 8px;
+  border-radius: 6px;
+  position: relative;
+}
+
+.sortable-header:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.sortable-header.active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.header-text {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: white;
+}
+
+.sort-icons {
+  display: flex;
+  flex-direction: column;
+  margin-left: 8px;
+  gap: 1px;
+}
+
+.sort-icon {
+  font-size: 10px;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.sort-icon.up {
+  color: #ffffff60;
+}
+
+.sort-icon.down {
+  color: #ffffff60;
+}
+
+.sort-icon.active {
+  color: #ffffff;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+  transform: scale(1.2);
+}
+
+/* 정렬되지 않는 헤더 */
+.non-sortable-header {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: white;
+  padding: 4px 8px;
+}
+
+/* 정렬 표시기 애니메이션 */
+@keyframes sortActive {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1.2);
+  }
+}
+
+.sort-icon.active {
+  animation: sortActive 0.3s ease-out;
+}
+
+/* 호버 효과 개선 */
+.sortable-header:hover .sort-icon {
+  color: #ffffff80;
+}
+
+.sortable-header:hover .sort-icon.active {
+  color: #ffffff;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .sortable-header {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sort-icons {
+    flex-direction: row;
+    margin-left: 0;
+    gap: 4px;
+  }
+
+  .header-text {
+    font-size: 0.9rem;
+  }
+}
+
+/* 테이블 행 정렬 애니메이션 */
+.table-body tr {
+  transition: all 0.3s ease;
+}
+
+.table-body tr.sorting {
+  opacity: 0.7;
+  transform: translateX(5px);
+}
+
+/* 정렬 상태 표시 */
+.sort-indicator {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 6px;
+  height: 6px;
+  background: #52c41a;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.sortable-header.active .sort-indicator {
+  opacity: 1;
+}
