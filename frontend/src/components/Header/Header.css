@@ -90,3 +90,20 @@ header {
   text-decoration: none;
   color: inherit;
 }
+
+.user-menu {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px 0 rgba(34, 64, 140, 0.04);
+}
+
+.normal:hover {
+  cursor: pointer;
+  color: #1F5FF8;
+}
+
+.danger:hover {
+  cursor: pointer;
+  color: red;
+}
