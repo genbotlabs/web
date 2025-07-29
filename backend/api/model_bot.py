@@ -3,7 +3,7 @@
 from fastapi import APIRouter
 from schemas.request.model_bot import ChatRequest
 from schemas.response.model_bot import ChatResponse
-from services.bot.service import run_langgraph_answer
+# from services.bot.service import run_langgraph_answer
 
 router = APIRouter()
 
@@ -12,7 +12,7 @@ async def return_answer(req: ChatRequest):
     """
     사용자 질문을 받아 langgraph 모델로부터 응답을 생성하는 API
     """
-    answer = run_langgraph_answer(req.question)
+    # answer = run_langgraph_answer(req.question)
     return ChatResponse(answer=answer)
 
 # 1. 챗봇으로 사용자 질문이 들어오면 질문에 대한 답변 반환

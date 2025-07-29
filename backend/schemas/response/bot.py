@@ -5,25 +5,25 @@ from datetime import datetime
 
 # 데이터 메타 정보
 class BotDataItemResponse(BaseModel):
-    data_id: str = Field(..., example="data_001")
-    filename: str = Field(..., example="faq.pdf")
-    type: int = Field(..., example=0, description="파일 타입 (예: 0: json, 1: pdf)")
+    data_id: int = Field(..., example="1")
+    name: str = Field(..., example="faq.pdf")
+    # type: int = Field(..., example=0, description="파일 타입 (예: 0: json, 1: pdf)")
     storage_url: str = Field(..., example="https://storage.example.com/faq.pdf")
 
 # 봇 상세
 class BotDetailItem(BaseModel):
-    bot_id: str = Field(..., example="bot_001")
-    company_name: str = Field(..., example="GenBot")
-    bot_name: str = Field(..., example="문의")
-    first_text: str = Field(..., example="안녕하세요! GenBot의 문의봇입니다.")
-    email: str = Field(..., example="user@example.com")
-    cs_number: str = Field(..., example="1522-0000")
-    data: List[BotDataItemResponse]
+    user_id: int = Field(..., example="1"),
+    bot_id: str = Field(..., example="bot_001"),
+    company_name: str = Field(..., example="GenBot"),
+    bot_name: str = Field(..., example="문의"),
+    email: str = Field(..., example="user@example.com"),
+    status: int = Field(..., example=0),
+    cs_number: str = Field(..., example="1522-0000"),
+    first_text: str = Field(..., example="안녕하세요! GenBot의 문의봇입니다."),
+    files: List[BotDataItemResponse]
     created_at: datetime = Field(..., example="2025-07-14T12:00:00Z")
     updated_at: datetime = Field(..., example="2025-07-14T12:10:00Z")
 
-# 봇 생성
-# 봇 상세 조회
 # 봇 수정
 class BotDetailResponse(BaseModel):
     bot: BotDetailItem
@@ -31,6 +31,10 @@ class BotDetailResponse(BaseModel):
 # 봇 목록 조회
 class BotListResponse(BaseModel):
     bots: List[BotDetailItem]
+
+# 봇 아이디로 첫 인사 조회
+class BotFirstTextResponse(BaseModel):
+    first_text: str = Field(..., example="안녕하세요! GenBot의 문의봇입니다.")
 
 # 데이터 상세 조회
 class UploadedDataDetailResponse(BaseModel):
