@@ -76,8 +76,8 @@ export default function DashBoardPage({ user }) {
     const matchesTab =
       activeTab === "all" ||
       (activeTab === "pending" && bot.status === 0) ||
-      (activeTab === "inactive" && bot.status === 1) ||
-      (activeTab === "active" && bot.status === 2) ||
+      (activeTab === "active" && bot.status === 1) ||
+      (activeTab === "inactive" && bot.status === 2) ||
       (activeTab === "error" && bot.status === 3)
       
 
@@ -207,7 +207,7 @@ export default function DashBoardPage({ user }) {
               { key: "all", label: "전체 봇" },
               { key: "pending", label: "제작중" },
               { key: "active", label: "활성화" },
-              { key: "inactive", label: "비활성화" }
+              { key: "error", label: "오류" }
             ].map((tab) => (
               <button
                 key={tab.key}
