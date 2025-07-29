@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Form, Input, Button, message, Modal } from "antd"
 import { PlusOutlined, FileTextOutlined, DeleteOutlined } from "@ant-design/icons"
@@ -13,6 +13,12 @@ export default function GenerateBotPage({ user }) {
     const [formValues, setFormValues] = useState({})
     const [uploadedFiles, setUploadedFiles] = useState([])
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [totalSize, setTotalSize] = useState(0);
+
+    useEffect(() => {
+        const total = uploadedFiles.reduce((sum, fileObj) => sum + fileObj.file.size, 0);
+        setTotalSize(total);
+      }, [uploadedFiles]);
 
     const handleFileUpload = (e) => {
         const files = Array.from(e.target.files)
@@ -284,25 +290,17 @@ export default function GenerateBotPage({ user }) {
                             <br />
                         </Modal>
 
-                        <div className="upload-area">
-
-                            <input
-                                type="file"
-                                multiple
-                                accept=".pdf,.json"
-                                onChange={handleFileUpload}
-                                className="hidden-file-input"
-                                id="file-upload"
-                            />
-                            {/* <FileUploadBox
-                                onFileChange={setUploadedFiles}
-                                validationResult={validationResult}
-                                setValidationResult={setValidationResult}
-                            /> */}
-                            <label htmlFor="file-upload" className="upload-button">
-                                <PlusOutlined style={{ margin: "8px" }} />
+                        <div className="upload-area" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <label htmlFor="file-upload" className="upload-button" style={{ width: "150px" }}> 
+                                <PlusOutlined style={{ margin: "4px" }} />
                                 파일 업로드
                             </label>
+
+                            {uploadedFiles.length > 0 && (
+                                <div style={{ fontSize: "18px", color: totalSize > 10 * 1024 * 1024 ? "red" : "#333" }}>
+                                    총 파일 크기: {(totalSize / 1024 / 1024).toFixed(2)} MB {totalSize > 10 * 1024 * 1024 && "(10MB 초과!)"}
+                                </div>
+                            )}
                         </div>
 
                         {uploadedFiles.length > 0 && (
