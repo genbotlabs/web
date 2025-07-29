@@ -48,6 +48,10 @@ export default function DashBoardPage({ user }) {
     }
 
     fetchBots()
+
+    const intervalId = setInterval(fetchBots, 5000);
+
+    return () => clearInterval(intervalId);
   }, [user])
 
   const getStatusBadge = (statusCode) => {

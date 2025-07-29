@@ -173,14 +173,14 @@ async def initialize_bot_record(
     await db.refresh(csbot)
     return csbot
 
-async def get_bot_id(bot_id: str, db: AsyncSession):
+async def get_bot_id_detail(bot_id: str, db: AsyncSession):
     result = await db.execute(
         select(Detail).where(Detail.bot_id == bot_id)
     )
     detail = result.scalar_one_or_none()
     if not detail:
         raise HTTPException(status_code=404, detail="해당 봇이 존재하지 않거나 권한이 없습니다.")
-    return BotFirstTextResponse(first_text=detail.first_text)
+    return detail
 
 # 봇 목록 조회
 async def bot_list(user_id: int, db: AsyncSession) -> List[BotDetailItem]:
