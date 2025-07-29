@@ -150,15 +150,44 @@ def send_email_notification(to_email, detail):
         subject = f"[GenBot] '{detail.bot_name}' 생성 완료 안내"
         html = f"""
         <html>
-        <body>
-            <h2>GenBot 봇 생성이 완료되었습니다 🎉</h2>
-            <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse;">
-                <tr><th align="left">회사명</th><td>{detail.company_name}</td></tr>
-                <tr><th align="left">봇 이름</th><td>{detail.bot_name}</td></tr>
-                <tr><th align="left">고객센터 번호</th><td>{detail.cs_number}</td></tr>
-                <tr><th align="left">인사말</th><td>{detail.first_text}</td></tr>
+        <body style="font-family: 'Inter', sans-serif; background-color: #f9fafb; padding: 24px;">
+            <h2 style="color: #111827;">GenBot 봇 생성이 완료되었습니다 🎉</h2>
+            <table style="
+                width: 100%;
+                border-collapse: collapse;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                overflow: hidden;
+                background-color: #ffffff;
+                font-size: 14px;
+                color: #111827;
+            ">
+            <tbody>
+                <tr>
+                <th style="text-align: left; background-color: #f3f4f6; padding: 12px; font-weight: 600; border-bottom: 1px solid #e5e7eb;">회사명</th>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">{detail.company_name}</td>
+                </tr>
+                <tr>
+                <th style="text-align: left; background-color: #f3f4f6; padding: 12px; font-weight: 600; border-bottom: 1px solid #e5e7eb;">봇 이름</th>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">{detail.bot_name}</td>
+                </tr>
+                <tr>
+                <th style="text-align: left; background-color: #f3f4f6; padding: 12px; font-weight: 600; border-bottom: 1px solid #e5e7eb;">이메일</th>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">{detail.email}</td>
+                </tr>
+                <tr>
+                <th style="text-align: left; background-color: #f3f4f6; padding: 12px; font-weight: 600; border-bottom: 1px solid #e5e7eb;">고객센터 번호</th>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">{detail.cs_number}</td>
+                </tr>
+                <tr>
+                <th style="text-align: left; background-color: #f3f4f6; padding: 12px; font-weight: 600; border-bottom: 1px solid #e5e7eb;">인사말</th>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">{detail.first_text}</td>
+                </tr>
+            </tbody>
             </table>
-            <p>GenBot 서비스를 이용해 주셔서 감사합니다.</p>
+            <p style="margin-top: 24px; font-size: 14px; color: #4b5563;">
+            GenBot 서비스를 이용해 주셔서 감사합니다.
+            </p>
         </body>
         </html>
         """
