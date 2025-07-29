@@ -114,6 +114,12 @@ async def service_create_bot(
         # 이메일 보내기 
         send_email_notification(email, detail)
 
+        csbot.status = 1
+        csbot.updated_at = datetime.utcnow()
+        await db.commit()
+        await db.refresh(csbot)
+        print("✅ 최종 상태(status=1)로 업데이트 완료")
+
         return {
             "bot": BotDetailItem(
                 user_id=user_id,
@@ -121,7 +127,7 @@ async def service_create_bot(
                 company_name=company_name,
                 bot_name=bot_name,
                 email=email,
-                status=0,
+                status=1,
                 cs_number=cs_number,
                 first_text=first_text,
                 files=data_items,
@@ -131,9 +137,18 @@ async def service_create_bot(
         }
 
     except Exception as e:
-        await db.rollback()
-        print("[ERROR]", traceback.format_exc())
-        raise HTTPException(status_code=500, detail="서버 내부 오류가 발생했습니다.")
+        print(f"❌ 오류 발생: {e}")
+
+        try:
+            csbot.status = 3
+            csbot.updated_at = datetime.utcnow()
+            await db.commit()
+            await db.refresh(csbot)
+            print("⚠️ 오류로 인해 상태(status=3)로 업데이트")
+        except Exception as rollback_error:
+            print(f"❌ 상태 업데이트 실패: {rollback_error}")
+
+        raise e
 
 async def get_bot_id(bot_id: str, db: AsyncSession):
     result = await db.execute(
