@@ -17,20 +17,20 @@ export default function MainPage() {
         const botId = searchParams.get('bot_id');
         console.log(botId)
         if (botId) {
-            fetch(`http://localhost:8000/bots/bot_id/${botId}`)
+            fetch(`http://localhost:8000/bots/detail/${botId}`)
                 .then(res => {
                     if (!res.ok) throw new Error('봇 정보를 가져오는 데 실패했습니다.');
                     return res.json();
                 })
                 .then(data => {
-                    setBotName(data.bot_name || '봇');
+                    setCompanyName(data.company_name || 'GenBot');
+                    setBotName(data.bot_name || '문의');
                 })
                 .catch(err => {
                     console.error(err);
-                    setBotName('봇');
                 });
         } else {
-            setBotName('봇');
+            setBotName('문의');
         }
     }, []);
 

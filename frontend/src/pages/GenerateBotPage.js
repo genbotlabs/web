@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Form, Input, Button, message, Modal } from "antd"
 import { PlusOutlined, FileTextOutlined, DeleteOutlined } from "@ant-design/icons"
@@ -13,6 +13,12 @@ export default function GenerateBotPage({ user }) {
     const [formValues, setFormValues] = useState({})
     const [uploadedFiles, setUploadedFiles] = useState([])
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [totalSize, setTotalSize] = useState(0);
+
+    useEffect(() => {
+        const total = uploadedFiles.reduce((sum, fileObj) => sum + fileObj.file.size, 0);
+        setTotalSize(total);
+      }, [uploadedFiles]);
 
     const handleFileUpload = (e) => {
         const files = Array.from(e.target.files)
@@ -61,6 +67,10 @@ export default function GenerateBotPage({ user }) {
             message.error("이메일을 입력해주세요.");
             return;
         }
+        if (!form.getFieldsValue().consultantNumber?.trim()) {
+            message.error("상담사 번호를 입력해주세요.");
+            return;
+        }
         if (uploadedFiles.length === 0) {
             message.error("최소 1개의 파일을 업로드해주세요.");
             return;
@@ -73,9 +83,17 @@ export default function GenerateBotPage({ user }) {
 
         setLoading(true)
 
+        const totalSize = uploadedFiles.reduce((sum, fileObj) => sum + fileObj.file.size, 0);
+        if (totalSize > 10 * 1024 * 1024) {
+            alert("업로드된 파일의 총 크기가 10MB를 초과했습니다. 다시 확인해주세요.");
+            return;
+        }
+
+        setLoading(true);
+
         // 2. FormData 구성
         const formData = new FormData();
-        const user_id = user?.user_id || "test_user";
+        const user_id = user?.user_id ? parseInt(user.user_id) : 0;
         formData.append("user_id", user_id);
         formData.append("company_name", form.getFieldsValue().company);
         formData.append("bot_name", form.getFieldsValue().botName);
@@ -272,25 +290,28 @@ export default function GenerateBotPage({ user }) {
                             <br />
                         </Modal>
 
-                        <div className="upload-area">
-
+                        <div className="upload-area" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                             <input
                                 type="file"
                                 multiple
-                                accept=".pdf,.json"
+                                accept=".pdf"
                                 onChange={handleFileUpload}
                                 className="hidden-file-input"
                                 id="file-upload"
                             />
-                            {/* <FileUploadBox
-                                onFileChange={setUploadedFiles}
-                                validationResult={validationResult}
-                                setValidationResult={setValidationResult}
-                            /> */}
-                            <label htmlFor="file-upload" className="upload-button">
-                                <PlusOutlined style={{ margin: "8px" }} />
+                            <label 
+                                htmlFor="file-upload" className="upload-button" 
+                                style={{ width: "150px" }}
+                            > 
+                                <PlusOutlined style={{ margin: "4px" }} />
                                 파일 업로드
                             </label>
+
+                            {uploadedFiles.length > 0 && (
+                                <div style={{ fontSize: "18px", color: totalSize > 10 * 1024 * 1024 ? "red" : "#333" }}>
+                                    총 파일 크기: {(totalSize / 1024 / 1024).toFixed(2)} MB {totalSize > 10 * 1024 * 1024 && "(10MB 초과!)"}
+                                </div>
+                            )}
                         </div>
 
                         {uploadedFiles.length > 0 && (
