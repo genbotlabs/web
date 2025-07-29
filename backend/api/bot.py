@@ -18,7 +18,7 @@ from fastapi import Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from services.get_db import get_db  
 from schemas.response.bot import BotDeleteResponse
-from services.bot.service import service_create_bot, initialize_bot_record, bot_list, delete_bot , update_bot, get_bot_id   
+from services.bot.service import service_create_bot, initialize_bot_record, bot_list, delete_bot , update_bot, get_bot_id_detail   
 # from services.bot.utils import generate_unique_bot_id
 from io import BytesIO
 
@@ -84,12 +84,14 @@ async def create_bot(
         )
     )
 
-@router.get("/bot_id/{bot_id}", response_model=BotFirstTextResponse)
+@router.get("/detail/{bot_id}")
 async def get_bot_detail(
     bot_id: str,
     db: AsyncSession = Depends(get_db)
 ):
-    return await get_bot_id(bot_id=bot_id, db=db)
+    bot_id = str(bot_id)
+    print('>>>>>', bot_id)
+    return await get_bot_id_detail(bot_id=bot_id, db=db)
 
 # 봇 목록 조회
 @router.get("/{user_id}", response_model=BotListResponse)
