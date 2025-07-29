@@ -52,35 +52,21 @@ export default function ChatbotPage() {
     setLoading(true);
 
     try {
-      const turn = messages.filter(msg => msg.from === 'user').length + 1;
-      const res = await fetch(`http://localhost:8000/bots/${botId}/sllm`, {
+      const res = await fetch(`https://bynve3gvz0rw60-7860.proxy.runpod.net/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ turn, role: 'user', content: textToSend })
+        body: JSON.stringify({
+          bot_id: botId,
+          session_id: sessionId,
+          question: textToSend
+        })
       });
 
-      if (!res.body) throw new Error('스트리밍 응답 없음');
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder('utf-8');
-      let botResponse = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        botResponse += decoder.decode(value);
-        addMessage('bot', botResponse, true);
-      }
-
-      setMessages(prev => {
-        const last = prev[prev.length - 1];
-        if (last && last.partial) {
-          return [...prev.slice(0, -1), { from: 'bot', text: last.text }];
-        }
-        return prev;
-      });
+      const data = await res.json();
+      addMessage('bot', data.answer);
 
     } catch (err) {
-      console.error('LLM 응답 오류:', err);
+      console.error(err);
       addMessage('bot', '답변 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);

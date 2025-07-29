@@ -43,12 +43,23 @@ export default function MainPage() {
         const data = await response.json()
         const sessionId = data.session_id
         console.log('sessionId', sessionId)
-        // navigate(`/chatbot?bot_id=${botId}`, {
-        //   state: { session_id: sessionId }
-        // });
-        // navigate(`/chatbot?bot_id=${botId}`, { state: { session_id: sessionId } });
+
+        // const res = await fetch(`http://localhost:8000/bots/bot_id/${botId}`);
+        const res = await fetch(`http://localhost:8000/bots/contact/${botId}`);
+        const botData = await res.json();
+        const { cs_number, email, detail_id } = botData;
+        console.log(cs_number, email, detail_id)
+
+        const runpodRes = await fetch(`https://bynve3gvz0rw60-7860.proxy.runpod.net/load`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ bot_id: botId, cs_number, email, detail_id})
+        });
+        
+        
         navigate(`/chatbot?bot_id=${botId}&session_id=${sessionId}`)
     }
+
 
     return (
         <div className="main-container">
