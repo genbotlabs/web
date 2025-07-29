@@ -142,16 +142,29 @@ def parse_pdfs_from_s3(bucket_name: str, base_folder: str):
 
     return "✅ PDF 파싱 및 벡터DB 생성, 결과 S3에 저장 완료"
 
-def send_email_notification(to_email, bot_name):
+def send_email_notification(to_email, detail):
     try:
-        print('to_email:', to_email)
         EMAIL = os.getenv("GMAIL")
         PASSWORD = os.getenv("GMAIL_PASSWORD")
-        print("EMAIL:", repr(EMAIL))
-        print("PASSWORD:", repr(PASSWORD))
 
-        msg = MIMEText(f"'{bot_name}' 봇이 생성되었습니다.")
-        msg['Subject'] = f"[GenBot] '{bot_name}' 생성 완료 안내"
+        subject = f"[GenBot] '{detail.bot_name}' 생성 완료 안내"
+        html = f"""
+        <html>
+        <body>
+            <h2>GenBot 봇 생성이 완료되었습니다 🎉</h2>
+            <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse;">
+                <tr><th align="left">회사명</th><td>{detail.company_name}</td></tr>
+                <tr><th align="left">봇 이름</th><td>{detail.bot_name}</td></tr>
+                <tr><th align="left">고객센터 번호</th><td>{detail.cs_number}</td></tr>
+                <tr><th align="left">인사말</th><td>{detail.first_text}</td></tr>
+            </table>
+            <p>GenBot 서비스를 이용해 주셔서 감사합니다.</p>
+        </body>
+        </html>
+        """
+
+        msg = MIMEText(html, 'html')
+        msg['Subject'] = subject
         msg['From'] = EMAIL
         msg['To'] = to_email
 

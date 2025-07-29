@@ -112,7 +112,7 @@ async def service_create_bot(
         print(">>>",parse_message)
 
         # 이메일 보내기 
-        send_email_notification(email, bot_name)
+        send_email_notification(email, detail)
 
         return {
             "bot": BotDetailItem(
