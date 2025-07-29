@@ -18,7 +18,7 @@ export default function ChatbotPage() {
   useEffect(() => {
     const fetchGreeting = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/bots/bot_id/${botId}`, {
+        const res = await fetch(`http://localhost:8000/bots/detail/${botId}`, {
           method: 'GET'
         });
         const data = await res.json();
