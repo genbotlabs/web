@@ -182,6 +182,10 @@ async def send_email_notification(to_email, detail):
                 <th style="text-align: left; background-color: #f3f4f6; padding: 12px; font-weight: 600; border-bottom: 1px solid #e5e7eb;">인사말</th>
                 <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">{detail.first_text}</td>
                 </tr>
+                <tr>
+                <th style="text-align: left; background-color: #f3f4f6; padding: 12px; font-weight: 600; border-bottom: 1px solid #e5e7eb;">챗봇 링크</th>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;"><a href="http://localhost:3001/?bot_id={detail.bot_id}">챗봇 바로가기</a></td>
+                </tr>
             </tbody>
             </table>
             <p style="margin-top: 24px; font-size: 14px; color: #4b5563;">
