@@ -13,6 +13,7 @@ from langchain_core.documents import Document
 import smtplib
 from email.mime.text import MIMEText
 from services.utils import run_in_threadpool
+from functools import partial
 
 load_dotenv()
 # os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
@@ -88,17 +89,15 @@ async def parse_pdfs_from_s3(bucket_name: str, base_folder: str):
         local_pdf_path = input_dir / filename
         s3.download_file(bucket_name, s3_key, str(local_pdf_path))
 
-        parse_result = await run_in_threadpool(client.parse_pdf, pdf_path=str(local_pdf_path), batch_size=50, language="Korean")
+        parse_func = partial(client.parse_pdf, pdf_path=str(local_pdf_path), batch_size=50, language="Korean")
+        parse_result = await run_in_threadpool(parse_func)
         job_id = parse_result["job_id"]
-        final_status = await run_in_threadpool(client.wait_for_job_completion, job_id, check_interval=5, max_attempts=60)
+        wait_func = partial(client.wait_for_job_completion, job_id, check_interval=5, max_attempts=60)
+        final_status = await run_in_threadpool(wait_func)
 
         if final_status["status"] == "completed":
-            zip_path, extract_path = await run_in_threadpool(client.download_result,
-                job_id=job_id,
-                save_dir=str(output_dir),
-                extract=True,
-                overwrite=True
-            )
+            download_func = partial(client.download_result, job_id=job_id, save_dir=str(output_dir), extract=True, overwrite=True)
+            zip_path, extract_path = await run_in_threadpool(download_func)
             print(f"✅ 파싱 완료: {zip_path}, 압축해제: {extract_path}")
         else:
             raise Exception(f"파싱 실패: {final_status.get('error')}")
@@ -115,7 +114,7 @@ async def parse_pdfs_from_s3(bucket_name: str, base_folder: str):
     print("[DEBUG] pkl_files:", pkl_files)
     all_documents = []
     for pkl_file in pkl_files:
-        docs = await run_in_threadpool(load_documents_from_pkl, pkl_file)   
+        docs = await load_documents_from_pkl(pkl_file)   
         print(f"[INFO] {pkl_file} → {len(docs)}개 문서 로드됨")
         all_documents.extend(docs)
 

@@ -75,7 +75,7 @@ export default function GenerateBotPage({ user }) {
 
         // 2. FormData 구성
         const formData = new FormData();
-        const user_id = user?.user_id || "test_user";
+        const user_id = user?.user_id ? parseInt(user.user_id) : 0;
         formData.append("user_id", user_id);
         formData.append("company_name", form.getFieldsValue().company);
         formData.append("bot_name", form.getFieldsValue().botName);
