@@ -291,7 +291,18 @@ export default function GenerateBotPage({ user }) {
                         </Modal>
 
                         <div className="upload-area" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <label htmlFor="file-upload" className="upload-button" style={{ width: "150px" }}> 
+                            <input
+                                type="file"
+                                multiple
+                                accept=".pdf"
+                                onChange={handleFileUpload}
+                                className="hidden-file-input"
+                                id="file-upload"
+                            />
+                            <label 
+                                htmlFor="file-upload" className="upload-button" 
+                                style={{ width: "150px" }}
+                            > 
                                 <PlusOutlined style={{ margin: "4px" }} />
                                 파일 업로드
                             </label>
