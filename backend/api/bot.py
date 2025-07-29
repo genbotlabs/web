@@ -1,5 +1,7 @@
 from fastapi import APIRouter, HTTPException, Path
 import uuid
+import asyncio
+from datetime import datetime
 
 from schemas.request.bot import BotCreateRequest, BotUpdateRequest
 from schemas.response.bot import (
@@ -16,8 +18,9 @@ from fastapi import Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from services.get_db import get_db  
 from schemas.response.bot import BotDeleteResponse
-from services.bot.service import service_create_bot,bot_list,delete_bot , update_bot, get_bot_id   
-from services.bot.utils import generate_unique_bot_id
+from services.bot.service import service_create_bot, initialize_bot_record, bot_list, delete_bot , update_bot, get_bot_id_detail   
+# from services.bot.utils import generate_unique_bot_id
+from io import BytesIO
 
 router = APIRouter()
 
@@ -35,28 +38,60 @@ async def create_bot(
     files: List[UploadFile] = File(...),
     db: AsyncSession = Depends(get_db)
 ):
-    bot_id = await generate_unique_bot_id(db)
-    bot_id = str(bot_id)
+    # bot_id = await generate_unique_bot_id(db)
+    # bot_id = str(bot_id)
 
-    return await service_create_bot(
-        db=db,
-        bot_id=bot_id,
-        user_id=user_id,
-        company_name=company_name,
-        bot_name=bot_name,
-        email=email,
-        status=status,
-        cs_number=cs_number,
-        first_text=first_text,
-        files=files
+    csbot = await initialize_bot_record(db=db, user_id=user_id)
+    bot_id = csbot.bot_id
+
+    copied_files = []
+    for file in files:
+        content = await file.read()
+        copied_files.append({
+            "filename": file.filename,
+            "file": BytesIO(content)
+        })
+
+    # 백그라운드 실행
+    asyncio.create_task(
+        service_create_bot(
+            db=None,
+            bot_id=bot_id,
+            user_id=user_id,
+            company_name=company_name,
+            bot_name=bot_name,
+            email=email,
+            status=status,
+            cs_number=cs_number,
+            first_text=first_text,
+            files=copied_files
+        )
     )
 
-@router.get("/bot_id/{bot_id}", response_model=BotFirstTextResponse)
+    return BotDetailResponse(
+        bot=BotDetailItem(
+            user_id=user_id,
+            bot_id=bot_id,
+            company_name=company_name,
+            bot_name=bot_name,
+            email=email,
+            status=0,
+            cs_number=cs_number,
+            first_text=first_text,
+            files=[],
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
+        )
+    )
+
+@router.get("/detail/{bot_id}")
 async def get_bot_detail(
     bot_id: str,
     db: AsyncSession = Depends(get_db)
 ):
-    return await get_bot_id(bot_id=bot_id, db=db)
+    bot_id = str(bot_id)
+    print('>>>>>', bot_id)
+    return await get_bot_id_detail(bot_id=bot_id, db=db)
 
 # 봇 목록 조회
 @router.get("/{user_id}", response_model=BotListResponse)

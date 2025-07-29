@@ -118,7 +118,6 @@ export default function PendingPage({ user }) {
             <Descriptions.Item label="회사명">{botInfo.company}</Descriptions.Item>
             <Descriptions.Item label="봇 이름">{botInfo.botName}</Descriptions.Item>
             <Descriptions.Item label="이메일">{botInfo.email}</Descriptions.Item>
-            <Descriptions.Item label="상태">{botInfo.status}</Descriptions.Item>
             <Descriptions.Item label="고객센터 번호">{botInfo.cs_number}</Descriptions.Item>
             <Descriptions.Item label="인사말">{botInfo.first_text}</Descriptions.Item>
             <Descriptions.Item label="업로드한 파일 목록">
