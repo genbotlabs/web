@@ -89,7 +89,7 @@ export default function ChatbotPage() {
   }
 
   const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm; codecs=opus' });
-  const ws = new WebSocket(`ws://localhost:8000/voicebot/ws/voice/${sessionId}`);
+  const ws = new WebSocket(`ws://localhost:8000/voicebot/ws/voice/${botId}/${sessionId}`);
   ws.binaryType = 'arraybuffer';
 
   // 세이프티 타이머

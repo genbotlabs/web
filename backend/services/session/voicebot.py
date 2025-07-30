@@ -14,7 +14,7 @@ load_dotenv()
 
 RUNPOD_STREAMING_STT_URL = os.getenv("RUNPOD_STREAMING_STT_URL")
 
-async def handle_streaming_voice(session_id: str, websocket: WebSocket, db: AsyncSession):
+async def handle_streaming_voice(session_id: str, bot_id: str, websocket: WebSocket, db: AsyncSession):
     print(f"▶▶▶ WebSocket 연결됨: session_id={session_id}")
 
     # 1. RunPod STT WebSocket 연결
@@ -67,7 +67,7 @@ async def handle_streaming_voice(session_id: str, websocket: WebSocket, db: Asyn
                         sllm_resp = await client.post(
                             f"https://bynve3gvz0rw60-7860.proxy.runpod.net/chat",
                             # json={"session_id": session_id, "turn": turn, "role": "user", "content": text}
-                            json={"content": text}
+                            json={"bot_id": bot_id, "session_id": session_id, "question": text},
                         )
                         sllm_resp.raise_for_status()
                         answer = sllm_resp.json().get("content", "").strip()
