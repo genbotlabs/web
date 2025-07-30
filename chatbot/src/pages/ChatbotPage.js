@@ -5,6 +5,9 @@ import '../styles/ChatbotPage.css';
 import sendIcon from '../icons/send.png';
 import voiceIcon from '../icons/voice.png';
 
+const runpodUrl = process.env.REACT_APP_RUNPOD_URL;
+const apiUrl = process.env.REACT_APP_API_URL;
+
 export default function ChatbotPage() {
   const [searchParams] = useSearchParams();
   const botId = searchParams.get('bot_id') || 'a1';
@@ -18,7 +21,7 @@ export default function ChatbotPage() {
   useEffect(() => {
     const fetchGreeting = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/bots/detail/${botId}`, {
+        const res = await fetch(`${apiUrl}/bots/detail/${botId}`, {
           method: 'GET'
         });
         const data = await res.json();
@@ -52,7 +55,7 @@ export default function ChatbotPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(`https://bynve3gvz0rw60-7860.proxy.runpod.net/chat`, {
+      const res = await fetch(`${runpodUrl}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -80,8 +83,45 @@ export default function ChatbotPage() {
     const sendVoiceStream = async () => {
     let stream;
     try {
-      // 1) 마이크 권한 & 스트림 얻기
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const ws = new WebSocket(`${runpodUrl}/voicebot/ws/voice/${sessionId}`);
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+
+      ws.binaryType = 'arraybuffer';  // 중요: 음성 응답 받을 때 바이너리로 처리
+
+      ws.onopen = () => {
+        mediaRecorder.start(250);
+        console.log('🎤 음성 스트리밍 시작');
+
+        mediaRecorder.ondataavailable = async (e) => {
+          if (e.data.size > 0 && ws.readyState === WebSocket.OPEN) {
+            const chunk = await e.data.arrayBuffer();
+            ws.send(chunk);
+          }
+        };
+      };
+
+      ws.onmessage = (event) => {
+        const blob = new Blob([event.data], { type: 'audio/mpeg' });  // 또는 'audio/wav'
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audio.play();
+      };
+
+      ws.onerror = (e) => {
+        console.error('WebSocket 에러:', e);
+        alert('음성 응답 중 오류 발생');
+      };
+
+      ws.onclose = () => {
+        console.log('WebSocket 연결 종료');
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      setTimeout(() => {
+        mediaRecorder.stop();
+        ws.close();
+      }, 8000); // 최대 8초 녹음
     } catch (err) {
       return alert("🎙️ 마이크 권한이 필요합니다.");
     }
