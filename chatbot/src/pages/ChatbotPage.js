@@ -5,6 +5,9 @@ import '../styles/ChatbotPage.css';
 import sendIcon from '../icons/send.png';
 import voiceIcon from '../icons/voice.png';
 
+const runpodUrl = process.env.REACT_APP_RUNPOD_URL;
+const apiUrl = process.env.REACT_APP_API_URL;
+
 export default function ChatbotPage() {
   const [searchParams] = useSearchParams();
   const botId = searchParams.get('bot_id') || 'a1';
@@ -18,7 +21,7 @@ export default function ChatbotPage() {
   useEffect(() => {
     const fetchGreeting = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/bots/detail/${botId}`, {
+        const res = await fetch(`${apiUrl}/bots/detail/${botId}`, {
           method: 'GET'
         });
         const data = await res.json();
@@ -52,7 +55,7 @@ export default function ChatbotPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(`https://bynve3gvz0rw60-7860.proxy.runpod.net/chat`, {
+      const res = await fetch(`${runpodUrl}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
