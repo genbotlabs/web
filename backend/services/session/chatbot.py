@@ -12,6 +12,8 @@ from schemas.response.session import (
     MessageItemResponse, MessageListResponse, EndSessionResponse
 )
 from services.session.utils import get_next_turn
+from services.session.runpod import start_runpod_pod
+
 
 client = httpx.AsyncClient()
 
@@ -36,6 +38,13 @@ async def create_session_service(bot_id: str, db: AsyncSession) -> CreateSession
     await db.commit()
 
     print('>>>> SessionModel 저장 완료 ')
+
+    try:
+        start_runpod_pod()
+        print("✅ RunPod Pod 실행 완료")
+    except Exception as e:
+        print(f"❌ RunPod Pod 실행 실패: {e}")
+
     return CreateSessionResponse(session_id=session_id)
 
 # 2. 메시지 전송 (텍스트)
