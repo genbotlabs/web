@@ -65,8 +65,9 @@ async def handle_streaming_voice(session_id: str, websocket: WebSocket, db: Asyn
                     # sLLM에 텍스트 전달
                     async with httpx.AsyncClient(timeout=60) as client:
                         sllm_resp = await client.post(
-                            f"http://localhost:3000/{session_id}/sllm",
-                            json={"session_id": session_id, "turn": turn, "role": "user", "content": text}
+                            f"https://bynve3gvz0rw60-7860.proxy.runpod.net/load",
+                            # json={"session_id": session_id, "turn": turn, "role": "user", "content": text}
+                            json={"content": text}
                         )
                         sllm_resp.raise_for_status()
                         answer = sllm_resp.json().get("content", "").strip()
@@ -75,6 +76,7 @@ async def handle_streaming_voice(session_id: str, websocket: WebSocket, db: Asyn
                         # TTS 변환 및 프론트로 음성 전송
                         tts_audio = text_to_speech(answer)
                         await websocket.send_bytes(tts_audio.read())
+                        
             except Exception as e:
                 print("[STT→응답 Error]", e)
                 await websocket.close()
