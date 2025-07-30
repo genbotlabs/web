@@ -2,7 +2,7 @@ import openai
 import io
 from dotenv import load_dotenv
 
-# load_dotenv()
+load_dotenv()
 
 session_turns = {}
 
@@ -18,4 +18,5 @@ def text_to_speech(content, voice="alloy"):
         voice=voice,
         input=content
     )
+
     return io.BytesIO(response.content)
