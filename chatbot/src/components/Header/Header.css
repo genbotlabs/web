@@ -20,6 +20,7 @@ header {
   margin: 0 20px 20px 0px;
   background-color: white;
   box-shadow: 0 2px 8px 0 rgba(34, 64, 140, 0.04);
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .header-left {

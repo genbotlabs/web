@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Button } from 'antd';
 import { useSearchParams, useNavigate } from 'react-router-dom'; 
 
 import '../styles/MainPage.css';
-import logo from '../icons/logo.png'
+import logo from '../icons/logo.png';
+import CustomCard from './coustomer';  // ✅ CustomCard 불러오기
 
 const runpodUrl = process.env.REACT_APP_RUNPOD_URL;
 const apiUrl = process.env.REACT_APP_API_URL;
 
 export default function MainPage() {
-    const [companyName, setCompanyName] = useState('GenBot');
-    const [botName, setBotName] = useState('문의');
+    const [companyName, setCompanyName] = React.useState('GenBot');
+    const [botName, setBotName] = React.useState('문의');
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     // const sessionId = searchParams.get('session_id') || "";
     // console.log(sessionId)
 
-    useEffect(() => {
+    React.useEffect(() => {
         const botId = searchParams.get('bot_id');
-        console.log(botId)
         if (botId) {
             fetch(`${apiUrl}/bots/detail/${botId}`)
                 .then(res => {
@@ -59,28 +59,31 @@ export default function MainPage() {
             body: JSON.stringify({ bot_id: botId, cs_number, email, detail_id})
         });
         
-        
         navigate(`/chatbot?bot_id=${botId}&session_id=${sessionId}`)
     }
 
 
     return (
         <div className="main-container">
-            <div className="content-wrapper">
+            <div className="left-section">
                 <div className="logo-section">
-                    <img src={logo} className="logo-icon" alt="GenBot"/>
+                    <img src={logo} className="logo-icon" alt="GenBot" />
                     <div className="text-section">
                         <h1 className="main-title">{companyName}의 {botName}봇</h1>
                         <p className="subtitle">궁금한 사항은 언제든지 문의해 주세요</p>
                     </div>
                 </div>
-
                 <div className="button-section">
                     <Button type="primary" className="link-chatbot-button" onClick={handleClick}>
                         챗봇 시작하기
                     </Button>
                 </div>
             </div>
+
+            <div className="right-section">
+                <CustomCard companyName={companyName} /> {/* ✅ companyName 전달 */}
+            </div>
         </div>
     );
 }
+
