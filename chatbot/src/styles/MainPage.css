@@ -1,6 +1,7 @@
 /* ───── 기본 배경 스타일 ───── */
 body {
   /* background: linear-gradient(135deg, #60a5fa, #93c5fd); */
+  background-color: #ffffff ;
   margin: 0;
   font-family: 'Alexandria', 'Apple SD Gothic Neo', sans-serif;
 }
