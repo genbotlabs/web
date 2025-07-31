@@ -104,21 +104,30 @@ export default function ChatbotPage() {
       formData.append('bot_id', botId);
       formData.append('session_id', sessionId);
 
-    try {
-      const res = await fetch(`${apiUrl}/voicebot/voicebot`, { method: 'POST', body: formData });
-      if (!res.ok) throw new Error('업로드 실패');
-      // 오디오 스트림 받기
-      const ttsBlob = await res.blob();
-      const url = URL.createObjectURL(ttsBlob);
-      new Audio(url).play();
-    } catch (err) {
-      alert('음성 업로드 실패: ' + err.message);
-    }
-    stream.getTracks().forEach(track => track.stop());
+      // 응답 시간 측정 시작
+      const t0 = performance.now();
+
+      try {
+        const res = await fetch(`${apiUrl}/voicebot/voicebot`, { method: 'POST', body: formData });
+        if (!res.ok) throw new Error('업로드 실패');
+        // 오디오 스트림 받기
+        const ttsBlob = await res.blob();
+
+        // 응답 시간 측정 종료
+        const t1 = performance.now();
+        const elapsed = t1 - t0;
+        console.log(`음성 응답 시간: ${(elapsed/1000).toFixed(2)}초`);
+
+        const url = URL.createObjectURL(ttsBlob);
+        new Audio(url).play();
+      } catch (err) {
+        alert('음성 업로드 실패: ' + err.message);
+      }
+      stream.getTracks().forEach(track => track.stop());
+    };
+    mediaRecorder.start();
+    setTimeout(() => mediaRecorder.stop(), 6000);
   };
-  mediaRecorder.start();
-  setTimeout(() => mediaRecorder.stop(), 6000);
-};
     //   try {
     //     const res = await fetch(`${apiUrl}/voicebot`, {
     //       method: 'POST',
