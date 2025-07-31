@@ -40,6 +40,8 @@ body {
 
 .message-wrapper.user {
   justify-content: flex-end;
+  flex-direction: row;
+  text-align: right;
 }
 
 .message-row {
@@ -48,7 +50,9 @@ body {
 }
 
 .message-row.user {
-  flex-direction: row-reverse;
+  flex-direction: row; 
+  justify-content: flex-end;
+  align-items: flex-end;
 }
 
 .message {
@@ -58,6 +62,7 @@ body {
   line-height: 1.5;
   word-break: break-word;
   max-width: 75%;
+  margin: 10px;
 }
 
 .message.bot {
@@ -70,30 +75,30 @@ body {
   background:  #f97874;
   color: white;
   border-bottom-right-radius: 0;
-  margin-left: 8px;
+  /* margin-left: 8px; */
 }
 
 .message-icon {
-  width: 36px;
-  height: 36px;
+  width: 45px;
+  /* height: 36px; */
   border-radius: 50%;
   object-fit: cover;
-  background-color: #f1f5f9;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  margin-left: 8px;
+  /* background-color: #f1f5f9; */
+  /* box-shadow: 0 2px 8px rgba(0,0,0,0.1); */
 }
 
-/* .message.bot.partial {
-  font-style: italic;
-  opacity: 0.6;
-  animation: blink 1.2s steps(1) infinite;
+.message-row.bot .message-icon {
+  margin-left: 8px;   /* ✅ 말풍선과 아이콘 간격 */
+  margin-right: 0;
+  align-self: flex-end;
 }
 
-@keyframes blink {
-  0% { opacity: 0.6; }
-  50% { opacity: 0.1; }
-  100% { opacity: 0.6; }
-} */
+.message-row.user .message-icon {
+  width: 40px;
+  margin-right: 8px;   /* ✅ 말풍선과 아이콘 간격 */
+  margin-left: 0;
+  align-self: flex-end;
+}
 
 .typing-indicator {
   display: flex;
@@ -192,7 +197,7 @@ body {
 }
 
 .send-button {
-  background-color: #f97316;
+  background-color: #f97874;
   right: 1.5rem;
 }
 

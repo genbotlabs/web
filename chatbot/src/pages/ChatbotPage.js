@@ -4,8 +4,8 @@ import Header from '../components/Header/Header';
 import '../styles/ChatbotPage.css';
 import sendIcon from '../icons/send.png';
 import voiceIcon from '../icons/voice.png';
-import botIcon from '../icons/logo.png';
-import userIcon from '../icons/logo.png';
+import botIcon from '../icons/bot.png';
+import userIcon from '../icons/user.png';
 
 const runpodUrl = process.env.REACT_APP_RUNPOD_URL;
 const apiUrl = process.env.REACT_APP_API_URL;
@@ -219,7 +219,7 @@ export default function ChatbotPage() {
       };
       mediaRecorder.start();
       detectSilence();
-      setTimeout(() => mediaRecorder.stop(), 6000);
+      setTimeout(() => mediaRecorder.stop(), 5000);
 
     } catch (err) {
       console.error('마이크 권한 오류:', err);
