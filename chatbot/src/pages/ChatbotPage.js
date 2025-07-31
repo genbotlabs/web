@@ -24,6 +24,7 @@ export default function ChatbotPage() {
   const streamRef = useRef(null);
   const silenceAnimationRef = useRef(null);
   const chunksRef = useRef([]);
+  const wavePanelRef = useRef(null);
 
   // 초기 인삿말 불러오기
   useEffect(() => {
@@ -44,13 +45,15 @@ export default function ChatbotPage() {
   }, [botId]);
 
   // 메시지 추가 유틸
-  const addMessage = (from, text, partial = false) => {
+  const addMessage = (from, text, partial = false, extra = {}) => {
     setMessages(prev => {
       const last = prev[prev.length - 1];
-      if (partial && last && last.from === from && last.partial) {
-        return [...prev.slice(0, -1), { from, text, partial }];
+      const newMessage = { from, text, partial, ...extra };
+  
+      if (partial && last?.from === from && last.partial) {
+        return [...prev.slice(0, -1), newMessage];
       } else {
-        return [...prev, { from, text, partial }];
+        return [...prev, newMessage];
       }
     });
   };
@@ -150,6 +153,11 @@ export default function ChatbotPage() {
         return alert("🎙️ 마이크 권한이 필요합니다.");
       }
 
+      addMessage('user', '', false, {
+        isVoice: true,
+        waveform: true
+      });
+
       const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm; codecs=opus' });
       const chunks = [];
 
@@ -228,6 +236,53 @@ export default function ChatbotPage() {
     }
   };
 
+  useEffect(() => {
+    if (!isRecording) return;
+  
+    let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    let analyser = audioContext.createAnalyser();
+    let dataArray = new Uint8Array(analyser.frequencyBinCount);
+    let source;
+    let animationFrameId;
+  
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+  
+      const animate = () => {
+        analyser.getByteFrequencyData(dataArray);
+        const avg = dataArray.slice(0, 32).reduce((a, b) => a + b, 0) / 32;
+  
+        // ✅ clova-voice-panel의 파형 조작
+        const waveEls = wavePanelRef.current?.querySelectorAll('.clova-wave');
+        if (waveEls) {
+          waveEls.forEach((el, i) => {
+            const height = Math.max(8, Math.min(40, avg / (3 + i)));
+            el.style.height = `${height}px`;
+          });
+        }
+  
+        // ✅ 사용자 메시지 내 파형도 조작
+        const inlineWaves = document.querySelectorAll('.inline-voice-wave .clova-wave');
+        inlineWaves.forEach((el, i) => {
+          const height = Math.max(8, Math.min(40, avg / (3 + i)));
+          el.style.height = `${height}px`;
+        });
+  
+        animationFrameId = requestAnimationFrame(animate);
+      };
+  
+      animationFrameId = requestAnimationFrame(animate);
+    });
+  
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      analyser.disconnect();
+      source?.disconnect();
+      audioContext.close();
+    };
+  }, [isRecording]);
+
   return (
     <>
       <Header />
@@ -236,12 +291,17 @@ export default function ChatbotPage() {
           
         {messages.map((msg, idx) => (
           <div key={idx} className={`message-row ${msg.from}`}>
-            {/* {msg.from === 'bot' && (
-              <img className="message-icon" src={botIcon} alt="Bot Icon" />
-            )} */}
             
             <div className={`message ${msg.from} ${msg.partial ? 'partial' : ''}`}>
-              {msg.partial && !msg.text ? (
+              {/* 파형 렌더링 */}
+              {msg.isVoice && msg.waveform ? (
+                <div className="inline-voice-wave" id="wave-target">
+                  <div className="clova-wave"></div>
+                  <div className="clova-wave"></div>
+                  <div className="clova-wave"></div>
+                  <div className="clova-wave"></div>
+                </div>
+              ) : msg.partial && !msg.text ? (
                 <span className="typing-indicator">
                   <span className="dot"></span>
                   <span className="dot"></span>
@@ -252,22 +312,26 @@ export default function ChatbotPage() {
               )}
             </div>
 
-            {/* {msg.from === 'user' && (
-              <img className="message-icon" src={userIcon} alt="User Icon" />
-            )} */}
+            {msg.from === 'user' && msg.isRecording && (
+              <div className="inline-voice-wave">
+                <div className="clova-wave"></div>
+                <div className="clova-wave"></div>
+                <div className="clova-wave"></div>
+                <div className="clova-wave"></div>
+              </div>
+            )}
           </div>
         ))}
         </div>
 
         {isRecording && (
-            <div className="clova-voice-ui">
-              <div className="clova-voice-text">말씀 중입니다...</div>
-              <div className="clova-voice-panel">
-                <div className="clova-wave wave1"></div>
-                <div className="clova-wave wave2"></div>
-                <div className="clova-mic-icon">🎤</div>
-              </div>
-            </div>
+          <div className="clova-voice-panel" ref={wavePanelRef}>
+            <div className="clova-wave" />
+            <div className="clova-wave" />
+            <div className="clova-wave" />
+            <div className="clova-wave" />
+            <div className="clova-mic-icon">🎤</div>
+          </div>
           )}
         
         <div className='chat-footer'>
