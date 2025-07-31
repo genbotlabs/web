@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Header from '../components/Header/Header';
 import '../styles/ChatbotPage.css';
@@ -16,6 +16,12 @@ export default function ChatbotPage() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+
+  const mediaRecorderRef = useRef(null);
+  const streamRef = useRef(null);
+  const silenceAnimationRef = useRef(null);
+  const chunksRef = useRef([]);
 
   // 초기 인삿말 불러오기
   useEffect(() => {
