@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Header from '../components/Header/Header';
 import '../styles/ChatbotPage.css';
 import sendIcon from '../icons/send.png';
 import voiceIcon from '../icons/voice.png';
+import botIcon from '../icons/bot.png';
+import userIcon from '../icons/user.png';
 
 const runpodUrl = process.env.REACT_APP_RUNPOD_URL;
 const apiUrl = process.env.REACT_APP_API_URL;
@@ -16,6 +18,12 @@ export default function ChatbotPage() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+
+  const mediaRecorderRef = useRef(null);
+  const streamRef = useRef(null);
+  const silenceAnimationRef = useRef(null);
+  const chunksRef = useRef([]);
 
   // 초기 인삿말 불러오기
   useEffect(() => {
@@ -53,7 +61,10 @@ export default function ChatbotPage() {
     addMessage('user', textToSend);
     setInput('');
     setLoading(true);
-
+  
+    // 1. 일단 빈 partial 메시지로 bot 영역 자리 확보
+    addMessage('bot', '', true); // true = partial
+  
     try {
       const res = await fetch(`${runpodUrl}/chat`, {
         method: 'POST',
@@ -64,113 +75,223 @@ export default function ChatbotPage() {
           question: textToSend
         })
       });
-
+  
+      if (!res.ok) throw new Error('응답 실패');
+  
       const data = await res.json();
-      addMessage('bot', data.answer);
-
+      const answer = data.answer || '답변이 없습니다.';
+  
+      // 2. 한 글자씩 타이핑처럼 보여주기
+      let currentText = '';
+      for (let i = 0; i < answer.length; i++) {
+        currentText += answer[i];
+  
+        setMessages(prev => {
+          const last = prev[prev.length - 1];
+          if (last?.from === 'bot' && last.partial) {
+            return [...prev.slice(0, -1), { from: 'bot', text: currentText, partial: true }];
+          }
+          return prev;
+        });
+  
+        await new Promise(resolve => setTimeout(resolve, 30)); // 글자당 delay (ms)
+      }
+  
+      // 3. partial → false 처리로 고정
+      setMessages(prev => {
+        const last = prev[prev.length - 1];
+        if (last?.from === 'bot' && last.partial) {
+          return [...prev.slice(0, -1), { from: 'bot', text: last.text }];
+        }
+        return prev;
+      });
+  
     } catch (err) {
       console.error(err);
-      addMessage('bot', '답변 중 오류가 발생했습니다.');
+      setMessages(prev => {
+        const last = prev[prev.length - 1];
+        if (last?.from === 'bot' && last.partial) {
+          return [...prev.slice(0, -1), { from: 'bot', text: '답변 중 오류가 발생했습니다.' }];
+        }
+        return [...prev, { from: 'bot', text: '답변 중 오류가 발생했습니다.' }];
+      });
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') sendMessage();
   };
 
-  const sendVoiceFile = async () => {
-    let stream;
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch (err) {
-      return alert("🎙️ 마이크 권한이 필요합니다.");
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.stop();
     }
-
-    const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm; codecs=opus' });
-    const chunks = [];
-
-    mediaRecorder.ondataavailable = (e) => {
-      if (e.data.size > 0) {
-        chunks.push(e.data);
-      }
-    };
-
-    mediaRecorder.onstop = async () => {
-      const audioBlob = new Blob(chunks, { type: 'audio/webm' });
-      const formData = new FormData();
-      formData.append('file', audioBlob, 'voice.webm');
-      formData.append('bot_id', botId);
-      formData.append('session_id', sessionId);
-
-    try {
-      const res = await fetch(`${apiUrl}/voicebot/voicebot`, { method: 'POST', body: formData });
-      if (!res.ok) throw new Error('업로드 실패');
-      // 오디오 스트림 받기
-      const ttsBlob = await res.blob();
-      const url = URL.createObjectURL(ttsBlob);
-      new Audio(url).play();
-    } catch (err) {
-      alert('음성 업로드 실패: ' + err.message);
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
     }
-    stream.getTracks().forEach(track => track.stop());
+    cancelAnimationFrame(silenceAnimationRef.current);
+    setIsRecording(false);
   };
-  mediaRecorder.start();
-  setTimeout(() => mediaRecorder.stop(), 6000);
-};
-    //   try {
-    //     const res = await fetch(`${apiUrl}/voicebot`, {
-    //       method: 'POST',
-    //       body: formData,
-    //     });
-    //     if (!res.ok) throw new Error('업로드 실패');
-    //     const result = await res.json();
 
-    //     // 결과가 음성 파일(blob)로 온다면:
-    //     const audioBlob = await res.blob();
-    //     const url = URL.createObjectURL(audioBlob);
-    //     new Audio(url).play();
+  const sendVoiceFile = async () => {
+    try {
+      if (isRecording) {
+        stopRecording();
+        return;
+      }
 
-    //     // 결과가 텍스트라면:
-    //     // addMessage('bot', result.text || result.answer || '음성 인식 결과를 받았습니다.');
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (err) {
+        return alert("🎙️ 마이크 권한이 필요합니다.");
+      }
 
-    //   } catch (err) {
-    //     alert('음성 업로드 실패: ' + err.message);
-    //   }
-    //   stream.getTracks().forEach(track => track.stop());
-    // };
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm; codecs=opus' });
+      const chunks = [];
 
-  //  // 6초 녹음
-  //   mediaRecorder.start();
-  //   setTimeout(() => mediaRecorder.stop(), 6000);
-  // };
+      chunksRef.current = chunks;
+      mediaRecorderRef.current = mediaRecorder;
+      streamRef.current = stream;
+
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const sourceNode = audioContext.createMediaStreamSource(stream);
+      const analyser = audioContext.createAnalyser();
+      sourceNode.connect(analyser);
+      analyser.fftSize = 2048;
+      const bufferLength = analyser.fftSize;
+      const dataArray = new Uint8Array(bufferLength);
+
+      let silenceStart = null;
+        const maxSilence = 5000;
+        setIsRecording(true);
+
+        const detectSilence = () => {
+          analyser.getByteTimeDomainData(dataArray);
+          let sum = 0;
+          for (let i = 0; i < bufferLength; i++) {
+            const normalized = dataArray[i] / 128 - 1;
+            sum += normalized * normalized;
+          }
+          const volume = Math.sqrt(sum / bufferLength);
+
+          if (volume < 0.01) {
+            if (!silenceStart) silenceStart = Date.now();
+            else if (Date.now() - silenceStart > maxSilence) {
+              stopRecording();
+              return;
+            }
+          } else {
+            silenceStart = null;
+          }
+
+          silenceAnimationRef.current = requestAnimationFrame(detectSilence);
+        };
+
+        mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunks.push(e.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+        const formData = new FormData();
+        formData.append('file', audioBlob, 'voice.webm');
+        formData.append('bot_id', botId);
+        formData.append('session_id', sessionId);
+
+        try {
+          const res = await fetch(`${apiUrl}/voicebot/voicebot`, { method: 'POST', body: formData });
+          if (!res.ok) throw new Error('업로드 실패');
+          const ttsBlob = await res.blob();
+          const url = URL.createObjectURL(ttsBlob);
+          new Audio(url).play();
+        } catch (err) {
+          alert('음성 업로드 실패: ' + err.message);
+        }
+        stream.getTracks().forEach(track => track.stop());
+      };
+      mediaRecorder.start();
+      detectSilence();
+      setTimeout(() => mediaRecorder.stop(), 5000);
+
+    } catch (err) {
+      console.error('마이크 권한 오류:', err);
+      alert('마이크 권한이 필요합니다.');
+      setIsRecording(false);
+    }
+  };
 
   return (
-    <div className="chatbot-container">
-      <div className="chat-window">
+    <>
+      <Header />
+      <div className="chatbot-container">
+        <div className="chat-window">
+          
         {messages.map((msg, idx) => (
-          <div key={idx} className={`message ${msg.from}`}>
-            {msg.text}
+          <div key={idx} className={`message-row ${msg.from}`}>
+            {msg.from === 'bot' && (
+              <img className="message-icon" src={botIcon} alt="Bot Icon" />
+            )}
+            
+            <div className={`message ${msg.from} ${msg.partial ? 'partial' : ''}`}>
+              {msg.partial && !msg.text ? (
+                <span className="typing-indicator">
+                  <span className="dot"></span>
+                  <span className="dot"></span>
+                  <span className="dot"></span>
+                </span>
+              ) : (
+                msg.text
+              )}
+            </div>
+
+            {msg.from === 'user' && (
+              <img className="message-icon" src={userIcon} alt="User Icon" />
+            )}
           </div>
         ))}
+        </div>
+
+        {isRecording && (
+            <div className="clova-voice-ui">
+              <div className="clova-voice-text">말씀 중입니다...</div>
+              <div className="clova-voice-panel">
+                <div className="clova-wave wave1"></div>
+                <div className="clova-wave wave2"></div>
+                <div className="clova-mic-icon">🎤</div>
+              </div>
+            </div>
+          )}
+        
+        <div className='chat-footer'>
+          <div className="chat-input">
+            <input
+              type="text"
+              placeholder="질문을 입력해 주세요."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={loading}
+            />
+            {!input.trim() ? (
+              <button onClick={sendVoiceFile} className={`voice-button ${isRecording ? 'recording' : ''}`} disabled={loading}>
+                <img src={voiceIcon} alt="음성 보내기" />
+              </button>
+            ) : (
+              <button onClick={() => sendMessage()} className="send-button" disabled={loading}>
+                <img src={sendIcon} alt="보내기" />
+              </button>
+            )}
+          </div>
+        </div>
       </div>
-      <div className="chat-input">
-        <input
-          type="text"
-          placeholder="질문을 입력해 주세요."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={loading}
-        />
-        <button onClick={() => sendMessage()} className="send-button" disabled={loading}>
-          <img src={sendIcon} alt="보내기" />
-        </button>
-        <button onClick={sendVoiceFile} className="voice-button" disabled={loading}>
-          <img src={voiceIcon} alt="음성 보내기" />
-        </button>
-      </div>
-    </div>
+    </>
   );
 }
