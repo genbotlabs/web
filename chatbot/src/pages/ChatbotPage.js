@@ -143,6 +143,12 @@ export default function ChatbotPage() {
     try {
       if (isRecording) {
         stopRecording();
+
+        // 🎯 사용자 움직이는 음성 말풍선만 제거
+        setMessages(prev => prev.filter(msg => {
+          return !(msg.from === 'user' && msg.isVoice && msg.waveform);
+        }));
+
         return;
       }
 
