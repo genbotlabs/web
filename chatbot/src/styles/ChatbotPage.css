@@ -58,7 +58,7 @@ body {
 .message {
   padding: 10px 16px;
   border-radius: 16px;
-  font-size: 15px;
+  font-size: 20px;
   line-height: 1.5;
   word-break: break-word;
   max-width: 75%;
@@ -78,14 +78,11 @@ body {
   /* margin-left: 8px; */
 }
 
-.message-icon {
+/* .message-icon {
   width: 45px;
-  /* height: 36px; */
   border-radius: 50%;
   object-fit: cover;
-  /* background-color: #f1f5f9; */
-  /* box-shadow: 0 2px 8px rgba(0,0,0,0.1); */
-}
+} */
 
 .message-row.bot .message-icon {
   margin-left: 8px;   /* ✅ 말풍선과 아이콘 간격 */
@@ -167,7 +164,7 @@ body {
   flex: 1;
   border: none;
   outline: none;
-  font-size: 1rem;
+  font-size: 1.3rem;
   padding: 0.75rem 3rem 0.75rem 1rem;
   border-radius: 9999px;
   background-color: #f8fafc;
@@ -177,12 +174,14 @@ body {
 
 .voice-button, .send-button {
   position: absolute;
-  right: 1.5rem;
+  right: 35rem;
+  bottom: 3.2rem;
+  padding: 1rem;
   background-color: #2563eb;
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -198,13 +197,12 @@ body {
 
 .send-button {
   background-color: #f97874;
-  right: 1.5rem;
 }
 
 .send-button img,
 .voice-button img {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
 }
 
 .clova-voice-ui {
@@ -237,18 +235,38 @@ body {
   50% { border-color: #1e3a8a; }
 }
 
+.inline-voice-wave {
+  display: flex;
+  gap: 6px;
+  margin-top: 0.5rem;
+  align-items: flex-end;
+}
+
+.inline-voice-wave .clova-wave {
+  width: 4px;
+  height: 12px;
+  background-color: white;
+  border-radius: 2px;
+  animation: waveAnim 1s ease-in-out infinite;
+}
+
+@keyframes waveAnim {
+  0%, 100% { height: 8px; }
+  50% { height: 24px; }
+}
 .clova-voice-panel {
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin: 0 auto;
 }
 
 .clova-wave {
-  width: 8px;
-  height: 24px;
-  background-color: #60a5fa;
+  width: 6px;
+  height: 10px;
+  background-color: #3b82f6;
   border-radius: 4px;
-  animation: waveAnim 1s infinite ease-in-out;
+  transition: height 0.1s ease-in-out;
 }
 
 .wave2 {
