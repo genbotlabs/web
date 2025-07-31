@@ -1,6 +1,6 @@
 /* ───── 기본 배경 스타일 ───── */
 body {
-  background: linear-gradient(135deg, #60a5fa, #93c5fd); /* ✅ 진한 블루 계열로 강조 */
+  background-color: #ffffff;
   margin: 0;
   font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
 }

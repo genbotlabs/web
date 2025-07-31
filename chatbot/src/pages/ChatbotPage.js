@@ -4,6 +4,8 @@ import Header from '../components/Header/Header';
 import '../styles/ChatbotPage.css';
 import sendIcon from '../icons/send.png';
 import voiceIcon from '../icons/voice.png';
+import botIcon from '../icons/logo.png';
+import userIcon from '../icons/logo.png';
 
 const runpodUrl = process.env.REACT_APP_RUNPOD_URL;
 const apiUrl = process.env.REACT_APP_API_URL;
@@ -59,58 +61,65 @@ export default function ChatbotPage() {
     addMessage('user', textToSend);
     setInput('');
     setLoading(true);
-
+  
+    // 1. 일단 빈 partial 메시지로 bot 영역 자리 확보
+    addMessage('bot', '', true); // true = partial
+  
     try {
       const res = await fetch(`${runpodUrl}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-
         body: JSON.stringify({
           bot_id: botId,
           session_id: sessionId,
           question: textToSend
         })
       });
-
+  
+      if (!res.ok) throw new Error('응답 실패');
+  
       const data = await res.json();
-      addMessage('bot', data.answer);
-
-      if (!res.body) throw new Error('스트림 body 없음 오류');
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder('utf-8');
-
-      let botResponse = '';
-      const appendPartial = (text) => {
+      const answer = data.answer || '답변이 없습니다.';
+  
+      // 2. 한 글자씩 타이핑처럼 보여주기
+      let currentText = '';
+      for (let i = 0; i < answer.length; i++) {
+        currentText += answer[i];
+  
         setMessages(prev => {
           const last = prev[prev.length - 1];
           if (last?.from === 'bot' && last.partial) {
-            return [...prev.slice(0, -1), { from: 'bot', text, partial: true }];
-          } else {
-            return [...prev, { from: 'bot', text, partial: true }];
+            return [...prev.slice(0, -1), { from: 'bot', text: currentText, partial: true }];
           }
+          return prev;
         });
-      };
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        botResponse += decoder.decode(value);
-        appendPartial(botResponse);
+  
+        await new Promise(resolve => setTimeout(resolve, 30)); // 글자당 delay (ms)
       }
-
+  
+      // 3. partial → false 처리로 고정
       setMessages(prev => {
         const last = prev[prev.length - 1];
-        if (last?.partial) return [...prev.slice(0, -1), { from: 'bot', text: last.text }];
+        if (last?.from === 'bot' && last.partial) {
+          return [...prev.slice(0, -1), { from: 'bot', text: last.text }];
+        }
         return prev;
       });
-
+  
     } catch (err) {
       console.error(err);
-      addMessage('bot', '답변 중 오류가 발생했습니다.');
+      setMessages(prev => {
+        const last = prev[prev.length - 1];
+        if (last?.from === 'bot' && last.partial) {
+          return [...prev.slice(0, -1), { from: 'bot', text: '답변 중 오류가 발생했습니다.' }];
+        }
+        return [...prev, { from: 'bot', text: '답변 중 오류가 발생했습니다.' }];
+      });
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') sendMessage();
@@ -224,11 +233,30 @@ export default function ChatbotPage() {
       <Header />
       <div className="chatbot-container">
         <div className="chat-window">
-          {messages.map((msg, idx) => (
-            <div key={idx} className={`message ${msg.from}`}>
-              {msg.text}
+          
+        {messages.map((msg, idx) => (
+          <div key={idx} className={`message-row ${msg.from}`}>
+            {msg.from === 'bot' && (
+              <img className="message-icon" src={botIcon} alt="Bot Icon" />
+            )}
+            
+            <div className={`message ${msg.from} ${msg.partial ? 'partial' : ''}`}>
+              {msg.partial && !msg.text ? (
+                <span className="typing-indicator">
+                  <span className="dot"></span>
+                  <span className="dot"></span>
+                  <span className="dot"></span>
+                </span>
+              ) : (
+                msg.text
+              )}
             </div>
-          ))}
+
+            {msg.from === 'user' && (
+              <img className="message-icon" src={userIcon} alt="User Icon" />
+            )}
+          </div>
+        ))}
         </div>
 
         {isRecording && (
@@ -242,24 +270,26 @@ export default function ChatbotPage() {
             </div>
           )}
         
-        <div className="chat-input">
-          <input
-            type="text"
-            placeholder="질문을 입력해 주세요."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            disabled={loading}
-          />
-          {!input.trim() ? (
-            <button onClick={sendVoiceFile} className={`voice-button ${isRecording ? 'recording' : ''}`} disabled={loading}>
-              <img src={voiceIcon} alt="음성 보내기" />
-            </button>
-          ) : (
-            <button onClick={() => sendMessage()} className="send-button" disabled={loading}>
-              <img src={sendIcon} alt="보내기" />
-            </button>
-          )}
+        <div className='chat-footer'>
+          <div className="chat-input">
+            <input
+              type="text"
+              placeholder="질문을 입력해 주세요."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={loading}
+            />
+            {!input.trim() ? (
+              <button onClick={sendVoiceFile} className={`voice-button ${isRecording ? 'recording' : ''}`} disabled={loading}>
+                <img src={voiceIcon} alt="음성 보내기" />
+              </button>
+            ) : (
+              <button onClick={() => sendMessage()} className="send-button" disabled={loading}>
+                <img src={sendIcon} alt="보내기" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </>

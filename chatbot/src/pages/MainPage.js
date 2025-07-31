@@ -58,13 +58,6 @@ export default function MainPage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ bot_id: botId, cs_number, email, detail_id})
         });
-
-        // stt 로드하는 api
-        await fetch(`{runpodUrl}/stt`, {
-            method: "POST",
-            body: JSON.stringify({})
-        })
-        
         
         navigate(`/chatbot?bot_id=${botId}&session_id=${sessionId}`)
     }
