@@ -236,9 +236,9 @@ export default function ChatbotPage() {
           
         {messages.map((msg, idx) => (
           <div key={idx} className={`message-row ${msg.from}`}>
-            {msg.from === 'bot' && (
+            {/* {msg.from === 'bot' && (
               <img className="message-icon" src={botIcon} alt="Bot Icon" />
-            )}
+            )} */}
             
             <div className={`message ${msg.from} ${msg.partial ? 'partial' : ''}`}>
               {msg.partial && !msg.text ? (
@@ -252,9 +252,9 @@ export default function ChatbotPage() {
               )}
             </div>
 
-            {msg.from === 'user' && (
+            {/* {msg.from === 'user' && (
               <img className="message-icon" src={userIcon} alt="User Icon" />
-            )}
+            )} */}
           </div>
         ))}
         </div>
@@ -280,16 +280,16 @@ export default function ChatbotPage() {
               onKeyDown={handleKeyDown}
               disabled={loading}
             />
-            {!input.trim() ? (
-              <button onClick={sendVoiceFile} className={`voice-button ${isRecording ? 'recording' : ''}`} disabled={loading}>
-                <img src={voiceIcon} alt="음성 보내기" />
-              </button>
-            ) : (
-              <button onClick={() => sendMessage()} className="send-button" disabled={loading}>
-                <img src={sendIcon} alt="보내기" />
-              </button>
-            )}
           </div>
+          {!input.trim() ? (
+            <button onClick={sendVoiceFile} className={`voice-button ${isRecording ? 'recording' : ''}`} disabled={loading}>
+              <img src={voiceIcon} alt="음성 보내기" />
+            </button>
+          ) : (
+            <button onClick={() => sendMessage()} className="send-button" disabled={loading}>
+              <img src={sendIcon} alt="보내기" />
+            </button>
+          )}
         </div>
       </div>
     </>

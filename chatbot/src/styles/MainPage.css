@@ -1,8 +1,11 @@
 /* ───── 기본 배경 스타일 ───── */
+@import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+
+
 body {
   background-color: #ffffff;
   margin: 0;
-  font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+  font-family: 'Alexandria', 'Apple SD Gothic Neo', sans-serif;
 }
 
 /* ───── 전체 컨테이너 ───── */
