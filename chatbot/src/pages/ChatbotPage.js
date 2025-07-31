@@ -116,7 +116,7 @@ export default function ChatbotPage() {
         // 응답 시간 측정 종료
         const t1 = performance.now();
         const elapsed = t1 - t0;
-        console.log(`음성 응답 시간: ${(elapsed/1000).toFixed(2)}초`);
+        console.log(`음성 응답 시간: ${(elapsed/1000).toFixed(2)}`);
 
         const url = URL.createObjectURL(ttsBlob);
         new Audio(url).play();
