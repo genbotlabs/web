@@ -1,0 +1,169 @@
+/* ───── 기본 배경 스타일 ───── */
+@import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+
+
+body {
+  background-color: #ffffff;
+  margin: 0;
+  font-family: 'Alexandria', 'Apple SD Gothic Neo', sans-serif;
+}
+
+/* ───── 전체 컨테이너 ───── */
+.main-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  gap: 4rem;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+/* ───── 왼쪽 섹션 ───── */
+.left-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.logo-icon {
+  width: 100px;
+  margin-bottom: 1.5rem;
+}
+
+.main-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #6b7280;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+.link-chatbot-button {
+  background-color: #2563eb;
+  border: none;
+  height: 42px;
+  padding: 0 1.5rem;
+  border-radius: 9999px;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  color: white;
+}
+
+.link-chatbot-button:hover {
+  background-color: #1e40af !important;
+  color: #ffffff !important;
+  transform: scale(1.08);
+}
+
+/* ───── 오른쪽 카드 섹션 ───── */
+.right-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeUp 1.2s ease-out;
+}
+
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ───── 카드 컴포넌트 ───── */
+.custom-card-container {
+  background-color: #ffffff;
+  border-radius: 1.25rem;
+  padding: 2rem;
+  max-width: 360px;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+  transition: transform 0.3s ease;
+}
+
+.custom-card-container:hover {
+  transform: translateY(-4px);
+}
+
+.custom-card-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  margin-bottom: 1.2rem;
+  color: #374151;
+}
+
+.company-name {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.timestamp {
+  font-weight: 500;
+}
+
+.custom-card-content p {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.custom-card-content .highlight {
+  color: #dc2626;
+  font-weight: bold;
+}
+
+.custom-card-content .subtext {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.custom-card-content .question {
+  font-weight: 600;
+  margin: 1.2rem 0 0.5rem;
+  font-size: 1rem;
+  color: #1e293b;
+}
+
+.option-box {
+  background-color: #f8fafc;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: #111827;
+  transition: background-color 0.3s;
+  border: 1px solid #e2e8f0;
+}
+
+.option-box:hover {
+  background-color: #e0f2fe;
+  cursor: pointer;
+}
+
+/* ───── 반응형 ───── */
+@media (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1.5rem;
+  }
+
+  .right-section {
+    margin-top: 2rem;
+  }
+}
